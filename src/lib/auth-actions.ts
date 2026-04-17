@@ -13,7 +13,7 @@ import { getInsforgeServerClient } from "@/lib/insforge";
 type AuthResult = { success: true } | { success: false; error: string };
 
 export async function getAuthConfig() {
-  const baseUrl = process.env.NEXT_PUBLIC_INSFORGE_URL;
+  const baseUrl = "https://9s8ct2b5.us-east.insforge.app";
 
   if (!baseUrl) {
     return { oAuthProviders: [] as string[], requireEmailVerification: false, passwordMinLength: 8 };
@@ -145,7 +145,7 @@ export async function getOAuthUrl(provider: string): Promise<{ url: string } | {
   const origin =
     process.env.NODE_ENV === "development"
       ? "http://localhost:3000"
-      : process.env.NEXT_PUBLIC_APP_URL ?? "";
+      : "https://9s8ct2b5.insforge.site" ?? "";
 
   if (!origin) {
     return { error: "Missing NEXT_PUBLIC_APP_URL." };
