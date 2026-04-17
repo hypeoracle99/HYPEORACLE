@@ -145,7 +145,7 @@ export async function getOAuthUrl(provider: string): Promise<{ url: string } | {
   const origin =
     process.env.NODE_ENV === "development"
       ? "http://localhost:3000"
-      : "https://9s8ct2b5.insforge.site" ?? "";
+      : "https://9s8ct2b5.insforge.site";
 
   if (!origin) {
     return { error: "Missing NEXT_PUBLIC_APP_URL." };
