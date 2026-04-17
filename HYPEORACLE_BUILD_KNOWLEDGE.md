@@ -1,7 +1,6 @@
 # HYPEORACLE BUILD KNOWLEDGE BASE
-**For AI Coding Agents (Cursor / Claude / Windsurf / etc.)**
 
-**Project**: HypeOracle – Collective Emotion Oracle for Bags.fm  
+**Project**: HypeOracle – Collective Emotion Oracle for Bags.fm and solana ecosystem
 **Tagline**: Real human hype & vibes → live on-chain trading signals  
 **Core Idea (from Day 1)**: Turn phone voice + sensors into a verifiable “emotional DePIN” oracle that powers Bags.fm trading.
 
@@ -105,6 +104,66 @@ Commit: "PHASE 5 COMPLETE – Polish & tested"PHASE 6: DEPLOYMENTCopy-paste this
 
 Deploy full app on InsForge. Provide live URL.
 
+commit : "PHASE 5A - ADDITIONAL FEATURE: PERSONAL VIBE AGENT (High Priority)Feature Name: Personal Vibe Agent
+Description: Every user gets their own AI trading agent trained on their personal vibe history. This turns HypeOracle into a personalized emotion-based trading companion.Why This Feature WinsExtremely sticky and differentiated
+Creates strong user retention
+Feels magical in demo ("Watch my agent that knows my vibe style")
+Perfect for long-term product after hackathon
+
+Database Changes (Add this table)sql
+
+CREATE TABLE user_vibe_profiles (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_pubkey text UNIQUE NOT NULL,
+    agent_name text DEFAULT 'My Vibe Agent',
+    personality_summary text,
+    risk_tolerance integer DEFAULT 50,        -- 0-100
+    trading_style text,                       -- 'degen', 'cautious', 'momentum', etc.
+    favorite_tokens jsonb DEFAULT '[]',
+    total_vibes integer DEFAULT 0,
+    last_trained_at timestamptz,
+    created_at timestamptz DEFAULT now()
+);
+
+New Edge Function: train-personal-agentFunctionality:Takes user’s last 30–50 vibes
+Sends to Groq with smart prompt to analyze personality
+Saves summary, risk tolerance, and style into user_vibe_profiles
+Returns agent profile
+
+Example Prompt for Groq:text
+
+Analyze this user's vibe history and create a concise trading personality profile.
+Return JSON only:
+{
+  "agent_name": "suggested fun name",
+  "personality_summary": "...",
+  "risk_tolerance": 65,
+  "trading_style": "aggressive momentum chaser",
+  "key_insights": ["...", "..."]
+}
+
+New Frontend Page: /my-agentFeatures to build:"Train My Agent" button (calls train-personal-agent)
+Beautiful agent card showing:Agent name + avatar (random or user editable)
+Personality summary
+Risk meter
+"Key Insights" list
+"Daily Vibe Recommendation" section
+
+"Retrain Agent" button (refreshes with new data)
+History of past agent versions
+
+Integration PointsAfter every vibe submission → increment total_vibes
+Add "My Agent" button in main navigation
+Show agent suggestion on dashboard:
+"Your agent is feeling bullish on $BONK right now"
+
+Future (Nice-to-have after MVP)Agent can auto-submit vibes on selected tokens
+Shareable agent clones
+Agent performance tracking (how much PnL it helped generate)
+
+
+
+
 Commit: "PHASE 6 COMPLETE – Live on InsForge"FUTURE PHASE 7: BONDING-CURVE TOKEN LAUNCH (after traction)When we have users:Use Bags SDK + Meteora Dynamic Bonding Curve to launch $HYPE token.
 Set creator fee 1% + dynamic fee-share from HypeOracle oracle.
 
@@ -113,5 +172,4 @@ Emphasize DePIN sensors in comments/code.
 All in InsForge only.
 Token = bonding curve (post-MVP).
 
-Start with PHASE 1 now.
 

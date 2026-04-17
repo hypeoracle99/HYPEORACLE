@@ -1,0 +1,18 @@
+{
+  "name": "HypeOracle",
+  "short_name": "HypeOracle",
+  "description": "Real human vibes → on-chain Solana trades via Bags.fm",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#FF6B1A",
+  "orientation": "portrait",
+  "icons": [],
+  "shortcuts": [
+    {
+      "name": "My Earnings",
+      "url": "/earnings",
+      "description": "View and claim your oracle fee earnings"
+    }
+  ]
+}
