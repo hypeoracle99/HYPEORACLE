@@ -4,11 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@insforge/sdk'
 import { ExternalLink, TrendingUp, ArrowUpRight, Clock, Wifi, WifiOff } from 'lucide-react'
+import { INSFORGE_CONFIG } from '@/lib/constants'
 
-const client = createClient({
-  baseUrl: "https://9s8ct2b5.us-east.insforge.app",
-  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTU2NzgtOTBhYi1jZGVmMTIzNDU2NzgiLCJlbWFpbCI6ImFub25AaW5zZm9yZ2UuY29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNDEzNjl9.Cm7dzmsTq0k1LYT2n9R-S2LgnRBG1vOTsZoJ9R8DNXY",
-})
+const client = createClient(INSFORGE_CONFIG)
 
 const CHANNEL = 'oracle_trades'
 
@@ -96,8 +94,8 @@ export function OracleTradeFeed() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-3.5 h-3.5 text-orange-500" />
-          <h3 className="mono-label" style={{ fontSize: '0.65rem' }}>
-            Oracle Transparency Log
+          <h3 className="mono-label text-white/90 !font-sans font-bold tracking-tight" style={{ fontSize: '0.65rem' }}>
+            ORACLE TRANSPARENCY LOG
           </h3>
         </div>
         <div className="flex items-center gap-1.5">

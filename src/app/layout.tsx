@@ -1,6 +1,8 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { SolanaProvider } from '@/components/solana-provider';
+import { NavHeader } from '@/components/nav-header';
+import { MobileNav } from '@/components/mobile-nav';
 
 export const metadata: Metadata = {
   title: 'HypeOracle | Real Human Vibes → On-Chain Trades',
@@ -23,11 +25,12 @@ export const metadata: Metadata = {
     title: 'HypeOracle',
     description: 'Real human hype & vibes → live on-chain trading signals',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 const themeScript = `
@@ -47,7 +50,11 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-body bg-[var(--bg-base)] text-[var(--text-primary)] overflow-x-hidden">
         <SolanaProvider>
-          {children}
+          <NavHeader />
+          <main className="pb-24 lg:pb-0">
+            {children}
+          </main>
+          <MobileNav />
         </SolanaProvider>
       </body>
     </html>

@@ -8,11 +8,10 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import Link from 'next/link'
 import { ChevronLeft, BrainCircuit, Activity, Target, Zap, LayoutDashboard } from 'lucide-react'
 import { AmbientBackground } from './ui-primitives'
+import { INSFORGE_CONFIG } from '@/lib/constants'
+import { OFFICIAL_TOKEN } from '@/lib/token-config'
 
-const client = createClient({
-  baseUrl: "https://9s8ct2b5.us-east.insforge.app",
-  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTU2NzgtOTBhYi1jZGVmMTIzNDU2NzgiLCJlbWFpbCI6ImFub25AaW5zZm9yZ2UuY29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNDEzNjl9.Cm7dzmsTq0k1LYT2n9R-S2LgnRBG1vOTsZoJ9R8DNXY",
-})
+const client = createClient(INSFORGE_CONFIG)
 
 export function PersonalAgentDashboard() {
   const { publicKey } = useWallet()
@@ -68,10 +67,6 @@ export function PersonalAgentDashboard() {
       <div className="relative min-h-screen flex items-center justify-center">
         <AmbientBackground />
         <div className="absolute top-6 left-6 sm:top-10 sm:left-10 z-20">
-          <Link href="/" className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-[var(--text-muted)] hover:text-white transition-colors font-mono">
-            <ChevronLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
         </div>
         <motion.div
            initial={{ opacity: 0, scale: 0.96 }}
@@ -97,20 +92,7 @@ export function PersonalAgentDashboard() {
       <AmbientBackground />
 
       <main className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 py-12">
-        <div className="flex justify-between items-center mb-10">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-[var(--text-muted)] hover:text-white transition-colors font-mono"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Oracle Dashboard
-          </Link>
-          <Link 
-            href="/earnings" 
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-[var(--text-muted)] hover:text-white transition-colors font-mono px-3 py-1.5 rounded-lg border border-white/5 bg-white/5"
-          >
-            Earnings <LayoutDashboard className="w-3 h-3" />
-          </Link>
+        <div className="flex justify-between items-center mb-10 pt-24">
         </div>
 
         {/* Header */}
@@ -135,7 +117,7 @@ export function PersonalAgentDashboard() {
             <div className="text-6xl mb-4">🤖</div>
             <h2 className="font-display font-bold text-xl text-white mb-2">No Agent Brain Found</h2>
             <p className="text-sm text-[var(--text-muted)] mb-6 max-w-sm mx-auto">
-              Your personal AI doesn't know who you are yet. Train it using your past vibe submissions!
+              Your personal AI doesn&apos;t know who you are yet. Train it using your past vibe submissions!
             </p>
             
             <button
@@ -152,10 +134,10 @@ export function PersonalAgentDashboard() {
         ) : (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
              {/* Profile Card */}
-             <div className="p-6 sm:p-8 rounded-3xl mb-6 relative overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
+             <div className="p-6 sm:p-8 rounded-3xl mb-6 relative overflow-hidden backdrop-blur-xl" style={{ background: 'rgba(20, 20, 20, 0.4)', border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)' }}>
                 {/* Visual Risk Gradient */}
                 <div 
-                   className="absolute top-0 right-0 w-64 h-64 blur-[80px] opacity-20 pointer-events-none" 
+                   className="absolute top-0 right-0 w-64 h-64 blur-[80px] opacity-20 pointer-events-none transition-colors duration-1000" 
                    style={{ background: profile.risk_tolerance > 70 ? '#ef4444' : profile.risk_tolerance > 40 ? '#f59e0b' : '#3b82f6' }}
                 />
 
@@ -199,6 +181,23 @@ export function PersonalAgentDashboard() {
                          </li>
                       ))}
                    </ul>
+                </div>
+
+                {/* Daily Recommendation from Token Config */}
+                <div className="mb-8 p-5 rounded-2xl border border-white/5 relative overflow-hidden group" style={{ background: 'rgba(16, 185, 129, 0.05)' }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#10b981] opacity-10 blur-[40px] pointer-events-none group-hover:opacity-20 transition-opacity duration-500" />
+                  <div className="flex items-start gap-4 relative z-10">
+                    <div className="mt-1 shrink-0 px-2 py-1 bg-[#10b981]/20 rounded-md border border-[#10b981]/30">
+                      <Zap className="w-4 h-4 text-[#10b981]" />
+                    </div>
+                    <div>
+                      <h3 className="mono-label text-[0.65rem] text-[#10b981] mb-1.5 tracking-wider">DAILY RECOMMENDATION</h3>
+                      <p className="text-white/90 text-sm leading-relaxed">
+                        Based on your risk tolerance of <span className="font-mono text-[#10b981]">{profile.risk_tolerance}</span>, your agent is closely monitoring <span className="font-bold text-[#10b981]">${OFFICIAL_TOKEN.symbol}</span> momentum. 
+                        {OFFICIAL_TOKEN.isLive ? ' Active market conditions detected, prioritize high-conviction vibes.' : ' Prepare for impending bonding curve launch.'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-6 border-t border-white/5">

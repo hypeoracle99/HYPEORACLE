@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@insforge/sdk'
 import { Connection } from '@solana/web3.js'
 import { BagsSDK } from '@bagsfm/bags-sdk'
@@ -17,40 +18,62 @@ import {
   Search, Zap, Shield, Activity, TrendingUp,
   Radio, ChevronRight, Globe, BarChart3, Users, Sparkles, Coins, BrainCircuit
 } from 'lucide-react'
+import { 
+  BAGS_API_KEY, 
+  INSFORGE_CONFIG, 
+  GET_CONNECTION,
+  FALLBACK_TICKER_DATA 
+} from '@/lib/constants'
+import { OFFICIAL_TOKEN } from '@/lib/token-config'
 
-const client = createClient({
-  baseUrl: "https://9s8ct2b5.us-east.insforge.app",
-  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTU2NzgtOTBhYi1jZGVmMTIzNDU2NzgiLCJlbWFpbCI6ImFub25AaW5zZm9yZ2UuY29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNDEzNjl9.Cm7dzmsTq0k1LYT2n9R-S2LgnRBG1vOTsZoJ9R8DNXY",
-})
+const client = createClient(INSFORGE_CONFIG)
 
 // --- Live ticker data ---
 
 function LiveTicker() {
-  const [tickerData, setTickerData] = useState<any[]>([])
+  const [tickerData, setTickerData] = useState<any[]>(FALLBACK_TICKER_DATA)
+  const [isLive, setIsLive] = useState(false)
 
   useEffect(() => {
-    async function fetchTickerData() {
+    async function fetchTickerData(retryCount = 0) {
+      if (retryCount >= 3) {
+        console.warn('[LiveTicker] Max retries reached, staying on current data/fallback.')
+        setIsLive(false)
+        return
+      }
+
       try {
-        const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com')
-        const sdk = new BagsSDK("bags_prod_8lR0OnUDXzqmRKoWBXV5p14Blh8OsiKWuHgIgc2rook", connection, 'processed')
+        const connection = GET_CONNECTION(retryCount)
+        const sdk = new BagsSDK(BAGS_API_KEY, connection, 'processed')
         
         const topTokens = await sdk.state.getTopTokensByLifetimeFees()
         if (topTokens && topTokens.length > 0) {
-          setTickerData(topTokens.slice(0, 15)) // Top 15 Bags tokens
+          setTickerData(topTokens.slice(0, 15))
+          setIsLive(true)
         }
       } catch (err) {
-        console.warn('Failed to fetch Bags.fm leaderboard', err)
+        console.warn(`[LiveTicker] RPC fetch failed (attempt ${retryCount + 1}), retrying...`, err)
+        // Recurse with incremented index to try next RPC
+        fetchTickerData(retryCount + 1)
       }
     }
     
     fetchTickerData()
-    const interval = setInterval(fetchTickerData, 30000)
+    const interval = setInterval(fetchTickerData, 60000)
     return () => clearInterval(interval)
   }, [])
 
-  const baseItems = tickerData.length > 0 ? tickerData : []
-  // Repeat the items to construct the infinite scroll
-  const items = [...baseItems, ...baseItems, ...baseItems]
+  // Construction for infinite scroll
+  const items = useMemo(() => {
+    if (!tickerData || tickerData.length === 0) return []
+    // Prioritize official token if live
+    let base = [...tickerData]
+    if (OFFICIAL_TOKEN.isLive && OFFICIAL_TOKEN.mint !== "LAUNCH_PENDING") {
+      // In a real scenario, we'd fetch the official price here. 
+      // For now, ensure it has a spot in the primary feed rotation.
+    }
+    return [...base, ...base, ...base]
+  }, [tickerData])
 
   if (items.length === 0) {
     return <div className="ticker-bar overflow-hidden py-2 h-[34px]" />
@@ -97,7 +120,7 @@ function LiveTicker() {
 }
 
 // --- Hero section ---
-function HeroSection() {
+function HeroSection({ stats }: { stats: { tokens: number; trades: number } }) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
@@ -108,26 +131,25 @@ function HeroSection() {
       transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
       className="text-center py-16 px-4"
     >
-      {/* Badge */}
+      {/* Logo Badge */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
-        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8"
-        style={{
-          background: 'rgba(255,107,26,0.08)',
-          border: '1px solid rgba(255,107,26,0.2)',
-        }}
+        className="flex justify-center mb-8"
       >
-        <Radio className="w-3 h-3 text-orange-500 animate-pulse" />
-        <span className="text-xs font-mono text-orange-400 tracking-wider">
-          LIVE ON SOLANA
-        </span>
-        <Sparkles className="w-3 h-3 text-orange-500" />
+        <div className="relative group">
+          <div className="absolute inset-0 bg-[#FF6B1A]/20 blur-3xl rounded-full group-hover:bg-[#FF6B1A]/40 transition-all" />
+          <img 
+            src="/logo.png" 
+            alt="Logo" 
+            className="relative w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_0_15px_rgba(255,107,26,0.3)] animate-float"
+          />
+        </div>
       </motion.div>
 
       {/* Main heading */}
-      <h1 className="display-heading text-[clamp(3rem,10vw,7rem)] mb-4 leading-[0.9]">
+      <h1 className="display-heading text-[clamp(2.5rem,10vw,7rem)] mb-4 leading-[0.9] !font-sans tracking-tighter">
         <span className="gradient-text-fire">HYPE</span>
         <br />
         <span style={{ color: 'rgba(255,255,255,0.9)' }}>ORACLE</span>
@@ -143,23 +165,23 @@ function HeroSection() {
       </p>
 
       {/* Stats row */}
-      <div className="flex items-center justify-center gap-8 flex-wrap">
+      <div className="flex items-center justify-center gap-6 md:gap-8 flex-wrap">
         {[
-          { label: 'Vibe Score Formula', value: 'AI × 0.6 + Vol × 0.3 + Emoji' },
-          { label: 'Auto-Buy Trigger', value: 'Score > 80' },
-          { label: 'Max Position', value: '0.005 SOL' },
+          { label: 'Intelligence', value: 'Vibe 2.0' },
+          { label: 'Tokens Tracked', value: stats.tokens > 0 ? stats.tokens : 'Scanning...' },
+          { label: 'Oracle Trades', value: stats.trades > 0 ? stats.trades : 'Monitoring' },
+          { label: 'Max Buy (SOL)', value: OFFICIAL_TOKEN.defaults.maxPosition },
         ].map((stat) => (
-          <div key={stat.label} className="text-center">
-            <p className="font-display font-bold text-sm text-white">{stat.value}</p>
-            <p className="mono-label mt-0.5" style={{ fontSize: '0.55rem' }}>{stat.label}</p>
-          </div>
+          <Link key={stat.label} href="/stake" className="text-center group hover:scale-105 transition-transform cursor-pointer p-2 min-w-[100px]">
+            <p className="font-display font-bold text-sm text-white group-hover:text-orange-400 !font-sans tracking-tight">{stat.value}</p>
+            <p className="mono-label mt-0.5 group-hover:text-orange-300 uppercase tracking-widest" style={{ fontSize: '0.55rem' }}>{stat.label}</p>
+          </Link>
         ))}
       </div>
     </motion.section>
   )
 }
 
-// --- Token search bar ---
 function TokenSearch({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div
@@ -175,7 +197,7 @@ function TokenSearch({ value, onChange }: { value: string; onChange: (v: string)
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Enter token mint address to track vibes..."
+        placeholder="Search by name, symbol or mint address..."
         className="w-full py-3.5 pl-11 pr-4 bg-transparent text-sm text-white placeholder:text-[var(--text-muted)] outline-none font-mono"
       />
       {value && (
@@ -192,39 +214,20 @@ function TokenSearch({ value, onChange }: { value: string; onChange: (v: string)
   )
 }
 
-// --- Score card for a single token ---
 function VibeCard({
   score,
+  metadata,
   onVibeSubmitted,
   index,
 }: {
   score: any
+  metadata?: { name: string, symbol: string }
   onVibeSubmitted: () => void
   index: number
 }) {
   const [expanded, setExpanded] = useState(false)
-  const [tokenName, setTokenName] = useState<string | null>(null)
-  
-  useEffect(() => {
-    async function fetchName() {
-      if (!score.token_mint) return
-      try {
-        // Try DexScreener for established tokens
-        let res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${score.token_mint}`)
-        let data = await res.json()
-        if (data && data.pairs && data.pairs.length > 0) {
-          setTokenName(data.pairs[0].baseToken.symbol || data.pairs[0].baseToken.name)
-          return
-        }
-      } catch (err) {
-        // silently fallback on fetch failures
-      }
-      
-      // If it's a completely unlisted/test token
-      setTokenName('Unlisted')
-    }
-    fetchName()
-  }, [score.token_mint])
+  const isNew = score.score === undefined || score.isDiscovery
+  const tokenName = metadata?.symbol || (isNew ? 'New Token' : metadata?.name) || score.token_mint.slice(0, 8)
 
   const isHot = score.score > 80
   const isWarm = score.score > 60
@@ -360,11 +363,30 @@ function VibeCard({
               className="px-5 pb-5 pt-2"
               style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
             >
-              <VibeRecorder tokenMint={score.token_mint} onVibeSubmitted={onVibeSubmitted} />
+              <VibeRecorder tokenMint={score.token_mint} onVibeSubmitted={() => {
+                onVibeSubmitted()
+              }} />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {isNew && !expanded && (
+        <div className="mt-4 flex justify-center">
+          <button
+            onClick={() => setExpanded(true)}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl font-display font-bold text-sm transition-all"
+            style={{
+              background: 'linear-gradient(135deg, #FF6B1A 0%, #FF8C42 100%)',
+              boxShadow: '0 4px 15px rgba(255, 107, 26, 0.3)',
+              color: 'white'
+            }}
+          >
+            <Zap className="w-4 h-4 fill-current" />
+            Initialize Hype Logic
+          </button>
+        </div>
+      )}
     </motion.div>
   )
 }
@@ -372,11 +394,13 @@ function VibeCard({
 // --- Main dashboard ---
 const SCORES_CHANNEL = 'vibe_scores'
 
+
 export function VibeDashboard() {
   const { publicKey } = useWallet()
   const [scores, setScores] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [tokenMetadata, setTokenMetadata] = useState<Record<string, { name: string, symbol: string }>>({})
   const [activeTab, setActiveTab] = useState<'all' | 'hot' | 'backed'>('all')
   const [realtimeConnected, setRealtimeConnected] = useState(false)
   const subscribedRef = useRef(false)
@@ -459,14 +483,79 @@ export function VibeDashboard() {
     }
   }, [])
 
-  const filtered = scores.filter((s) => {
-    const matchSearch = !search || s.token_mint?.toLowerCase().includes(search.toLowerCase())
-    const matchTab =
-      activeTab === 'all' ||
-      (activeTab === 'hot' && s.score > 80) ||
-      (activeTab === 'backed' && s.last_oracle_trade_at)
-    return matchSearch && matchTab
-  })
+  // Enrichment Layer: Fetch metadata for tokens to enable name/symbol search
+  useEffect(() => {
+    if (scores.length === 0) return
+
+    async function enrichMetadata() {
+      const missing = scores.filter(s => !tokenMetadata[s.token_mint])
+      if (missing.length === 0) return
+
+      for (const score of missing) {
+        try {
+          const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${score.token_mint}`)
+          const data = await res.json()
+          if (data?.pairs?.[0]) {
+            const { name, symbol } = data.pairs[0].baseToken
+            setTokenMetadata(prev => ({
+              ...prev,
+              [score.token_mint]: { name, symbol }
+            }))
+          } else {
+            // Fallback for unlisted
+            setTokenMetadata(prev => ({
+              ...prev,
+              [score.token_mint]: { name: 'Unlisted', symbol: score.token_mint.slice(0, 4) }
+            }))
+          }
+        } catch (err) {
+          // Retry later
+        }
+      }
+    }
+
+  enrichMetadata()
+  }, [scores, tokenMetadata])
+
+  const isSolanaAddress = (addr: string) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)
+
+  const filtered = useMemo(() => {
+    const q = search.trim()
+    const lowerQ = q.toLowerCase()
+    
+    // Base filter
+    const base = scores.filter((s) => {
+      if (!lowerQ) return (
+        activeTab === 'all' ||
+        (activeTab === 'hot' && s.score > 80) ||
+        (activeTab === 'backed' && s.last_oracle_trade_at)
+      )
+
+      const meta = tokenMetadata[s.token_mint] || { name: '', symbol: '' }
+      const matchSearch = 
+        s.token_mint?.toLowerCase().includes(lowerQ) ||
+        meta.name.toLowerCase().includes(lowerQ) ||
+        meta.symbol.toLowerCase().includes(lowerQ)
+
+      const matchTab =
+        activeTab === 'all' ||
+        (activeTab === 'hot' && s.score > 80) ||
+        (activeTab === 'backed' && s.last_oracle_trade_at)
+
+      return matchSearch && matchTab
+    })
+
+    // If search is a Solana address and NOT in the list, inject a Discovery Card
+    if (q && isSolanaAddress(q) && !base.find(b => b.token_mint === q)) {
+      return [{
+        token_mint: q,
+        score: undefined,
+        isDiscovery: true
+      }, ...base]
+    }
+
+    return base
+  }, [scores, search, activeTab, tokenMetadata])
 
   const tabs = [
     { id: 'all', label: 'All', count: scores.length, icon: Globe },
@@ -478,98 +567,17 @@ export function VibeDashboard() {
     <div className="relative min-h-screen">
       <AmbientBackground />
 
-      {/* Nav */}
-      <nav
-        className="sticky top-0 z-50 backdrop-blur-xl"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="relative flex items-center justify-center">
-              {/* This image element looks for 'logo.png' in the /public folder */}
-              <img 
-                src="/logo.png" 
-                alt="HypeOracle Logo" 
-                className="h-10 sm:h-12 w-auto object-contain scale-110 origin-left"
-                onError={(e) => {
-                  // Fallback to Zap icon if logo.png doesn't exist
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                }}
-              />
-              {/* Fallback Icon */}
-              <div
-                className="w-7 h-7 rounded-lg items-center justify-center hidden"
-                style={{ background: 'linear-gradient(135deg, #FF6B1A, #FF3D00)' }}
-              >
-                <Zap className="w-4 h-4 text-white" />
-              </div>
-            </div>
-            <span className="font-display font-bold text-sm text-white tracking-wide">
-              HypeOracle
-            </span>
-            <span
-              className="px-1.5 py-0.5 rounded text-[9px] font-mono"
-              style={{
-                background: 'rgba(255,107,26,0.12)',
-                border: '1px solid rgba(255,107,26,0.2)',
-                color: '#FF8C42',
-              }}
-            >
-              BETA
-            </span>
-          </div>
-
-          {/* Right */}
-          <div className="flex items-center gap-3 min-w-[150px] justify-end">
-            {mounted && publicKey && (
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <Activity className="w-3 h-3 text-green-500" />
-                <span className="text-[10px] font-mono text-[var(--text-secondary)]">
-                  {publicKey.toBase58().slice(0, 6)}...{publicKey.toBase58().slice(-4)}
-                </span>
-              </div>
-            )}
-            {mounted && publicKey && (
-              <Link
-                href="/my-agent"
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-display font-bold transition-all"
-                style={{
-                  background: 'rgba(16, 185, 129, 0.08)',
-                  border: '1px solid rgba(16, 185, 129, 0.2)',
-                  color: '#10b981',
-                }}
-              >
-                <BrainCircuit className="w-3 h-3" />
-                My Agent
-              </Link>
-            )}
-            {mounted && publicKey && (
-              <Link
-                href="/earnings"
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-display font-bold transition-all"
-                style={{
-                  background: 'rgba(255,107,26,0.08)',
-                  border: '1px solid rgba(255,107,26,0.2)',
-                  color: '#FF8C42',
-                }}
-              >
-                <Coins className="w-3 h-3" />
-                My Earnings
-              </Link>
-            )}
-            {mounted ? <WalletMultiButton /> : <div className="w-[150px] h-[48px] rounded-lg animate-pulse" style={{ background: 'rgba(255,255,255,0.05)' }} />}
-          </div>
-        </div>
-      </nav>
+      {/* Hero section */}
 
       {/* Ticker */}
       <LiveTicker />
 
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-16">
         {/* Hero */}
-        <HeroSection />
+        <HeroSection stats={{ 
+          tokens: scores.length, 
+          trades: scores.filter(s => s.last_oracle_trade_at).length 
+        }} />
 
         {/* Oracle Status */}
         <motion.div
@@ -662,9 +670,10 @@ export function VibeDashboard() {
             ) : filtered.length > 0 ? (
               <AnimatePresence mode="popLayout">
                 {filtered.map((score, i) => (
-                  <VibeCard
+                   <VibeCard
                     key={score.token_mint}
                     score={score}
+                    metadata={tokenMetadata[score.token_mint]}
                     onVibeSubmitted={fetchScores}
                     index={i}
                   />

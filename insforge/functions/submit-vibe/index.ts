@@ -74,24 +74,32 @@ export default async function (req: Request): Promise<Response> {
       throw new Error("Transcription returned empty result");
     }
 
-    // 3. AI Processing: Sentiment Analysis (Grok 4.1 Fast via Model Gateway)
+    // 3. AI Processing: Enhanced Sentiment Analysis (Consensus-Aware)
     const analysisPrompt = `
       Analyze this crypto hype submission. 
       Transcript: "${rawTranscript}"
       Emoji: ${emoji}
       
-      Score the "Excitement Level" from 0-100 based on enthusiasm, energy, and bull-market-readiness.
-      Provide ONLY a single integer score.
+      Return a JSON object:
+      {
+        "score": number (0-100),
+        "conviction": number (0-1),
+        "momentum": "bullish" | "bearish" | "neutral",
+        "is_bot_like": boolean
+      }
     `;
 
     const modelResponse = await client.ai.chat.completions.create({
       model: "x-ai/grok-4.1-fast",
-      messages: [{ role: "user", content: analysisPrompt }],
-      max_tokens: 10,
+      messages: [{ role: "system", content: "You are the HypeOracle Sentiment Engine. Output JSON only." }, { role: "user", content: analysisPrompt }],
+      response_format: { type: "json_object" },
+      max_tokens: 150,
       temperature: 0.1,
     });
 
-    const excitementScore = parseInt(modelResponse.choices[0]?.message?.content?.trim()) || 50;
+    const aiResult = JSON.parse(modelResponse.choices[0]?.message?.content || "{}");
+    const excitementScore = aiResult.score || 50;
+    const conviction = aiResult.conviction || 0.5;
 
     // 4. Scoring Formula
     // emoji_weight: Mapping positive/negative vibes
@@ -103,6 +111,21 @@ export default async function (req: Request): Promise<Response> {
 
     // score = (excitement * 0.6) + (volume/energy * 0.3) + emoji_weight
     let totalScore = (excitementScore * 0.6) + (energy * 0.3) + emojiWeight;
+    
+    // 4.1 Apply Staking Multiplier (10-50% boost)
+    const { data: stakingData } = await client.database
+      .from("user_staking")
+      .select("staked_amount")
+      .eq("user_pubkey", userPubkey)
+      .single();
+    
+    if (stakingData && stakingData.staked_amount > 0) {
+      // Simple scaling logic: 1M $HYPE = 50% boost (max), capped at 50%
+      const boostPercent = Math.min(0.5, (stakingData.staked_amount / 1_000_000));
+      totalScore = totalScore * (1 + boostPercent);
+      console.log(`[submit-vibe] Staking Boost Applied: +${(boostPercent * 100).toFixed(1)}%`);
+    }
+
     const finalScore = Math.min(100, Math.max(0, totalScore));
 
     // 5. Database Persistence
@@ -155,13 +178,19 @@ export default async function (req: Request): Promise<Response> {
       updated_at: updatedAt,
     });
 
-    // 6. Bags.fm Trading Integration (Production Hardened)
+    // 6. Bags.fm Trading Integration (Vibe 2.0 Dynamic Sizing)
     let tradeSignature = null;
     
-    // Safety Constants from Env
-    const MAX_BUY = parseFloat(Deno.env.get("ORACLE_MAX_BUY_SOL") || "0.005");
+    // Security & Sizing Logic
     const COOLDOWN_MINS = parseInt(Deno.env.get("ORACLE_COOLDOWN_MINUTES") || "5");
     const MIN_BALANCE = parseFloat(Deno.env.get("ORACLE_MIN_BALANCE_SOL") || "0.2");
+    const MAX_SINGLE_BUY = 0.01; // Safety Cap
+
+    // Dynamic Buy Calculation (Consensus Aware)
+    // Base 0.003 + (Contributor Boost: 0.001 per unique user in last 10min)
+    const baseBuy = 0.003;
+    const consensusBoost = Math.min(0.007, (nextCount - 1) * 0.001);
+    const INTENDED_BUY = Math.min(MAX_SINGLE_BUY, baseBuy + consensusBoost);
 
     if (nextScore > 80) {
       try {
@@ -183,7 +212,18 @@ export default async function (req: Request): Promise<Response> {
           
           if (balanceSol < MIN_BALANCE) {
             console.warn(`Oracle low on fuel: ${balanceSol} SOL. Skipping auto-buy.`);
+            
+            // Still sync the identity for the UI to show refill address
+            await client.database
+              .from("oracle_fuel")
+              .update({ oracle_pubkey: wallet.publicKey.toBase58() })
+              .eq("id", (await client.database.from("oracle_fuel").select("id").limit(1).single()).data?.id);
           } else {
+            // Sync identity
+            await client.database
+              .from("oracle_fuel")
+              .update({ oracle_pubkey: wallet.publicKey.toBase58() })
+              .eq("id", (await client.database.from("oracle_fuel").select("id").limit(1).single()).data?.id);
             // 6.2 Rate Limit Check
             const { data: scoreRecord } = await client.database
               .from("vibe_scores")
@@ -202,7 +242,7 @@ export default async function (req: Request): Promise<Response> {
               const quote = await sdk.trade.getQuote({
                 inputMint: new PublicKey("So11111111111111111111111111111111111111112"), // SOL
                 outputMint: new PublicKey(tokenMint),
-                amount: MAX_BUY * LAMPORTS_PER_SOL,
+                amount: BUY_AMOUNT_SOL * LAMPORTS_PER_SOL,
               });
 
               const swap = await sdk.trade.createSwapTransaction({
@@ -218,10 +258,38 @@ export default async function (req: Request): Promise<Response> {
                 const tradeRecord = {
                   token_mint: tokenMint,
                   signature: tradeSignature,
-                  amount_sol: MAX_BUY,
+                  amount_sol: BUY_AMOUNT_SOL,
                   vibe_score: Math.round(nextScore),
                   created_at: now.toISOString(),
                 };
+
+                // Record Platform Fee
+                await client.database.from("platform_fees").insert({
+                  vibe_id: null, // we can link if we have vibe record id
+                  amount_sol: FEE_SOL,
+                });
+
+                // 6.4 Trigger Automated Fuel Refill & Staker Distribution
+                // We fire and forget this so it doesn't slow down the vibe submission
+                fetch("https://9s8ct2b5.us-east.insforge.app/functions/refill-oracle-fuel", {
+                  method: "POST",
+                  body: JSON.stringify({ trigger: "auto-buy" })
+                }).catch(e => console.error("[submit-vibe] Refill Trigger Error:", e));
+
+                // Trigger Refill Logic (Internal call to update pools)
+                // 40% Fuel, 40% Stakers, 20% Treasury
+                const fuelAmount = FEE_SOL * 0.4;
+                const rewardAmount = FEE_SOL * 0.4;
+
+                await client.database.query(`
+                  UPDATE oracle_fuel SET current_balance = current_balance + ${fuelAmount};
+                  UPDATE hype_token_stats SET 
+                    oracle_fuel_pool = oracle_fuel_pool + ${fuelAmount},
+                    staking_reward_pool = COALESCE(staking_reward_pool, 0) + ${rewardAmount};
+                `);
+
+                // We'll update stakers pool in a batch or rewards table later
+                // For MVP, logging the fee is the primary recording step.
 
                 // Record trade for transparency
                 const { data: insertedTrade } = await client.database

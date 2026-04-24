@@ -6,11 +6,13 @@ import { BagsSDK } from '@bagsfm/bags-sdk'
 import { PublicKey } from '@solana/web3.js'
 import { Mic, MicOff, Zap, ExternalLink, Loader2, Radio, CheckCircle2, AlertCircle } from 'lucide-react'
 import { WaveformBar, ScoreGauge } from './ui-primitives'
+import { 
+  BAGS_API_KEY, 
+  INSFORGE_CONFIG, 
+  GET_CONNECTION 
+} from '@/lib/constants'
 
-const client = createClient({
-  baseUrl: "https://9s8ct2b5.us-east.insforge.app",
-  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTU2NzgtOTBhYi1jZGVmMTIzNDU2NzgiLCJlbWFpbCI6ImFub25AaW5zZm9yZ2UuY29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNDEzNjl9.Cm7dzmsTq0k1LYT2n9R-S2LgnRBG1vOTsZoJ9R8DNXY",
-})
+const client = createClient(INSFORGE_CONFIG)
 
 interface VibeRecorderProps {
   tokenMint: string
@@ -121,7 +123,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
     setTradeSig(null)
     setError(null)
     try {
-      const sdk = new BagsSDK("bags_prod_8lR0OnUDXzqmRKoWBXV5p14Blh8OsiKWuHgIgc2rook", connection, 'processed')
+      const sdk = new BagsSDK(BAGS_API_KEY, connection, 'processed')
       const quote = await sdk.trade.getQuote({
         inputMint: new PublicKey('So11111111111111111111111111111111111111112'),
         outputMint: new PublicKey(tokenMint),

@@ -11,11 +11,9 @@ import {
   ExternalLink, ArrowUpRight, Sparkles, ChevronLeft, BrainCircuit
 } from 'lucide-react'
 import { AmbientBackground } from './ui-primitives'
+import { INSFORGE_CONFIG } from '@/lib/constants'
 
-const client = createClient({
-  baseUrl: "https://9s8ct2b5.us-east.insforge.app",
-  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3OC0xMjM0LTU2NzgtOTBhYi1jZGVmMTIzNDU2NzgiLCJlbWFpbCI6ImFub25AaW5zZm9yZ2UuY29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNDEzNjl9.Cm7dzmsTq0k1LYT2n9R-S2LgnRBG1vOTsZoJ9R8DNXY",
-})
+const client = createClient(INSFORGE_CONFIG)
 
 const CHANNEL = 'fee_claims'
 
@@ -212,13 +210,6 @@ export function EarningsDashboard() {
         <AmbientBackground />
         
         <div className="absolute top-6 left-6 sm:top-10 sm:left-10 z-20">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-[var(--text-muted)] hover:text-white transition-colors font-mono"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
         </div>
 
         <motion.div
@@ -246,21 +237,6 @@ export function EarningsDashboard() {
 
       <main className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <div className="flex justify-between items-center mb-8">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-[var(--text-muted)] hover:text-white transition-colors font-mono"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back to Oracle Dashboard
-          </Link>
-          <Link 
-            href="/my-agent" 
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-[var(--text-emerald-400)] hover:text-emerald-300 transition-colors font-mono px-3 py-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10"
-            style={{ color: '#10b981' }}
-          >
-            <BrainCircuit className="w-3 h-3" />
-            My Agent
-          </Link>
         </div>
 
         {/* Header */}

@@ -173,3 +173,97 @@ All in InsForge only.
 Token = bonding curve (post-MVP).
 
 
+
+PHASE 7: $HYPE TOKEN LAUNCH ON BAGS.FM (Bonding Curve)Status: After core app is built and we have initial users/traction.Platform: Bags.fm (easiest and most aligned with hackathon)Token Utility & TokenomicsToken Name: $HYPE
+Symbol: HYPE
+Total Supply: 1,000,000,000 (1 Billion)
+Launch Type: Bonding Curve (via Bags.fm)Core Utility (Make this real from Day 1):Oracle Fuel — Stake $HYPE to increase Oracle wallet’s buying power (more auto-buys when high vibes)
+Vibe Multiplier — Hold/stake $HYPE → your vibes get score boost (10–50%)
+Personal Vibe Agent Boost — Stake $HYPE → faster training + better agent insights
+Revenue Share — 50% of all platform fees are distributed to $HYPE stakers
+Governance — Stake to vote on safety parameters and new features
+
+Token Allocation:Bonding Curve Liquidity: 60%
+Team / Treasury (locked): 20%
+Community / Early Vibers Airdrop: 10%
+Marketing & Partnerships: 10%
+
+Creator Fee: 1% (permanent on Bags.fm)Implementation Requirements for AI AgentAfter completing the Personal Vibe Agent feature, implement the following:Create New Table for token-related data:sql
+
+CREATE TABLE hype_token_stats (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    total_staked numeric DEFAULT 0,
+    oracle_fuel_pool numeric DEFAULT 0,        -- SOL available for auto-buys
+    stakers_count integer DEFAULT 0,
+    last_distribution timestamptz
+);
+
+New Edge Function: stake-hype & claim-rewardsAllow users to stake $HYPE
+Track staked amount per user
+Distribute fee share proportionally
+
+Frontend Additions:New page /token or /stake
+Show $HYPE price, market cap, bonding curve progress (if still in curve)
+Staking interface with APY estimate
+"Fuel Oracle" section (shows how much SOL is in Oracle wallet)
+Leaderboard of top $HYPE stakers
+
+Bags.fm Integration:Use @bagsfm/bags-sdk to:Query $HYPE token data
+Execute trades if needed
+Read fee distribution
+
+Token Launch Steps (Human will do this manually):Go to https://bags.fm
+Launch $HYPE using bonding curve
+Set creator fee = 1%
+Add main dev wallet as fee recipient
+After launch, share the token address with the app
+
+AI Agent Instructions:Once the Personal Vibe Agent is complete and tested, implement the $HYPE token features as described above.
+Focus on staking, Oracle fuel tracking, and revenue share logic.
+Do NOT launch the token yourself — prepare the frontend and backend so the token can be easily integrated after manual launch on Bags.fm.
+Make sure staking directly benefits the Oracle wallet and user vibe power.
+
+
+Important Clarifications 
+
+for AI AgentEven after launching $HYPE, the HypeOracle Engine wallet still needs SOL as fuel for auto-buying tokens when vibe score > 80.
+$HYPE token alone cannot be used to buy other tokens — SOL is required.
+We will automatically refill the Oracle Engine wallet using collected fees.
+
+Token UtilityStake $HYPE → Boost your vibe score (10-50%)
+Stake $HYPE → Stronger Personal Vibe Agent
+Stake $HYPE → Receive revenue share from platform fees
+Stake $HYPE → Increase Oracle Engine buying power ("Fuel the Oracle")
+
+Revenue & Oracle Fuel MechanismCreator Fee: 1% on all $HYPE trades (goes to dev wallet)Platform Fee: 0.5% (we will implement this) — split as follows:40% → Oracle Engine Wallet (auto-refill for fuel)
+40% → $HYPE stakers (revenue share)
+20% → Treasury / Development
+
+Oracle Engine Fuel Rules:Minimum safe balance: 0.5 SOL
+Warning threshold: 0.2 SOL → show "LOW FUEL"
+When Oracle Engine balance < 0.5 SOL → automatically send collected fees to refill it
+
+AI Agent Implementation TasksAfter Personal Vibe Agent is done, implement the following:Add this table:sql
+
+CREATE TABLE oracle_fuel (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    current_balance numeric DEFAULT 0,
+    last_refill timestamptz,
+    total_fuel_used numeric DEFAULT 0
+);
+
+New Edge Functions:stake-hype
+claim-staking-rewards
+refill-oracle-fuel (automatically called when fees are collected)
+
+Frontend:/stake page with clear explanation of how staking benefits the Oracle Engine
+Live Oracle Engine balance display
+"Fuel Oracle" button (shows wallet address to send SOL)
+
+Logic:After every $HYPE trade fee is collected → call refill-oracle-fuel
+Show real-time Oracle Engine SOL balance on dashboard
+
+
+
+
+
