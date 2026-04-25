@@ -11,7 +11,7 @@ export const BAGS_API_KEY = "bags_prod_8lR0OnUDXzqmRKoWBXV5p14Blh8OsiKWuHgIgc2ro
 // --- SOLANA RPC CONFIG ---
 // We use a prioritized list to bypass rate limits on Vercel
 export const RPC_ENDPOINTS = [
-  "https://rpc.ankr.com/solana",
+  "https://solana-mainnet.g.alchemy.com/v2/jq4Zj9Zjor_oxzeIl_tx8",
   "https://solana-mainnet.rpc.extrnode.com",
   "https://api.mainnet-beta.solana.com",
   "https://mainnet.helius-rpc.com/?api-key=your_helius_key"

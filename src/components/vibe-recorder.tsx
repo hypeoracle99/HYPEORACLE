@@ -77,8 +77,17 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
       setIsRecording(true)
       setLastVibeScore(null)
       setTradeSig(null)
-    } catch {
-      setError('Microphone access denied. Grant permission to submit vibes.')
+    } catch (err: any) {
+      console.warn("[VibeRecorder] Mic Error:", err);
+      if (!navigator.mediaDevices) {
+        setError('Browser security blocked the microphone. Try using http://127.0.0.1:3000 instead.')
+      } else if (err.name === 'NotFoundError') {
+        setError('No microphone hardware detected! Please plug in a mic.')
+      } else if (err.name === 'NotReadableError') {
+        setError('Microphone is in use by another app (like Zoom/OBS) or is frozen.')
+      } else {
+        setError(`Microphone blocked by Windows OS: ${err.message || err.name}`)
+      }
     }
   }
 
@@ -155,14 +164,28 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="w-full flex items-center gap-2 p-3 rounded-xl"
+            className="w-full flex flex-col items-start gap-2 p-3.5 rounded-xl"
             style={{
               background: 'rgba(239,68,68,0.08)',
               border: '1px solid rgba(239,68,68,0.2)',
             }}
           >
-            <AlertCircle className="w-3.5 h-3.5 text-red-400 shrink-0" />
-            <p className="text-xs font-mono text-red-400 leading-snug">{error}</p>
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+              <p className="text-sm font-display font-bold text-red-400 leading-snug">Microphone Access Blocked</p>
+            </div>
+            <p className="text-xs font-mono text-red-400/80 leading-relaxed mb-1">
+              {error}
+            </p>
+            {error.includes('Microphone') && (
+              <button 
+                onClick={startRecording}
+                className="mt-1 px-4 py-2 w-full text-xs font-bold text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg border border-red-500/20 transition-colors flex justify-center items-center gap-2"
+              >
+                <Zap className="w-3 h-3" />
+                I Allowed It — Try Again
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

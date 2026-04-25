@@ -1,3 +1,4 @@
+// @ts-ignore
 import { createClient } from "https://esm.sh/@insforge/sdk@1.2.2";
 
 interface RefillRequest {
@@ -21,7 +22,7 @@ export default async function(req: Request) {
       return Response.json({ success: true, message: "No fees to process" });
     }
     
-    const totalCollected = fees.reduce((acc, curr) => acc + Number(curr.amount_sol), 0);
+    const totalCollected = fees.reduce((acc: number, curr: any) => acc + Number(curr.amount_sol), 0);
     
     // 2. Apply 40/40/20 Split
     const fuelShare = totalCollected * 0.4;
@@ -67,7 +68,7 @@ export default async function(req: Request) {
     }
     
     // 5. Cleanup processed fees
-    const feeIds = fees.map(f => f.id);
+    const feeIds = fees.map((f: any) => f.id);
     await client.database
       .from("platform_fees")
       .delete()

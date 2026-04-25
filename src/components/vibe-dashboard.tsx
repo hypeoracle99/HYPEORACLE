@@ -43,18 +43,18 @@ function LiveTicker() {
       }
 
       try {
-        const connection = GET_CONNECTION(retryCount)
-        const sdk = new BagsSDK(BAGS_API_KEY, connection, 'processed')
+        const res = await fetch('/api/ticker')
+        if (!res.ok) throw new Error('API fetch failed')
+        const { data } = await res.json()
         
-        const topTokens = await sdk.state.getTopTokensByLifetimeFees()
-        if (topTokens && topTokens.length > 0) {
-          setTickerData(topTokens.slice(0, 15))
+        if (data && data.length > 0) {
+          setTickerData(data.slice(0, 15))
           setIsLive(true)
         }
       } catch (err) {
-        console.warn(`[LiveTicker] RPC fetch failed (attempt ${retryCount + 1}), retrying...`, err)
-        // Recurse with incremented index to try next RPC
-        fetchTickerData(retryCount + 1)
+        console.warn(`[LiveTicker] NextJS API fetch failed (attempt ${retryCount + 1}), retrying...`, err)
+        // Recurse with incremented index
+        setTimeout(() => fetchTickerData(retryCount + 1), 2000)
       }
     }
     
