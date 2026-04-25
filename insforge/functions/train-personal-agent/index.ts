@@ -81,7 +81,7 @@ export default async function (req: Request): Promise<Response> {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama3-70b-8192", // We can use Groq's fast Llama3 model for analysis
+        model: "llama-3.3-70b-versatile", // Latest production model for analysis
         messages: [{ role: "user", content: systemPrompt }],
         temperature: 0.7,
         response_format: { type: "json_object" }
