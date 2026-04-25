@@ -13,18 +13,28 @@ import { createClient } from '@insforge/sdk'
 import { INSFORGE_CONFIG } from '@/lib/constants'
 import { OFFICIAL_TOKEN } from '@/lib/token-config'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, LogOut } from 'lucide-react'
+import { 
+  getAssociatedTokenAddress, 
+  createTransferInstruction, 
+  createAssociatedTokenAccountInstruction,
+  getAccount
+} from '@solana/spl-token'
+import { Transaction, PublicKey } from '@solana/web3.js'
+import { GET_CONNECTION } from '@/lib/constants'
 
 const client = createClient(INSFORGE_CONFIG)
 
 export default function StakePage() {
-  const { publicKey, connected } = useWallet()
+  const { publicKey, connected, sendTransaction } = useWallet()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<any>(null)
   const [fuel, setFuel] = useState<any>(null)
   const [userStake, setUserStake] = useState<any>(null)
   const [stakeAmount, setStakeAmount] = useState('')
+  const [unstakeAmount, setUnstakeAmount] = useState('')
   const [stakingStatus, setStakingStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [unstakingStatus, setUnstakingStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [mounted, setMounted] = useState(false)
   const [leaderboard, setLeaderboard] = useState<any[]>([])
   const [claiming, setClaiming] = useState(false)
@@ -68,7 +78,7 @@ export default function StakePage() {
     if (!publicKey) return
     setClaiming(true)
     try {
-      const res = await fetch('https://9s8ct2b5.us-east.insforge.app/functions/claim-staking-rewards', {
+      const res = await fetch(`https://9s8ct2b5.functions.insforge.app/claim-staking-rewards`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_pubkey: publicKey.toBase58() })
@@ -86,15 +96,44 @@ export default function StakePage() {
   }
 
   async function handleStake() {
-    if (!publicKey || !stakeAmount) return
+    if (!publicKey || !stakeAmount || !fuel?.oracle_pubkey) {
+      if (!fuel?.oracle_pubkey) alert("Oracle Vault Address not found. Please refresh.");
+      return;
+    }
     setStakingStatus('loading')
     try {
-      const res = await fetch('https://9s8ct2b5.us-east.insforge.app/functions/stake-hype', {
+      const connection = GET_CONNECTION();
+      const mintPubKey = new PublicKey(OFFICIAL_TOKEN.mint);
+      const vaultPubKey = new PublicKey(fuel.oracle_pubkey);
+      const amount = parseFloat(stakeAmount) * 1e9; // Assuming 9 decimals for HYPE
+      
+      const userAta = await getAssociatedTokenAddress(mintPubKey, publicKey);
+      const vaultAta = await getAssociatedTokenAddress(mintPubKey, vaultPubKey);
+      
+      const transaction = new Transaction();
+      
+      // Ensure vault ATA exists (though it should for the Oracle)
+      // For speed in MVP, we assume it exists or the user can fuel it.
+      
+      transaction.add(
+        createTransferInstruction(
+          userAta,
+          vaultAta,
+          publicKey,
+          amount
+        )
+      );
+      
+      const signature = await sendTransaction(transaction, connection);
+      console.log("Stake TX sent:", signature);
+      
+      const res = await fetch(`https://9s8ct2b5.functions.insforge.app/stake-hype`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_pubkey: publicKey.toBase58(),
-          amount_hype: parseFloat(stakeAmount)
+          amount_hype: parseFloat(stakeAmount),
+          signature: signature // Send the real tx signature for verification
         })
       })
       const result = await res.json()
@@ -106,8 +145,38 @@ export default function StakePage() {
       } else {
         setStakingStatus('error')
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error("Stake failed:", err);
+      alert(`Transaction failed: ${err.message || err.name}`);
       setStakingStatus('error')
+    }
+  }
+
+  async function handleUnstake() {
+    if (!publicKey || !unstakeAmount) return
+    setUnstakingStatus('loading')
+    try {
+      // Unstaking is handled by the backend because it needs the Vault's Private Key
+      const res = await fetch(`https://9s8ct2b5.functions.insforge.app/unstake-hype`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_pubkey: publicKey.toBase58(),
+          amount_hype: parseFloat(unstakeAmount)
+        })
+      })
+      const result = await res.json()
+      if (result.success) {
+        setUnstakingStatus('success')
+        setUnstakeAmount('')
+        fetchData()
+        setTimeout(() => setUnstakingStatus('idle'), 3000)
+      } else {
+        alert(result.error || "Unstake failed");
+        setUnstakingStatus('error')
+      }
+    } catch (err) {
+      setUnstakingStatus('error')
     }
   }
 
@@ -265,6 +334,32 @@ export default function StakePage() {
                         </motion.div>
                       )}
                     </AnimatePresence>
+
+                    {/* Unstake Separator */}
+                    <div className="pt-4 border-t border-white/5 opacity-50 flex items-center gap-4">
+                       <div className="h-px bg-white/10 flex-1" />
+                       <span className="text-[10px] font-mono whitespace-nowrap">MANAGED WITHDRAWAL</span>
+                       <div className="h-px bg-white/10 flex-1" />
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="relative flex-1 group">
+                        <input 
+                          type="number"
+                          placeholder="Unstake amount..."
+                          value={unstakeAmount}
+                          onChange={(e) => setUnstakeAmount(e.target.value)}
+                          className="w-full bg-[#080808] border border-white/[0.08] rounded-2xl h-12 pl-4 pr-4 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all font-mono text-sm"
+                        />
+                      </div>
+                      <button 
+                        onClick={handleUnstake}
+                        disabled={unstakingStatus === 'loading' || !unstakeAmount}
+                        className="px-8 h-12 rounded-2xl bg-white/5 border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 transition-all font-display font-bold text-xs uppercase disabled:opacity-30 disabled:grayscale"
+                      >
+                        {unstakingStatus === 'loading' ? '...' : 'Unstake'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

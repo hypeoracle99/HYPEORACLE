@@ -13,7 +13,7 @@ export default async function (req: Request): Promise<Response> {
   }
 
   try {
-    const { user_pubkey, amount_hype } = await req.json();
+    const { user_pubkey, amount_hype, signature } = await req.json();
 
     if (!user_pubkey || amount_hype === undefined) {
       return new Response(JSON.stringify({ error: "Missing required fields", success: false }), {
@@ -41,6 +41,7 @@ export default async function (req: Request): Promise<Response> {
       .upsert({
         user_pubkey,
         staked_amount: newAmount,
+        last_stake_sig: signature,
         last_calculated_at: new Date().toISOString()
       });
 

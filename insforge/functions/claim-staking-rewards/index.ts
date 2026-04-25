@@ -62,10 +62,42 @@ export default async function (req: Request): Promise<Response> {
       });
     }
 
-    // 3. Distribution Logic (Deduct from pool, reset user rewards state if needed)
-    // NOTE: In a true production app, we would use a more complex Reward-Per-Share index 
-    // to prevent frontrunning. This is MVP logic for the hackathon.
+    // 3. Execute REAL SOL transfer from oracle wallet to user
+    const privateKey = Deno.env.get("PRIVATE_KEY");
+    const rpcUrl = Deno.env.get("SOLANA_RPC_URL") || "https://api.mainnet-beta.solana.com";
+    let transferSignature: string | null = null;
+
+    if (privateKey && claimableSOL > 0) {
+      const { 
+        Keypair, Connection, LAMPORTS_PER_SOL, PublicKey, 
+        Transaction, SystemProgram, sendAndConfirmTransaction 
+      } = await import("npm:@solana/web3.js");
+      const bs58 = (await import("npm:bs58")).default;
+
+      const connection = new Connection(rpcUrl, "confirmed");
+      const oracleWallet = Keypair.fromSecretKey(bs58.decode(privateKey));
+      
+      const lamports = Math.floor(claimableSOL * LAMPORTS_PER_SOL);
+      
+      // Safety: check oracle balance
+      const oracleBalance = await connection.getBalance(oracleWallet.publicKey);
+      if (oracleBalance < lamports + 5000) {
+        throw new Error("Oracle wallet has insufficient balance for rewards payout.");
+      }
+
+      const tx = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: oracleWallet.publicKey,
+          toPubkey: new PublicKey(user_pubkey),
+          lamports,
+        })
+      );
+
+      transferSignature = await sendAndConfirmTransaction(connection, tx, [oracleWallet]);
+      console.log(`[claim-rewards] Payout Success: ${transferSignature}`);
+    }
     
+    // 4. Update Database
     await client.database.query(`
       UPDATE hype_token_stats SET staking_reward_pool = staking_reward_pool - ${claimableSOL};
       UPDATE user_staking SET pending_rewards = 0, last_calculated_at = now() WHERE user_pubkey = '${user_pubkey}';
@@ -74,6 +106,7 @@ export default async function (req: Request): Promise<Response> {
     return new Response(JSON.stringify({
       message: `Successfully claimed ${claimableSOL.toFixed(6)} SOL rewards!`,
       claimed_amount: claimableSOL,
+      signature: transferSignature,
       success: true
     }), {
       status: 200,

@@ -275,7 +275,7 @@ export default async function (req: Request): Promise<Response> {
 
                 // 6.4 Trigger Automated Fuel Refill & Staker Distribution
                 // We fire and forget this so it doesn't slow down the vibe submission
-                fetch("https://9s8ct2b5.us-east.insforge.app/functions/refill-oracle-fuel", {
+                fetch("https://9s8ct2b5.functions.insforge.app/refill-oracle-fuel", {
                   method: "POST",
                   body: JSON.stringify({ trigger: "auto-buy" })
                 }).catch(e => console.error("[submit-vibe] Refill Trigger Error:", e));
