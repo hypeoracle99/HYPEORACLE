@@ -40,6 +40,8 @@ export default async function (req: Request): Promise<Response> {
       anonKey: Deno.env.get("ANON_KEY") || ""
     });
 
+    await client.realtime.connect();
+
     // 1. Upload voice to storage
     const uniqueKey = `vibes/${Date.now()}-${crypto.randomUUID()}.webm`;
     const { data: uploadData, error: uploadError } = await client.storage
@@ -170,7 +172,7 @@ export default async function (req: Request): Promise<Response> {
       });
 
     // Broadcast live score update to subscribed dashboard clients
-    await client.realtime.broadcast("vibe_scores", "score_updated", {
+    await client.realtime.publish("vibe_scores", "score_updated", {
       token_mint: tokenMint,
       score: nextScore,
       contributor_count: nextCount,
@@ -242,7 +244,7 @@ export default async function (req: Request): Promise<Response> {
               const quote = await sdk.trade.getQuote({
                 inputMint: new PublicKey("So11111111111111111111111111111111111111112"), // SOL
                 outputMint: new PublicKey(tokenMint),
-                amount: BUY_AMOUNT_SOL * LAMPORTS_PER_SOL,
+                amount: INTENDED_BUY * LAMPORTS_PER_SOL,
               });
 
               const swap = await sdk.trade.createSwapTransaction({
@@ -255,10 +257,12 @@ export default async function (req: Request): Promise<Response> {
               
               // 6.3 Logging & State Update
               if (tradeSignature) {
+                const FEE_SOL = INTENDED_BUY * 0.01; // 1% fee simulation
+
                 const tradeRecord = {
                   token_mint: tokenMint,
                   signature: tradeSignature,
-                  amount_sol: BUY_AMOUNT_SOL,
+                  amount_sol: INTENDED_BUY,
                   vibe_score: Math.round(nextScore),
                   created_at: now.toISOString(),
                 };
@@ -299,7 +303,7 @@ export default async function (req: Request): Promise<Response> {
                   .single();
 
                 // Broadcast live trade event to trade-feed listeners
-                await client.realtime.broadcast("oracle_trades", "new_trade", {
+                await client.realtime.publish("oracle_trades", "new_trade", {
                   ...(insertedTrade ?? tradeRecord),
                 });
 
@@ -312,7 +316,7 @@ export default async function (req: Request): Promise<Response> {
                   .eq("token_mint", tokenMint);
 
                 // Broadcast updated score with trade flag
-                await client.realtime.broadcast("vibe_scores", "score_updated", {
+                await client.realtime.publish("vibe_scores", "score_updated", {
                   token_mint: tokenMint,
                   score: nextScore,
                   contributor_count: nextCount,
@@ -347,7 +351,14 @@ export default async function (req: Request): Promise<Response> {
     });
 
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
+    let msg = "Unknown error";
+    if (error instanceof Error) {
+      msg = error.message;
+    } else if (typeof error === "object" && error !== null) {
+      msg = JSON.stringify(error);
+    } else {
+      msg = String(error);
+    }
     console.error("[submit-vibe] fatal:", msg);
     return new Response(JSON.stringify({ error: msg, success: false }), {
       status: 500,
