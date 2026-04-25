@@ -82,7 +82,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
       if (!navigator.mediaDevices) {
         setError('Browser security blocked the microphone. Try using http://127.0.0.1:3000 instead.')
       } else if (err.name === 'NotFoundError') {
-        setError("No microphone detected! If on a phone, avoid in-app browsers. Open directly in Safari/Chrome. Or simulate a vibe below.")
+        setError("No microphone detected! If on a phone, avoid in-app browsers. Open directly in Safari/Chrome.")
       } else if (err.name === 'NotReadableError') {
         setError('Microphone is in use by another app (like Zoom/OBS) or is frozen.')
       } else {
@@ -95,19 +95,6 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
     mediaRecorder.current?.stop()
     setIsRecording(false)
     audioContext.current?.close()
-  }
-
-  async function simulateVibeMock() {
-    setSubmitting(true)
-    setError(null)
-    
-    // Fake the network delay and processing
-    setTimeout(() => {
-      setEmotion('🔥')
-      setLastVibeScore(88) // High score to trigger UI state
-      setSubmitting(false)
-      onVibeSubmitted()
-    }, 1500)
   }
 
   async function submitVibe(voiceBlob: Blob) {
@@ -190,15 +177,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
             <p className="text-xs font-mono text-red-400/80 leading-relaxed mb-1">
               {error}
             </p>
-            {error.includes('simulate') ? (
-              <button 
-                onClick={simulateVibeMock}
-                className="mt-1 px-4 py-2 w-full text-xs font-bold text-orange-300 bg-orange-500/10 hover:bg-orange-500/20 rounded-lg border border-orange-500/20 transition-colors flex justify-center items-center gap-2"
-              >
-                <Zap className="w-3 h-3" />
-                Simulate Vibe Submission
-              </button>
-            ) : error.includes('Microphone') && (
+            {error.includes('Microphone') && (
               <button 
                 onClick={startRecording}
                 className="mt-1 px-4 py-2 w-full text-xs font-bold text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg border border-red-500/20 transition-colors flex justify-center items-center gap-2"
