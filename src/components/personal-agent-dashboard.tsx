@@ -93,6 +93,12 @@ export function PersonalAgentDashboard() {
 
       <main className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 py-12">
         <div className="flex justify-between items-center mb-10 pt-24">
+          <Link href="/" className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)] hover:text-white transition-colors group">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center border border-white/5 bg-white/5 group-hover:bg-white/10 transition-all">
+              <ChevronLeft className="w-4 h-4" />
+            </div>
+            BACK TO ORACLE
+          </Link>
         </div>
 
         {/* Header */}
