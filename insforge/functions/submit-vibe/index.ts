@@ -103,35 +103,53 @@ export default async function (req: Request): Promise<Response> {
     const rawTranscript = await transcribeRes.text();
 
     if (!rawTranscript || rawTranscript.trim().length === 0) {
-      throw new Error("Transcription returned empty result");
+      console.warn("[submit-vibe] Transcription was empty. Using fallback.");
+      // We don't throw here, we just use a fallback transcript to avoid 500
     }
 
+    const transcriptToAnalyze = (rawTranscript && rawTranscript.trim().length > 0) 
+      ? rawTranscript 
+      : "No clear audio captured (silent hype).";
+
     // 3. AI Processing: Enhanced Sentiment Analysis (Consensus-Aware)
-    const analysisPrompt = `
-      Analyze this crypto hype submission. 
-      Transcript: "${rawTranscript}"
-      Emoji: ${emoji}
-      
-      Return a JSON object:
-      {
-        "score": number (0-100),
-        "conviction": number (0-1),
-        "momentum": "bullish" | "bearish" | "neutral",
-        "is_bot_like": boolean
-      }
-    `;
+    let excitementScore = 50;
+    let conviction = 0.5;
 
-    const modelResponse = await client.ai.chat.completions.create({
-      model: "x-ai/grok-4.1-fast",
-      messages: [{ role: "system", content: "You are the HypeOracle Sentiment Engine. Output JSON only." }, { role: "user", content: analysisPrompt }],
-      response_format: { type: "json_object" },
-      max_tokens: 150,
-      temperature: 0.1,
-    });
+    try {
+      const analysisPrompt = `
+        Analyze this crypto hype submission. 
+        Transcript: "${transcriptToAnalyze}"
+        Emoji: ${emoji}
+        
+        Return a JSON object:
+        {
+          "score": number (0-100),
+          "conviction": number (0-1),
+          "momentum": "bullish" | "bearish" | "neutral",
+          "is_bot_like": boolean
+        }
+      `;
 
-    const aiResult = JSON.parse(modelResponse.choices[0]?.message?.content || "{}");
-    const excitementScore = aiResult.score || 50;
-    const conviction = aiResult.conviction || 0.5;
+      const modelResponse = await client.ai.chat.completions.create({
+        model: "openai/gpt-4o-mini", // Using a highly stable model for analysis
+        messages: [
+          { role: "system", content: "You are the HypeOracle Sentiment Engine. Output JSON only." },
+          { role: "user", content: analysisPrompt }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 150,
+        temperature: 0.1,
+      });
+
+      const aiResult = JSON.parse(modelResponse.choices[0]?.message?.content || "{}");
+      excitementScore = aiResult.score || 50;
+      conviction = aiResult.conviction || 0.5;
+      console.log(`[submit-vibe] AI Score: ${excitementScore}, Conviction: ${conviction}`);
+    } catch (aiErr) {
+      console.error("[submit-vibe] AI Sentiment Analysis failed, using defaults:", aiErr);
+      // Fallback: If AI fails, use energy and emoji to guess score
+      excitementScore = (energy > 50 || ["🔥", "🚀"].includes(emoji)) ? 75 : 50;
+    }
 
     // 4. Scoring Formula
     // emoji_weight: Mapping positive/negative vibes
