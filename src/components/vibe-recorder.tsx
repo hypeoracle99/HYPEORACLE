@@ -59,29 +59,59 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
     }
     return () => clearInterval(levelInterval.current)
   }, [isRecording])
+  const [countdown, setCountdown] = useState<number | null>(null)
+  const countdownInterval = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
 
   async function startRecording() {
+    if (isRecording || submitting) return
     setError(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       mediaRecorder.current = new MediaRecorder(stream)
       audioChunks.current = []
-      mediaRecorder.current.ondataavailable = (e) => audioChunks.current.push(e.data)
-      mediaRecorder.current.onstop = () => {
-        const mimeType = mediaRecorder.current?.mimeType || 'audio/webm';
-        submitVibe(new Blob(audioChunks.current, { type: mimeType }))
+      mediaRecorder.current.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) audioChunks.current.push(e.data)
       }
+      mediaRecorder.current.onstop = () => {
+        const mimeType = mediaRecorder.current?.mimeType || 'audio/webm'
+        const blob = new Blob(audioChunks.current, { type: mimeType })
+        // Stop all tracks to release mic
+        stream.getTracks().forEach(t => t.stop())
+        submitVibe(blob)
+      }
+
       audioContext.current = new AudioContext()
       const source = audioContext.current.createMediaStreamSource(stream)
       analyser.current = audioContext.current.createAnalyser()
       source.connect(analyser.current)
-      mediaRecorder.current.start(200) // timeslice=200ms ensures valid chunked webm
+
+      // Start with timeslice to ensure audio frames are flushed regularly
+      mediaRecorder.current.start(100)
       recordingStartTime.current = Date.now()
       setIsRecording(true)
       setLastVibeScore(null)
       setTradeSig(null)
+
+      // Auto-stop after 3 seconds with countdown
+      let secs = 3
+      setCountdown(secs)
+      countdownInterval.current = setInterval(() => {
+        secs -= 1
+        if (secs <= 0) {
+          clearInterval(countdownInterval.current)
+          setCountdown(null)
+          if (mediaRecorder.current?.state === 'recording') {
+            mediaRecorder.current.stop()
+          }
+          setIsRecording(false)
+          audioContext.current?.close()
+        } else {
+          setCountdown(secs)
+        }
+      }, 1000)
+
     } catch (err: any) {
-      console.warn("[VibeRecorder] Mic Error:", err);
+      console.warn("[VibeRecorder] Mic Error:", err)
       if (!navigator.mediaDevices) {
         setError('Browser security blocked the microphone. Try using http://127.0.0.1:3000 instead.')
       } else if (err.name === 'NotFoundError') {
@@ -89,28 +119,21 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
       } else if (err.name === 'NotReadableError') {
         setError('Microphone is in use by another app (like Zoom/OBS) or is frozen.')
       } else {
-        setError(`Microphone blocked by Windows OS: ${err.message || err.name}`)
+        setError(`Microphone blocked: ${err.message || err.name}`)
       }
     }
   }
 
   function stopRecording() {
-    if (!mediaRecorder.current || !isRecording) return
-    // Enforce minimum 1 second of recording for valid audio
-    const minDuration = 1000
-    const elapsed = Date.now() - (recordingStartTime.current || Date.now())
-    if (elapsed < minDuration) {
-      setTimeout(() => {
-        mediaRecorder.current?.stop()
-        setIsRecording(false)
-        audioContext.current?.close()
-      }, minDuration - elapsed)
-    } else {
+    clearInterval(countdownInterval.current)
+    setCountdown(null)
+    if (mediaRecorder.current?.state === 'recording') {
       mediaRecorder.current.stop()
-      setIsRecording(false)
-      audioContext.current?.close()
     }
+    setIsRecording(false)
+    audioContext.current?.close()
   }
+
 
   async function submitVibe(voiceBlob: Blob) {
     setSubmitting(true)
@@ -262,10 +285,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
           )}
 
           <button
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
+            onClick={isRecording ? stopRecording : startRecording}
             disabled={submitting}
             className="relative z-10 flex items-center justify-center transition-all duration-200 disabled:opacity-40"
             style={{
@@ -283,7 +303,11 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
             {submitting ? (
               <Loader2 className="w-6 h-6 text-orange-400 animate-spin" />
             ) : isRecording ? (
-              <MicOff className="w-6 h-6 text-white" />
+              countdown !== null ? (
+                <span className="text-white font-bold text-lg">{countdown}</span>
+              ) : (
+                <MicOff className="w-6 h-6 text-white" />
+              )
             ) : (
               <Mic className="w-6 h-6 text-orange-500/80" />
             )}
@@ -293,10 +317,12 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
         {/* Status label */}
         <p className="mono-label text-center" style={{ fontSize: '0.6rem' }}>
           {isRecording
-            ? `● CAPTURING FREQUENCY · Vol ${(level * 100).toFixed(0)}%`
+            ? countdown !== null
+              ? `● RECORDING · ${countdown}s remaining — speak now!`
+              : `● CAPTURING FREQUENCY · Vol ${(level * 100).toFixed(0)}%`
             : submitting
               ? '⚡ NEURAL PROCESSING...'
-              : 'Hold to Transmit Vibe'}
+              : 'Click to Record Vibe (3 seconds)'}
         </p>
       </div>
 
