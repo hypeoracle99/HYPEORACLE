@@ -117,11 +117,29 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
       formData.append('user_pubkey', publicKey?.toBase58() || 'ANON')
       formData.append('sensor_data', JSON.stringify({
         avg_volume: peak,
-        accel_magnitude: 0.7, // stable default; DeviceMotion API used when available
+        accel_magnitude: 0.7,
       }))
 
-      const { data, error: fnError } = await client.functions.invoke('submit-vibe', { body: formData })
-      if (fnError) throw fnError
+      // Use raw fetch to capture actual error messages from the backend
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_INSFORGE_URL}/functions/v1/submit-vibe`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_INSFORGE_ANON_KEY}`,
+          },
+          body: formData,
+        }
+      )
+
+      const responseText = await res.text()
+      let data: any = {}
+      try { data = JSON.parse(responseText) } catch { data = { error: responseText } }
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || `Server error ${res.status}: ${responseText}`)
+      }
+
       if (data?.vibeScore !== undefined) setLastVibeScore(data.vibeScore)
       onVibeSubmitted()
     } catch (err: any) {
@@ -177,7 +195,11 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
           >
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-              <p className="text-sm font-display font-bold text-red-400 leading-snug">Microphone Access Blocked</p>
+              <p className="text-sm font-display font-bold text-red-400 leading-snug">
+                {error?.toLowerCase().includes('microphone') || error?.toLowerCase().includes('mic') 
+                  ? 'Microphone Access Blocked' 
+                  : 'Submission Error'}
+              </p>
             </div>
             <p className="text-xs font-mono text-red-400/80 leading-relaxed mb-1">
               {error}
