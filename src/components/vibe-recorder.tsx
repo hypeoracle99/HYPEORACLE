@@ -67,7 +67,8 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
       audioChunks.current = []
       mediaRecorder.current.ondataavailable = (e) => audioChunks.current.push(e.data)
       mediaRecorder.current.onstop = () => {
-        submitVibe(new Blob(audioChunks.current, { type: 'audio/webm' }))
+        const mimeType = mediaRecorder.current?.mimeType || 'audio/webm';
+        submitVibe(new Blob(audioChunks.current, { type: mimeType }))
       }
       audioContext.current = new AudioContext()
       const source = audioContext.current.createMediaStreamSource(stream)
@@ -101,12 +102,16 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
     setSubmitting(true)
     setError(null)
     try {
+      if (voiceBlob.size === 0) {
+        throw new Error("Recording failed: Audio data is empty. Please try again.")
+      }
       const peak = peakLevel.current
       const emoji = peak > 0.8 ? '🔥' : peak > 0.5 ? '🚀' : '🐂'
       setEmotion(emoji)
 
       const formData = new FormData()
-      formData.append('voice', voiceBlob)
+      const extension = voiceBlob.type.includes('mp4') || voiceBlob.type.includes('m4a') ? 'm4a' : 'webm'
+      formData.append('voice', voiceBlob, `vibe.${extension}`)
       formData.append('emoji', emoji)
       formData.append('token_mint', tokenMint)
       formData.append('user_pubkey', publicKey?.toBase58() || 'ANON')

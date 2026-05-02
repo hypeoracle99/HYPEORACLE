@@ -60,15 +60,43 @@ export default async function (req: Request): Promise<Response> {
     if (!groqApiKey) throw new Error("GROQ_API_KEY not set");
 
     const transcribeForm = new FormData();
-    transcribeForm.append("file", voiceFile);
-    transcribeForm.append("model", "whisper-large-v3");
+    
+    // Determine extension based on MIME type
+    let extension = "wav";
+    let mimeType = "audio/wav";
+    
+    if (voiceFile.type.includes("mp4") || voiceFile.type.includes("m4a")) {
+      extension = "m4a";
+      mimeType = "audio/mp4";
+    } else if (voiceFile.type.includes("mpeg") || voiceFile.type.includes("mp3")) {
+      extension = "mp3";
+      mimeType = "audio/mpeg";
+    } else if (voiceFile.type.includes("webm")) {
+      extension = "webm";
+      mimeType = "audio/webm";
+    }
+
+    // Re-wrap as File for proper multipart formatting in Deno
+    // We use a generic 'audio.ext' name which Groq likes
+    const fileToSend = new File([await voiceFile.arrayBuffer()], `audio.${extension}`, { type: mimeType });
+    
+    transcribeForm.append("file", fileToSend);
+    transcribeForm.append("model", "whisper-large-v3"); // Groq's high quality model
     transcribeForm.append("response_format", "text");
+
+    console.log(`[submit-vibe] Groq Request: ${fileToSend.name} (${fileToSend.type}, ${fileToSend.size} bytes)`);
 
     const transcribeRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
       method: "POST",
       headers: { "Authorization": `Bearer ${groqApiKey}` },
       body: transcribeForm,
     });
+
+    if (!transcribeRes.ok) {
+      const errorData = await transcribeRes.text();
+      console.error("[submit-vibe] Groq Error Details:", errorData);
+      throw new Error(`Groq transcription failed (${transcribeRes.status}): ${errorData}`);
+    }
 
     const rawTranscript = await transcribeRes.text();
 
