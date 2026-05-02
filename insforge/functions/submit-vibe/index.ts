@@ -62,7 +62,6 @@ export default async function (req: Request): Promise<Response> {
     const voiceBuffer = await voiceFile.arrayBuffer();
     console.log(`[submit-vibe] Buffer size: ${voiceBuffer.byteLength} bytes, type: ${mimeType}`);
     if (voiceBuffer.byteLength === 0) throw new Error("Audio buffer is empty — microphone may not have captured any audio.");
-    if (voiceBuffer.byteLength < 1000) throw new Error(`Audio too short (${voiceBuffer.byteLength} bytes). Hold the mic for at least 1 second.`);
 
     const voiceBlob = new Blob([voiceBuffer], { type: mimeType });
 
