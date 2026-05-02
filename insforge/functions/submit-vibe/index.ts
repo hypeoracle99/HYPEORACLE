@@ -268,16 +268,24 @@ export default async function (req: Request): Promise<Response> {
           if (balanceSol < MIN_BALANCE) {
             console.warn(`Oracle low on fuel: ${balanceSol} SOL. Skipping auto-buy.`);
             
-            // Still sync the identity for the UI to show refill address
+            // Sync identity and live balance
             await client.database
               .from("oracle_fuel")
-              .update({ oracle_pubkey: wallet.publicKey.toBase58() })
+              .update({ 
+                oracle_pubkey: wallet.publicKey.toBase58(),
+                current_balance: balanceSol,
+                updated_at: new Date().toISOString()
+              })
               .eq("id", (await client.database.from("oracle_fuel").select("id").limit(1).single()).data?.id);
           } else {
-            // Sync identity
+            // Sync identity and live balance
             await client.database
               .from("oracle_fuel")
-              .update({ oracle_pubkey: wallet.publicKey.toBase58() })
+              .update({ 
+                oracle_pubkey: wallet.publicKey.toBase58(),
+                current_balance: balanceSol,
+                updated_at: new Date().toISOString()
+              })
               .eq("id", (await client.database.from("oracle_fuel").select("id").limit(1).single()).data?.id);
             // 6.2 Rate Limit Check
             const { data: scoreRecord } = await client.database
