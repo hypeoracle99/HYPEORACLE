@@ -105,7 +105,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
             mediaRecorder.current.stop()
           }
           setIsRecording(false)
-          audioContext.current?.close()
+          closeAudio()
         } else {
           setCountdown(secs)
         }
@@ -125,6 +125,12 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
     }
   }
 
+  function closeAudio() {
+    if (audioContext.current && audioContext.current.state !== 'closed') {
+      audioContext.current.close()
+    }
+  }
+
   function stopRecording() {
     clearInterval(countdownInterval.current)
     setCountdown(null)
@@ -132,7 +138,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
       mediaRecorder.current.stop()
     }
     setIsRecording(false)
-    audioContext.current?.close()
+    closeAudio()
   }
 
 
