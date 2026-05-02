@@ -68,8 +68,8 @@ export default function StakePage() {
         // Fetch live on-chain balance for the oracle wallet
         if (fuelRow.oracle_pubkey) {
           try {
-            const { Connection, PublicKey: PK, LAMPORTS_PER_SOL } = await import('@solana/web3.js')
-            const conn = new Connection('https://api.mainnet-beta.solana.com', 'confirmed')
+            const { PublicKey: PK, LAMPORTS_PER_SOL } = await import('@solana/web3.js')
+            const conn = GET_CONNECTION()
             const lamports = await conn.getBalance(new PK(fuelRow.oracle_pubkey))
             setLiveFuelSol(lamports / LAMPORTS_PER_SOL)
           } catch (rpcErr) {
