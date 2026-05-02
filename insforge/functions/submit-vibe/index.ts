@@ -79,6 +79,7 @@ export default async function (req: Request): Promise<Response> {
     // Use Blob + filename in append for maximum Deno compatibility
     const voiceBuffer = await voiceFile.arrayBuffer();
     if (voiceBuffer.byteLength === 0) throw new Error("Audio buffer is empty");
+    if (voiceBuffer.byteLength < 1000) throw new Error(`Audio too short to transcribe (${voiceBuffer.byteLength} bytes). Hold the mic button for at least 1 second.`);
     
     const voiceBlob = new Blob([voiceBuffer], { type: mimeType });
     

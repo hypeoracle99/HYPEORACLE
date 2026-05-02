@@ -38,6 +38,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
   const levelInterval = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
   // Track peak volume across recording — used for emoji + sensor_data (no Math.random)
   const peakLevel = useRef(0)
+  const recordingStartTime = useRef<number>(0)
 
   useEffect(() => {
     if (isRecording) {
@@ -74,7 +75,8 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
       const source = audioContext.current.createMediaStreamSource(stream)
       analyser.current = audioContext.current.createAnalyser()
       source.connect(analyser.current)
-      mediaRecorder.current.start()
+      mediaRecorder.current.start(200) // timeslice=200ms ensures valid chunked webm
+      recordingStartTime.current = Date.now()
       setIsRecording(true)
       setLastVibeScore(null)
       setTradeSig(null)
@@ -93,9 +95,21 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
   }
 
   function stopRecording() {
-    mediaRecorder.current?.stop()
-    setIsRecording(false)
-    audioContext.current?.close()
+    if (!mediaRecorder.current || !isRecording) return
+    // Enforce minimum 1 second of recording for valid audio
+    const minDuration = 1000
+    const elapsed = Date.now() - (recordingStartTime.current || Date.now())
+    if (elapsed < minDuration) {
+      setTimeout(() => {
+        mediaRecorder.current?.stop()
+        setIsRecording(false)
+        audioContext.current?.close()
+      }, minDuration - elapsed)
+    } else {
+      mediaRecorder.current.stop()
+      setIsRecording(false)
+      audioContext.current?.close()
+    }
   }
 
   async function submitVibe(voiceBlob: Blob) {
