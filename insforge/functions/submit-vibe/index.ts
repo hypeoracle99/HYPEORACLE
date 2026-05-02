@@ -251,7 +251,7 @@ export default async function (req: Request): Promise<Response> {
       try {
         const privateKey = Deno.env.get("PRIVATE_KEY");
         const bagsApiKey = Deno.env.get("BAGS_API_KEY");
-        const rpcUrl = Deno.env.get("SOLANA_RPC_URL") || "https://api.mainnet-beta.solana.com";
+        const rpcUrl = Deno.env.get("SOLANA_RPC_URL") || "https://solana-mainnet.g.alchemy.com/v2/jq4Zj9Zjor_oxzeIl_tx8";
         
         if (privateKey && bagsApiKey) {
           const { Keypair, Connection, LAMPORTS_PER_SOL, PublicKey } = await import("npm:@solana/web3.js");
