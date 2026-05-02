@@ -122,7 +122,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
 
       // Use raw fetch to capture actual error messages from the backend
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_INSFORGE_URL}/functions/v1/submit-vibe`,
+        'https://9s8ct2b5.functions.insforge.app/submit-vibe',
         {
           method: 'POST',
           headers: {
