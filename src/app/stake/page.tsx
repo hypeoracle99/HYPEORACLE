@@ -39,6 +39,8 @@ export default function StakePage() {
   const [leaderboard, setLeaderboard] = useState<any[]>([])
   const [claiming, setClaiming] = useState(false)
 
+  const [liveFuelSol, setLiveFuelSol] = useState<number | null>(null)
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -51,7 +53,6 @@ export default function StakePage() {
 
   async function fetchData() {
     try {
-      // Parallelize fetches to reduce lag
       const [statsRes, fuelRes, userRes, leaderboardRes] = await Promise.all([
         client.database.from('hype_token_stats').select('*').limit(1),
         client.database.from('oracle_fuel').select('*').limit(1),
@@ -60,7 +61,23 @@ export default function StakePage() {
       ])
 
       if (statsRes.data && statsRes.data[0]) setStats(statsRes.data[0])
-      if (fuelRes.data && fuelRes.data[0]) setFuel(fuelRes.data[0])
+      if (fuelRes.data && fuelRes.data[0]) {
+        const fuelRow = fuelRes.data[0]
+        setFuel(fuelRow)
+
+        // Fetch live on-chain balance for the oracle wallet
+        if (fuelRow.oracle_pubkey) {
+          try {
+            const { Connection, PublicKey: PK, LAMPORTS_PER_SOL } = await import('@solana/web3.js')
+            const conn = new Connection('https://api.mainnet-beta.solana.com', 'confirmed')
+            const lamports = await conn.getBalance(new PK(fuelRow.oracle_pubkey))
+            setLiveFuelSol(lamports / LAMPORTS_PER_SOL)
+          } catch (rpcErr) {
+            console.warn('RPC balance fetch failed, using DB value:', rpcErr)
+            setLiveFuelSol(Number(fuelRow.current_balance))
+          }
+        }
+      }
       if (userRes.data && userRes.data[0]) {
         setUserStake(userRes.data[0])
       } else if (publicKey) {
@@ -180,8 +197,9 @@ export default function StakePage() {
     }
   }
 
-  const isLowFuel = fuel ? Number(fuel.current_balance) < 0.2 : false
-  const refillNeeded = fuel ? Number(fuel.current_balance) < 0.5 : false
+  const currentFuelVal = liveFuelSol !== null ? liveFuelSol : fuel ? Number(fuel.current_balance) : 0
+  const isLowFuel = fuel ? currentFuelVal < 0.2 : false
+  const refillNeeded = fuel ? currentFuelVal < 0.5 : false
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-[#FF6B1A]/30">
@@ -229,7 +247,7 @@ export default function StakePage() {
           />
           <StatCard 
             label="Oracle Fuel" 
-            value={fuel ? `${Number(fuel.current_balance).toFixed(2)} SOL` : null} 
+            value={fuel ? `${currentFuelVal.toFixed(2)} SOL` : null} 
             icon={<Activity className="w-4 h-4 text-blue-500" />}
             status={isLowFuel ? 'LOW' : 'SAFE'}
             loading={loading && !fuel}
@@ -425,7 +443,7 @@ export default function StakePage() {
                 <motion.div 
                   className={`h-full rounded-full ${isLowFuel ? 'bg-red-500' : 'bg-[#FF6B1A]'}`}
                   initial={{ width: 0 }}
-                  animate={{ width: fuel ? `${Math.min(100, (Number(fuel.current_balance) / 0.8) * 100)}%` : '0%' }}
+                  animate={{ width: fuel ? `${Math.min(100, (currentFuelVal / 0.8) * 100)}%` : '0%' }}
                 />
               </div>
 
@@ -437,7 +455,7 @@ export default function StakePage() {
                 <div className="flex justify-between items-center text-sm font-mono font-bold">
                   <span className="text-[var(--text-muted)]">Current Level:</span>
                   <span className={isLowFuel ? 'text-red-500' : 'text-white'}>
-                    {fuel ? Number(fuel.current_balance).toFixed(4) : '0.0000'} SOL
+                    {fuel ? currentFuelVal.toFixed(4) : '0.0000'} SOL
                   </span>
                 </div>
               </div>
