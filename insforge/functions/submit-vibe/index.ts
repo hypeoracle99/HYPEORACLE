@@ -65,26 +65,28 @@ export default async function (req: Request): Promise<Response> {
     let extension = "wav";
     let mimeType = "audio/wav";
     
-    if (voiceFile.type.includes("mp4") || voiceFile.type.includes("m4a")) {
+    if (voiceFile.type && (voiceFile.type.includes("mp4") || voiceFile.type.includes("m4a"))) {
       extension = "m4a";
       mimeType = "audio/mp4";
-    } else if (voiceFile.type.includes("mpeg") || voiceFile.type.includes("mp3")) {
+    } else if (voiceFile.type && (voiceFile.type.includes("mpeg") || voiceFile.type.includes("mp3"))) {
       extension = "mp3";
       mimeType = "audio/mpeg";
-    } else if (voiceFile.type.includes("webm")) {
+    } else if (voiceFile.type && voiceFile.type.includes("webm")) {
       extension = "webm";
       mimeType = "audio/webm";
     }
 
-    // Re-wrap as File for proper multipart formatting in Deno
-    // We use a generic 'audio.ext' name which Groq likes
-    const fileToSend = new File([await voiceFile.arrayBuffer()], `audio.${extension}`, { type: mimeType });
+    // Use Blob + filename in append for maximum Deno compatibility
+    const voiceBuffer = await voiceFile.arrayBuffer();
+    if (voiceBuffer.byteLength === 0) throw new Error("Audio buffer is empty");
     
-    transcribeForm.append("file", fileToSend);
-    transcribeForm.append("model", "whisper-large-v3"); // Groq's high quality model
+    const voiceBlob = new Blob([voiceBuffer], { type: mimeType });
+    
+    transcribeForm.append("file", voiceBlob, `audio.${extension}`);
+    transcribeForm.append("model", "whisper-large-v3");
     transcribeForm.append("response_format", "text");
 
-    console.log(`[submit-vibe] Groq Request: ${fileToSend.name} (${fileToSend.type}, ${fileToSend.size} bytes)`);
+    console.log(`[submit-vibe] Groq Request: audio.${extension} (${mimeType}, ${voiceBuffer.byteLength} bytes)`);
 
     const transcribeRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
       method: "POST",
@@ -100,7 +102,7 @@ export default async function (req: Request): Promise<Response> {
 
     const rawTranscript = await transcribeRes.text();
 
-    if (!rawTranscript) {
+    if (!rawTranscript || rawTranscript.trim().length === 0) {
       throw new Error("Transcription returned empty result");
     }
 
