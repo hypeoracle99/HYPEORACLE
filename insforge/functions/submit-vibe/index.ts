@@ -42,11 +42,35 @@ export default async function (req: Request): Promise<Response> {
 
     await client.realtime.connect();
 
-    // 1. Upload voice to storage
-    const uniqueKey = `vibes/${Date.now()}-${crypto.randomUUID()}.webm`;
+    // READ BUFFER FIRST — voiceFile is a stream that can only be consumed once.
+    // Doing storage.upload(voiceFile) first would exhaust the stream, leaving arrayBuffer() empty.
+    const groqApiKey = Deno.env.get("GROQ_API_KEY");
+    if (!groqApiKey) throw new Error("GROQ_API_KEY not set");
+
+    // Determine extension/mimeType based on incoming file type
+    let extension = "wav";
+    let mimeType = "audio/wav";
+    if (voiceFile.type && (voiceFile.type.includes("mp4") || voiceFile.type.includes("m4a"))) {
+      extension = "m4a"; mimeType = "audio/mp4";
+    } else if (voiceFile.type && (voiceFile.type.includes("mpeg") || voiceFile.type.includes("mp3"))) {
+      extension = "mp3"; mimeType = "audio/mpeg";
+    } else if (voiceFile.type && voiceFile.type.includes("webm")) {
+      extension = "webm"; mimeType = "audio/webm";
+    }
+
+    // Read the buffer ONCE, reuse for both storage and Groq
+    const voiceBuffer = await voiceFile.arrayBuffer();
+    console.log(`[submit-vibe] Buffer size: ${voiceBuffer.byteLength} bytes, type: ${mimeType}`);
+    if (voiceBuffer.byteLength === 0) throw new Error("Audio buffer is empty — microphone may not have captured any audio.");
+    if (voiceBuffer.byteLength < 1000) throw new Error(`Audio too short (${voiceBuffer.byteLength} bytes). Hold the mic for at least 1 second.`);
+
+    const voiceBlob = new Blob([voiceBuffer], { type: mimeType });
+
+    // 1. Upload voice to storage (use the blob, not the original file)
+    const uniqueKey = `vibes/${Date.now()}-${crypto.randomUUID()}.${extension}`;
     const { data: uploadData, error: uploadError } = await client.storage
       .from("vibes")
-      .upload(uniqueKey, voiceFile);
+      .upload(uniqueKey, voiceBlob);
 
     if (uploadError || !uploadData) {
       throw new Error(`Upload failed: ${uploadError?.message}`);
@@ -54,40 +78,13 @@ export default async function (req: Request): Promise<Response> {
 
     const voiceUrl = uploadData.url;
 
-    // 2. AI Processing: Transcription (Whisper)
-    // We use the AI Gateway for transcription
-    const groqApiKey = Deno.env.get("GROQ_API_KEY");
-    if (!groqApiKey) throw new Error("GROQ_API_KEY not set");
-
+    // 2. AI Processing: Transcription (Whisper via Groq)
     const transcribeForm = new FormData();
-    
-    // Determine extension based on MIME type
-    let extension = "wav";
-    let mimeType = "audio/wav";
-    
-    if (voiceFile.type && (voiceFile.type.includes("mp4") || voiceFile.type.includes("m4a"))) {
-      extension = "m4a";
-      mimeType = "audio/mp4";
-    } else if (voiceFile.type && (voiceFile.type.includes("mpeg") || voiceFile.type.includes("mp3"))) {
-      extension = "mp3";
-      mimeType = "audio/mpeg";
-    } else if (voiceFile.type && voiceFile.type.includes("webm")) {
-      extension = "webm";
-      mimeType = "audio/webm";
-    }
-
-    // Use Blob + filename in append for maximum Deno compatibility
-    const voiceBuffer = await voiceFile.arrayBuffer();
-    if (voiceBuffer.byteLength === 0) throw new Error("Audio buffer is empty");
-    if (voiceBuffer.byteLength < 1000) throw new Error(`Audio too short to transcribe (${voiceBuffer.byteLength} bytes). Hold the mic button for at least 1 second.`);
-    
-    const voiceBlob = new Blob([voiceBuffer], { type: mimeType });
-    
-    transcribeForm.append("file", voiceBlob, `audio.${extension}`);
+    transcribeForm.append("file", new Blob([voiceBuffer], { type: mimeType }), `audio.${extension}`);
     transcribeForm.append("model", "whisper-large-v3");
     transcribeForm.append("response_format", "text");
 
-    console.log(`[submit-vibe] Groq Request: audio.${extension} (${mimeType}, ${voiceBuffer.byteLength} bytes)`);
+    console.log(`[submit-vibe] Sending to Groq: audio.${extension} (${mimeType}, ${voiceBuffer.byteLength} bytes)`);
 
     const transcribeRes = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
       method: "POST",
@@ -97,7 +94,7 @@ export default async function (req: Request): Promise<Response> {
 
     if (!transcribeRes.ok) {
       const errorData = await transcribeRes.text();
-      console.error("[submit-vibe] Groq Error Details:", errorData);
+      console.error("[submit-vibe] Groq Error:", errorData);
       throw new Error(`Groq transcription failed (${transcribeRes.status}): ${errorData}`);
     }
 
