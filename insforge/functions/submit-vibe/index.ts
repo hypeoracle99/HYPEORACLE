@@ -130,24 +130,32 @@ export default async function (req: Request): Promise<Response> {
         }
       `;
 
-      const modelResponse = await client.ai.chat.completions.create({
-        model: "openai/gpt-4o-mini", // Using a highly stable model for analysis
-        messages: [
-          { role: "system", content: "You are the HypeOracle Sentiment Engine. Output JSON only." },
-          { role: "user", content: analysisPrompt }
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 150,
-        temperature: 0.1,
+      const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${groqApiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: "You are the HypeOracle Sentiment Engine. Output JSON only." },
+            { role: "user", content: analysisPrompt }
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.1,
+        })
       });
 
-      const aiResult = JSON.parse(modelResponse.choices[0]?.message?.content || "{}");
+      const completion = await groqRes.json();
+      if (completion.error) throw new Error(completion.error.message);
+
+      const aiResult = JSON.parse(completion.choices[0]?.message?.content || "{}");
       excitementScore = aiResult.score || 50;
       conviction = aiResult.conviction || 0.5;
-      console.log(`[submit-vibe] AI Score: ${excitementScore}, Conviction: ${conviction}`);
+      console.log(`[submit-vibe] Groq Sentiment Score: ${excitementScore}`);
     } catch (aiErr) {
-      console.error("[submit-vibe] AI Sentiment Analysis failed, using defaults:", aiErr);
-      // Fallback: If AI fails, use energy and emoji to guess score
+      console.error("[submit-vibe] Groq Sentiment failed, using defaults:", aiErr);
       excitementScore = (energy > 50 || ["🔥", "🚀"].includes(emoji)) ? 75 : 50;
     }
 
