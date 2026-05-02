@@ -85,8 +85,9 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
       analyser.current = audioContext.current.createAnalyser()
       source.connect(analyser.current)
 
-      // Start with timeslice to ensure audio frames are flushed regularly
-      mediaRecorder.current.start(100)
+      // NO timeslice — browser accumulates all audio and emits one complete valid file on stop()
+      // timeslice caused intermittent corrupted webm with only header bytes
+      mediaRecorder.current.start()
       recordingStartTime.current = Date.now()
       setIsRecording(true)
       setLastVibeScore(null)
