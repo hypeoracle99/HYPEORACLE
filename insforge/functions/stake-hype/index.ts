@@ -50,7 +50,7 @@ export default async function (req: Request): Promise<Response> {
     // 2. Update Global Stats
     const { data: stats } = await client.database
       .from("hype_token_stats")
-      .select("total_staked, stakers_count")
+      .select("id, total_staked, stakers_count")
       .limit(1)
       .single();
 
