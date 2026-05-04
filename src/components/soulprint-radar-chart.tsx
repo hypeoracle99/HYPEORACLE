@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion'
 
 interface SoulprintRadarChartProps {
-  data: Record<string, number>
+  spectrum: Record<string, number>
   size?: number
 }
 
-export function SoulprintRadarChart({ data, size = 300 }: SoulprintRadarChartProps) {
+export function SoulprintRadarChart({ spectrum, size = 300 }: SoulprintRadarChartProps) {
   // Default emotional axes if data is missing or empty
   const defaultData = {
     Greed: 20,
@@ -17,8 +17,8 @@ export function SoulprintRadarChart({ data, size = 300 }: SoulprintRadarChartPro
     Skepticism: 20
   }
   
-  const axes = Object.keys(data).length > 0 ? Object.keys(data) : Object.keys(defaultData)
-  const values = Object.keys(data).length > 0 ? Object.values(data) : Object.values(defaultData)
+  const axes = Object.keys(spectrum || {}).length > 0 ? Object.keys(spectrum) : Object.keys(defaultData)
+  const values = Object.keys(spectrum || {}).length > 0 ? Object.values(spectrum) : Object.values(defaultData)
   
   const center = size / 2
   const radius = (size / 2) * 0.7 // Leave space for labels

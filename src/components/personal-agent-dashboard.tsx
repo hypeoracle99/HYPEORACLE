@@ -168,7 +168,7 @@ export function PersonalAgentDashboard() {
                 {/* Soulprint Emotional Spectrum */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 items-center">
                    <div className="flex justify-center bg-white/[0.02] rounded-3xl p-6 border border-white/5">
-                      <SoulprintRadarChart data={profile.emotional_spectrum || {}} size={240} />
+                      <SoulprintRadarChart spectrum={profile.emotional_spectrum || {}} size={240} />
                    </div>
 
                    <div className="space-y-6">
