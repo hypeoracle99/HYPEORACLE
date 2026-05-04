@@ -11,6 +11,7 @@ import { OracleStatus } from './oracle-status'
 import { OracleTradeFeed } from './oracle-trade-feed'
 import { FuelOracle } from './fuel-oracle'
 import { AmbientBackground, ScoreGauge } from './ui-primitives'
+import { MarketPulse } from './market-pulse'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import Link from 'next/link'
@@ -578,6 +579,9 @@ export function VibeDashboard() {
           tokens: scores.length, 
           trades: scores.filter(s => s.last_oracle_trade_at).length 
         }} />
+
+        {/* Global Market Pulse */}
+        <MarketPulse />
 
         {/* Oracle Status */}
         <motion.div
