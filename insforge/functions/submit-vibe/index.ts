@@ -233,21 +233,45 @@ export default async function (req: Request): Promise<Response> {
       updated_at: updatedAt,
     });
 
-    // 6. Bags.fm Trading Integration (Vibe 2.0 Dynamic Sizing)
+    // 6. Bags.fm Trading Integration (Vibe 2.0 Dynamic Sizing + Symbiosis Protocol)
     let tradeSignature = null;
     
     // Security & Sizing Logic
     const COOLDOWN_MINS = parseInt(Deno.env.get("ORACLE_COOLDOWN_MINUTES") || "5");
     const MIN_BALANCE = parseFloat(Deno.env.get("ORACLE_MIN_BALANCE_SOL") || "0.2");
-    const MAX_SINGLE_BUY = 0.01; // Safety Cap
+    const MAX_SINGLE_BUY = 0.02; // Increased Safety Cap for high conviction
 
-    // Dynamic Buy Calculation (Consensus Aware)
-    // Base 0.003 + (Contributor Boost: 0.001 per unique user in last 10min)
+    // 6.1 Fetch User Soulprint for Symbiosis Protocol
+    const { data: soulprint } = await client.database
+      .from("user_vibe_profiles")
+      .select("panic_index, fomo_index, conviction_index")
+      .eq("user_pubkey", userPubkey)
+      .single();
+
+    // Default modifiers
+    let convictionMod = 1.0;
+    let fomoThresholdMod = 0;
+    let panicSizeMod = 1.0;
+
+    if (soulprint) {
+      // Conviction increases position size (0.5x to 1.5x)
+      convictionMod = 1 + (soulprint.conviction_index - 50) / 100;
+      // FOMO lowers trade threshold (up to -10 points)
+      fomoThresholdMod = Math.min(10, (soulprint.fomo_index / 10));
+      // Panic decreases position size (0.5x to 1.5x)
+      panicSizeMod = 1 - (soulprint.panic_index - 50) / 100;
+      
+      console.log(`[Symbiosis] Active. Mods: Conviction(${convictionMod.toFixed(2)}), FOMO(-${fomoThresholdMod.toFixed(1)}), Panic(${panicSizeMod.toFixed(2)})`);
+    }
+
+    // Dynamic Buy Calculation (Consensus Aware + Symbiosis)
     const baseBuy = 0.003;
     const consensusBoost = Math.min(0.007, (nextCount - 1) * 0.001);
-    const INTENDED_BUY = Math.min(MAX_SINGLE_BUY, baseBuy + consensusBoost);
+    const SYMBIOSIS_MULT = convictionMod * panicSizeMod;
+    const INTENDED_BUY = Math.min(MAX_SINGLE_BUY, (baseBuy + consensusBoost) * SYMBIOSIS_MULT);
+    const TRADE_THRESHOLD = 80 - fomoThresholdMod;
 
-    if (nextScore > 80) {
+    if (nextScore > TRADE_THRESHOLD) {
       try {
         const privateKey = Deno.env.get("PRIVATE_KEY");
         const bagsApiKey = Deno.env.get("BAGS_API_KEY");
@@ -404,7 +428,7 @@ export default async function (req: Request): Promise<Response> {
     return new Response(JSON.stringify({
       vibeScore: Math.round(finalScore),
       tradeSignature,
-      message: finalScore > 80 ? "BULLISH! Trade executed." : "Vibe localized.",
+      message: finalScore > TRADE_THRESHOLD ? "BULLISH! Trade executed." : "Vibe localized.",
       success: true
     }), {
       status: 200,

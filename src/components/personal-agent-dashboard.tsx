@@ -208,6 +208,35 @@ export function PersonalAgentDashboard() {
                    </div>
                 </div>
 
+                {/* Symbiosis Protocol Active Status */}
+                 <motion.div 
+                   initial={{ opacity: 0, y: 10 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   transition={{ delay: 0.8 }}
+                   className="p-5 rounded-3xl mb-12 relative overflow-hidden"
+                   style={{ 
+                     background: 'rgba(16, 185, 129, 0.05)', 
+                     border: '1px solid rgba(16, 185, 129, 0.2)' 
+                   }}
+                 >
+                   <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+                   <div className="flex items-center gap-4 relative z-10">
+                     <div className="p-3 bg-emerald-500/20 rounded-2xl border border-emerald-500/30">
+                        <Activity className="w-5 h-5 text-emerald-400" />
+                     </div>
+                     <div>
+                        <div className="flex items-center gap-2">
+                           <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest">Protocol Active</span>
+                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        </div>
+                        <h4 className="font-display font-bold text-white text-lg">AI-Human Symbiosis</h4>
+                        <p className="text-[10px] font-mono text-white/50 mt-1 max-w-md">
+                          Your Oracle has synchronized with your Soulprint. Trading parameters (thresholds, sizing, and risk) are now dynamically scaling based on your emotional frequency.
+                        </p>
+                     </div>
+                   </div>
+                 </motion.div>
+
                 {/* Behavioral Insights */}
                 <div className="mb-10 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
                    <h3 className="mono-label mb-5 text-[0.65rem] text-white/40 tracking-widest uppercase">Deep Consciousness Insights</h3>
