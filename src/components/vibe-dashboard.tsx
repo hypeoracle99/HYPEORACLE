@@ -18,7 +18,7 @@ import Link from 'next/link'
 import {
   Search, Zap, Shield, Activity, TrendingUp,
   Radio, ChevronRight, Globe, BarChart3, Users, Sparkles, Coins, BrainCircuit,
-  Twitter, Send, MessageSquare
+  X, Send, MessageSquare
 } from 'lucide-react'
 import { 
   BAGS_API_KEY, 
@@ -802,7 +802,7 @@ export function VibeDashboard() {
         {/* Social Links */}
         <div className="flex items-center justify-center gap-6 mb-6">
           <a href="https://x.com/hypeoracle" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-white/40 hover:text-[#1DA1F2] transition-colors">
-            <Twitter className="w-4 h-4" />
+            <X className="w-4 h-4" />
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest hidden sm:inline">X.com</span>
           </a>
           <a href="https://t.me/hypeoracle" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-white/40 hover:text-[#0088cc] transition-colors">
