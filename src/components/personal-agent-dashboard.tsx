@@ -7,7 +7,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import Link from 'next/link'
 import { ChevronLeft, BrainCircuit, Activity, Target, Zap, LayoutDashboard } from 'lucide-react'
-import { AmbientBackground } from './ui-primitives'
+import { AmbientBackground, ScoreGauge } from './ui-primitives'
+import { SoulprintRadarChart } from './soulprint-radar-chart'
 import { INSFORGE_CONFIG } from '@/lib/constants'
 import { OFFICIAL_TOKEN } from '@/lib/token-config'
 
@@ -76,8 +77,8 @@ export function PersonalAgentDashboard() {
         >
           <div className="text-5xl mb-2">🧠</div>
           <div>
-            <h2 className="font-display font-bold text-xl text-white mb-2">Personal Vibe Agent</h2>
-            <p className="mono-label text-sm max-w-sm">Connect your wallet to train or view your personalized AI trading companion.</p>
+            <h2 className="font-display font-bold text-xl text-white mb-2">Emotional Soulprint</h2>
+            <p className="mono-label text-sm max-w-sm">Connect your wallet to analyze your on-chain emotional identity.</p>
           </div>
           <div className="flex justify-center">
             {mounted ? <WalletMultiButton /> : <div className="h-[48px] w-[150px] rounded-lg animate-pulse" style={{ background: 'rgba(255,255,255,0.05)' }} />}
@@ -108,9 +109,9 @@ export function PersonalAgentDashboard() {
               <BrainCircuit className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-2xl text-white">My Vibe Agent</h1>
-              <p className="mono-label overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px] sm:max-w-[400px]" style={{ fontSize: '0.6rem' }}>
-                Wallet Context: {publicKey.toBase58()}
+              <h1 className="font-display font-bold text-2xl text-white tracking-tight">My Soulprint</h1>
+              <p className="mono-label text-[0.6rem] text-white/40 mt-0.5">
+                On-Chain Emotional Identity
               </p>
             </div>
           </div>
@@ -119,103 +120,142 @@ export function PersonalAgentDashboard() {
         {loading ? (
           <div className="h-64 rounded-3xl animate-pulse" style={{ background: 'rgba(255,255,255,0.02)' }} />
         ) : !profile ? (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 rounded-3xl text-center" style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-            <div className="text-6xl mb-4">🤖</div>
-            <h2 className="font-display font-bold text-xl text-white mb-2">No Agent Brain Found</h2>
-            <p className="text-sm text-[var(--text-muted)] mb-6 max-w-sm mx-auto">
-              Your personal AI doesn&apos;t know who you are yet. Train it using your past vibe submissions!
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-12 rounded-[2rem] text-center backdrop-blur-xl relative overflow-hidden" style={{ background: 'rgba(255, 107, 26, 0.03)', border: '1px solid rgba(255, 107, 26, 0.1)' }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#FF6B1A]/5 pointer-events-none" />
+            <div className="text-7xl mb-6 drop-shadow-[0_0_15px_rgba(255,107,26,0.3)]">🧠</div>
+            <h2 className="font-display font-bold text-2xl text-white mb-3">Initialize Soulprint</h2>
+            <p className="text-sm text-[var(--text-muted)] mb-8 max-w-xs mx-auto leading-relaxed">
+              Your on-chain emotional frequency hasn&apos;t been synthesized yet. Train your AI to unlock your Soulprint.
             </p>
             
             <button
                onClick={handleTrainAgent}
                disabled={training}
-               className="px-8 py-3 rounded-xl font-bold font-mono text-white transition-all w-full sm:w-auto"
-               style={{ background: training ? 'rgba(16, 185, 129, 0.3)' : '#10b981' }}
+               className="relative px-10 py-4 rounded-2xl font-bold font-mono text-white transition-all w-full sm:w-auto group overflow-hidden"
+               style={{ background: training ? 'rgba(255, 107, 26, 0.2)' : '#FF6B1A' }}
             >
-              {training ? 'Scanning Brainwaves...' : 'Train My Vibe Agent'}
+              <span className="relative z-10">{training ? 'Synthesizing...' : 'Calibrate Soulprint'}</span>
+              {!training && <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />}
             </button>
             
-            {errorMsg && <p className="text-red-400 mt-4 text-xs font-mono">{errorMsg}</p>}
+            {errorMsg && <p className="text-red-400 mt-6 text-xs font-mono bg-red-400/5 py-2 px-4 rounded-lg inline-block">{errorMsg}</p>}
           </motion.div>
         ) : (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
              {/* Profile Card */}
-             <div className="p-6 sm:p-8 rounded-3xl mb-6 relative overflow-hidden backdrop-blur-xl" style={{ background: 'rgba(20, 20, 20, 0.4)', border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)' }}>
+             <div className="p-6 sm:p-10 rounded-[2.5rem] mb-8 relative overflow-hidden backdrop-blur-3xl" style={{ background: 'rgba(5, 5, 7, 0.7)', border: '1px solid rgba(255, 255, 255, 0.05)', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
                 {/* Visual Risk Gradient */}
                 <div 
-                   className="absolute top-0 right-0 w-64 h-64 blur-[80px] opacity-20 pointer-events-none transition-colors duration-1000" 
-                   style={{ background: profile.risk_tolerance > 70 ? '#ef4444' : profile.risk_tolerance > 40 ? '#f59e0b' : '#3b82f6' }}
+                   className="absolute top-0 right-0 w-80 h-80 blur-[120px] opacity-10 pointer-events-none transition-colors duration-1000" 
+                   style={{ background: profile.risk_tolerance > 70 ? '#FF3D00' : profile.risk_tolerance > 40 ? '#FF6B1A' : '#3b82f6' }}
                 />
 
-                <div className="flex items-start gap-4 mb-8">
-                   <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shrink-0" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                      {profile.risk_tolerance > 80 ? '🦍' : profile.risk_tolerance > 50 ? '🐂' : '🦉'}
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-12 text-center sm:text-left">
+                   <div className="relative group">
+                      <div className="absolute inset-0 bg-[#FF6B1A]/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      <ScoreGauge score={profile.risk_tolerance} size={100} />
+                      <div className="absolute -top-1 -right-1 bg-[#FF6B1A] text-[10px] font-bold px-1.5 py-0.5 rounded-full text-black">RISK</div>
                    </div>
-                   <div>
-                      <h2 className="font-display font-bold text-3xl text-white">{profile.agent_name}</h2>
-                      <p className="text-[var(--text-secondary)] font-medium mt-1">{profile.personality_summary}</p>
+                   <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-3 mb-2 justify-center sm:justify-start">
+                        <h2 className="font-display font-black text-4xl text-white uppercase tracking-tight">{profile.agent_name}</h2>
+                        <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9px] font-mono text-white/50 uppercase tracking-tighter">Level {Math.floor(profile.total_vibes / 5) + 1} Soul</span>
+                      </div>
+                      <p className="text-[var(--text-secondary)] text-sm leading-relaxed max-w-lg">{profile.personality_summary}</p>
                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                   <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                      <div className="flex items-center justify-between mb-2">
-                         <span className="mono-label text-[0.6rem] flex items-center gap-1"><Activity className="w-3 h-3" /> Risk Tolerance</span>
-                         <span className="font-mono text-xs font-bold text-white">{profile.risk_tolerance}/100</span>
-                      </div>
-                      <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
-                         <div className="h-full rounded-full" style={{ width: `${profile.risk_tolerance}%`, background: `linear-gradient(90deg, #3b82f6, ${profile.risk_tolerance > 50 ? '#f59e0b' : '#3b82f6'}, ${profile.risk_tolerance > 80 ? '#ef4444' : '#f59e0b'})` }} />
-                      </div>
+                {/* Soulprint Emotional Spectrum */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 items-center">
+                   <div className="flex justify-center bg-white/[0.02] rounded-3xl p-6 border border-white/5">
+                      <SoulprintRadarChart data={profile.emotional_spectrum || {}} size={240} />
                    </div>
 
-                   <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }}>
-                      <div className="flex items-center gap-2 mb-2">
-                         <Target className="w-3 h-3 text-[var(--text-muted)]" />
-                         <span className="mono-label text-[0.6rem]">Trading Style</span>
-                      </div>
-                      <p className="font-display font-bold text-white capitalize">{profile.trading_style}</p>
-                   </div>
-                </div>
-
-                <div className="mb-8">
-                   <h3 className="mono-label mb-3 text-[0.65rem] border-b border-white/10 pb-2">Behavioral Insights</h3>
-                   <ul className="space-y-2">
-                      {Array.isArray(profile.favorite_tokens) && profile.favorite_tokens.map((insight: string, idx: number) => (
-                         <li key={idx} className="flex gap-2 text-sm text-[var(--text-secondary)]">
-                            <span className="text-[#10b981] mt-0.5"><Zap className="w-3 h-3" /></span>
-                            <span>{insight}</span>
-                         </li>
+                   <div className="space-y-6">
+                      <h3 className="mono-label text-[0.65rem] text-[#FF6B1A] tracking-[0.2em] uppercase">Behavioral Indices</h3>
+                      
+                      {/* Trait Meters */}
+                      {[
+                        { label: 'Panic Index', value: profile.panic_index, color: '#ef4444', icon: <Activity className="w-3 h-3" /> },
+                        { label: 'FOMO Index', value: profile.fomo_index, color: '#f59e0b', icon: <Zap className="w-3 h-3" /> },
+                        { label: 'Conviction', value: profile.conviction_index, color: '#10b981', icon: <Target className="w-3 h-3" /> }
+                      ].map((trait, i) => (
+                        <div key={i} className="space-y-1.5">
+                           <div className="flex justify-between items-center text-[10px] font-mono">
+                              <span className="text-white/40 uppercase tracking-wider flex items-center gap-1.5">
+                                {trait.icon} {trait.label}
+                              </span>
+                              <span className="text-white font-bold">{trait.value}%</span>
+                           </div>
+                           <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                              <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${trait.value}%` }}
+                                transition={{ duration: 1, delay: 0.5 + i * 0.1 }}
+                                className="h-full rounded-full" 
+                                style={{ background: trait.color, boxShadow: `0 0 10px ${trait.color}44` }} 
+                              />
+                           </div>
+                        </div>
                       ))}
-                   </ul>
+
+                      <div className="pt-4">
+                        <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                          <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest block mb-1">Current Trading Archetype</span>
+                          <p className="font-display font-bold text-white text-lg capitalize">{profile.trading_style}</p>
+                        </div>
+                      </div>
+                   </div>
                 </div>
 
-                {/* Daily Recommendation from Token Config */}
-                <div className="mb-8 p-5 rounded-2xl border border-white/5 relative overflow-hidden group" style={{ background: 'rgba(16, 185, 129, 0.05)' }}>
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#10b981] opacity-10 blur-[40px] pointer-events-none group-hover:opacity-20 transition-opacity duration-500" />
-                  <div className="flex items-start gap-4 relative z-10">
-                    <div className="mt-1 shrink-0 px-2 py-1 bg-[#10b981]/20 rounded-md border border-[#10b981]/30">
-                      <Zap className="w-4 h-4 text-[#10b981]" />
+                {/* Behavioral Insights */}
+                <div className="mb-10 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                   <h3 className="mono-label mb-5 text-[0.65rem] text-white/40 tracking-widest uppercase">Deep Consciousness Insights</h3>
+                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {Array.isArray(profile.favorite_tokens) && profile.favorite_tokens.map((insight: string, idx: number) => (
+                         <div key={idx} className="flex flex-col gap-2 p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-[#FF6B1A]/30 transition-colors">
+                            <span className="text-[#FF6B1A]"><Zap className="w-4 h-4" /></span>
+                            <span className="text-xs text-white/70 leading-relaxed font-medium">{insight}</span>
+                         </div>
+                      ))}
+                   </div>
+                </div>
+
+                {/* Daily Recommendation */}
+                <div className="mb-10 p-6 rounded-3xl border border-[#FF6B1A]/20 relative overflow-hidden group" style={{ background: 'linear-gradient(135deg, rgba(255, 107, 26, 0.05), transparent)' }}>
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-[#FF6B1A] opacity-[0.03] blur-[60px] pointer-events-none" />
+                  <div className="flex items-start gap-5 relative z-10">
+                    <div className="mt-1 shrink-0 p-2.5 bg-[#FF6B1A]/10 rounded-xl border border-[#FF6B1A]/20">
+                      <BrainCircuit className="w-5 h-5 text-[#FF6B1A]" />
                     </div>
                     <div>
-                      <h3 className="mono-label text-[0.65rem] text-[#10b981] mb-1.5 tracking-wider">DAILY RECOMMENDATION</h3>
-                      <p className="text-white/90 text-sm leading-relaxed">
-                        Based on your risk tolerance of <span className="font-mono text-[#10b981]">{profile.risk_tolerance}</span>, your agent is closely monitoring <span className="font-bold text-[#10b981]">${OFFICIAL_TOKEN.symbol}</span> momentum. 
-                        {OFFICIAL_TOKEN.isLive ? ' Active market conditions detected, prioritize high-conviction vibes.' : ' Prepare for impending bonding curve launch.'}
+                      <h3 className="mono-label text-[0.65rem] text-[#FF6B1A] mb-2 tracking-widest uppercase">Oracle Synergy Report</h3>
+                      <p className="text-white/80 text-sm leading-relaxed font-medium">
+                        Based on your {profile.trading_style} profile and {profile.conviction_index}% conviction rate, the Oracle suggests 
+                        {profile.risk_tolerance > 70 ? ' aggressive deployment into emerging volatility' : ' tactical positioning in consolidated assets'} like <span className="text-[#FF6B1A] font-bold">${OFFICIAL_TOKEN.symbol}</span>. 
+                        {OFFICIAL_TOKEN.isLive ? ' High-vibe momentum detected.' : ' Prepare for liquidity induction.'}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                   <div className="text-xs text-[var(--text-muted)] font-mono">
-                      Trained on {profile.total_vibes} vibes
+                <div className="flex items-center justify-between pt-8 border-t border-white/5">
+                   <div className="flex items-center gap-4">
+                      <div className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
+                        Data Points: {profile.total_vibes}
+                      </div>
+                      <div className="h-3 w-[1px] bg-white/10" />
+                      <div className="text-[10px] text-white/30 font-mono uppercase tracking-widest">
+                        Status: SYNCED
+                      </div>
                    </div>
                    <button 
                       onClick={handleTrainAgent}
                       disabled={training}
-                      className="text-xs font-bold text-[#10b981] hover:text-[#059669] transition-colors bg-transparent disabled:opacity-50"
+                      className="text-xs font-bold text-[#FF6B1A] hover:text-[#FF3D00] transition-colors bg-transparent disabled:opacity-50 flex items-center gap-2 group"
                    >
-                      {training ? 'Retraining...' : 'Recalibrate Agent ->'}
+                      {training ? 'RECALIBRATING...' : 'RECALIBRATE SOULPRINT'}
+                      <ChevronLeft className="w-3 h-3 rotate-180 group-hover:translate-x-1 transition-transform" />
                    </button>
                 </div>
              </div>

@@ -57,19 +57,29 @@ export default async function (req: Request): Promise<Response> {
     const transcriptText = vibeHistory.map(v => `Vibe: "${v.raw_transcript}" (Emoji: ${v.emoji})`).join("\n");
     
     const systemPrompt = `
-      You are an expert psychological trader profiler. Analyze the user's audio transcript history and emojis. 
-      Create a concise, fun, and highly personalized crypto trading personality profile ("Vibe Agent").
+      You are an expert psychological trader profiler. Analyze the user's audio transcript history and emojis to create an "Emotional Soulprint".
+      This is a deep analysis of their on-chain identity.
       
       User's Vibe History:
       ${transcriptText}
 
-      Return ONLY raw JSON in this exact format, with no markdown wrappers or extra text:
+      Return ONLY raw JSON in this exact format:
       {
-        "agent_name": "suggested fun name (e.g., 'Chad The Bull' or 'Conservative Carl')",
-        "personality_summary": "1-2 sentences summarizing their emotions and crypto mindset",
-        "risk_tolerance": 65,  // an integer from 0 (lowest risk) to 100 (complete degen)
-        "trading_style": "momentum chaser", // a very short phrase
-        "key_insights": ["insight 1", "insight 2", "insight 3"] // exactly 3 key behavioral insights
+        "agent_name": "suggested fun name",
+        "personality_summary": "1-2 sentences summarizing their mindset",
+        "risk_tolerance": 65,  // 0-100
+        "panic_index": 30, // 0-100, how likely they are to panic sell or react negatively to dips
+        "fomo_index": 45, // 0-100, how likely they are to chase green candles
+        "conviction_index": 80, // 0-100, how consistent their vibes are relative to price action (if detectable) or tone
+        "emotional_spectrum": {
+          "Greed": 10,
+          "Fear": 5,
+          "Hope": 40,
+          "Confidence": 35,
+          "Skepticism": 10
+        }, // Must sum to 100
+        "trading_style": "momentum chaser",
+        "key_insights": ["insight 1", "insight 2", "insight 3"]
       }
     `;
 
@@ -81,7 +91,7 @@ export default async function (req: Request): Promise<Response> {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile", // Latest production model for analysis
+        model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: systemPrompt }],
         temperature: 0.7,
         response_format: { type: "json_object" }
@@ -107,8 +117,12 @@ export default async function (req: Request): Promise<Response> {
         agent_name: profile.agent_name || "My Vibe Agent",
         personality_summary: profile.personality_summary,
         risk_tolerance: profile.risk_tolerance || 50,
+        panic_index: profile.panic_index || 0,
+        fomo_index: profile.fomo_index || 0,
+        conviction_index: profile.conviction_index || 0,
+        emotional_spectrum: profile.emotional_spectrum || {},
         trading_style: profile.trading_style || "Neutral",
-        favorite_tokens: profile.key_insights || [], // Using this field to store insights for now
+        favorite_tokens: profile.key_insights || [],
         total_vibes: totalVibes,
         last_trained_at: now
       }, { onConflict: "user_pubkey" })
