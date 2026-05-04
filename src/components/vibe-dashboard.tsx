@@ -17,7 +17,8 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import Link from 'next/link'
 import {
   Search, Zap, Shield, Activity, TrendingUp,
-  Radio, ChevronRight, Globe, BarChart3, Users, Sparkles, Coins, BrainCircuit
+  Radio, ChevronRight, Globe, BarChart3, Users, Sparkles, Coins, BrainCircuit,
+  Twitter, Send, MessageSquare
 } from 'lucide-react'
 import { 
   BAGS_API_KEY, 
@@ -796,6 +797,22 @@ export function VibeDashboard() {
               <p className="mono-label mt-0.5" style={{ fontSize: '0.5rem' }}>{stat.label}</p>
             </div>
           ))}
+        </div>
+        
+        {/* Social Links */}
+        <div className="flex items-center justify-center gap-6 mb-6">
+          <a href="https://x.com/hypeoracle" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-white/40 hover:text-[#1DA1F2] transition-colors">
+            <Twitter className="w-4 h-4" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest hidden sm:inline">X.com</span>
+          </a>
+          <a href="https://t.me/hypeoracle" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-white/40 hover:text-[#0088cc] transition-colors">
+            <Send className="w-4 h-4" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest hidden sm:inline">Telegram</span>
+          </a>
+          <a href="https://discord.gg/hypeoracle" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-white/40 hover:text-[#5865F2] transition-colors">
+            <MessageSquare className="w-4 h-4" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest hidden sm:inline">Discord</span>
+          </a>
         </div>
 
         <p className="mono-label text-center" style={{ fontSize: '0.55rem' }}>
