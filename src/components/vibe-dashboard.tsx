@@ -801,7 +801,7 @@ export function VibeDashboard() {
         
         {/* Social Links */}
         <div className="flex items-center justify-center gap-6 mb-6">
-          <a href="https://x.com/hypeoracle" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-white/40 hover:text-[#1DA1F2] transition-colors">
+          <a href="https://x.com/HypeOracle1" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-white/40 hover:text-[#1DA1F2] transition-colors">
             <X className="w-4 h-4" />
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest hidden sm:inline">X.com</span>
           </a>
