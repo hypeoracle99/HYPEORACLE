@@ -5,9 +5,10 @@ import { motion } from 'framer-motion'
 interface SoulprintRadarChartProps {
   spectrum: Record<string, number>
   size?: number
+  totalVibes?: number
 }
 
-export function SoulprintRadarChart({ spectrum, size = 300 }: SoulprintRadarChartProps) {
+export function SoulprintRadarChart({ spectrum, size = 300, totalVibes = 0 }: SoulprintRadarChartProps) {
   // Default emotional axes if data is missing or empty
   const defaultData = {
     Greed: 20,
@@ -23,6 +24,27 @@ export function SoulprintRadarChart({ spectrum, size = 300 }: SoulprintRadarChar
   const center = size / 2
   const radius = (size / 2) * 0.7 // Leave space for labels
   const angleStep = (Math.PI * 2) / axes.length
+
+  const level = Math.floor(totalVibes / 5) + 1
+
+  // Dynamic colors based on level (Color rules strictly followed)
+  let strokeColor = '#FF6B1A'
+  let fillColor = 'rgba(255, 107, 26, 0.2)'
+  let shadowColor = 'rgba(255, 107, 26, 0.4)'
+
+  if (level === 2) {
+    strokeColor = '#10b981'
+    fillColor = 'rgba(16, 185, 129, 0.2)'
+    shadowColor = 'rgba(16, 185, 129, 0.4)'
+  } else if (level === 3) {
+    strokeColor = '#06b6d4'
+    fillColor = 'rgba(6, 182, 212, 0.2)'
+    shadowColor = 'rgba(6, 182, 212, 0.4)'
+  } else if (level >= 4) {
+    strokeColor = '#fbbf24'
+    fillColor = 'rgba(251, 191, 36, 0.2)'
+    shadowColor = 'rgba(251, 191, 36, 0.4)'
+  }
 
   // Calculate coordinates for a given value and angle
   const getCoords = (val: number, i: number, r: number) => {
@@ -58,7 +80,8 @@ export function SoulprintRadarChart({ spectrum, size = 300 }: SoulprintRadarChar
             key={i}
             d={path}
             fill="none"
-            stroke="rgba(255, 107, 26, 0.1)"
+            stroke={strokeColor}
+            strokeOpacity="0.1"
             strokeWidth="1"
           />
         ))}
@@ -73,7 +96,8 @@ export function SoulprintRadarChart({ spectrum, size = 300 }: SoulprintRadarChar
               y1={center}
               x2={x}
               y2={y}
-              stroke="rgba(255, 107, 26, 0.1)"
+              stroke={strokeColor}
+              strokeOpacity="0.1"
               strokeWidth="1"
             />
           )
@@ -84,10 +108,10 @@ export function SoulprintRadarChart({ spectrum, size = 300 }: SoulprintRadarChar
           initial={{ d: gridPaths[0], opacity: 0 }}
           animate={{ d: dataPath, opacity: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          fill="rgba(255, 107, 26, 0.2)"
-          stroke="#FF6B1A"
+          fill={fillColor}
+          stroke={strokeColor}
           strokeWidth="2"
-          style={{ filter: 'drop-shadow(0 0 8px rgba(255, 107, 26, 0.4))' }}
+          style={{ filter: `drop-shadow(0 0 8px ${shadowColor})` }}
         />
 
         {/* Labels */}

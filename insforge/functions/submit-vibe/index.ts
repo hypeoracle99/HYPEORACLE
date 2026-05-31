@@ -242,42 +242,88 @@ export default async function (req: Request): Promise<Response> {
     const MAX_SINGLE_BUY = 0.02; // Increased Safety Cap for high conviction
 
     // 6.1 Fetch User Soulprint for Symbiosis Protocol
-    const { data: soulprint } = await client.database
-      .from("user_vibe_profiles")
-      .select("panic_index, fomo_index, conviction_index")
-      .eq("user_pubkey", userPubkey)
-      .single();
+    let soulprint = null;
+    try {
+      const { data } = await client.database
+        .from("user_vibe_profiles")
+        .select("panic_index, fomo_index, conviction_index, privacy_level, max_position_size, approval_mode, trading_guardrails")
+        .eq("user_pubkey", userPubkey)
+        .single();
+      soulprint = data;
+    } catch (dbErr) {
+      console.warn("[Symbiosis] Query failed, applying Fail-Safe defaults:", dbErr);
+    }
 
-    // Default modifiers
+    // Default modifiers & Fail-Safe Fallbacks (Recommended Option A)
     let convictionMod = 1.0;
     let fomoThresholdMod = 0;
     let panicSizeMod = 1.0;
+    let privacyLevel = 'public';
+    let maxPositionSize = 0.003; // Fail-safe fallback limit
+    let approvalMode = 'supervised'; // Fail-safe fallback mode
+    let tradingGuardrails = 'safe'; // Fail-safe fallback style
 
     if (soulprint) {
-      // Conviction increases position size (0.5x to 1.5x)
-      convictionMod = 1 + (soulprint.conviction_index - 50) / 100;
-      // FOMO lowers trade threshold (up to -10 points)
-      fomoThresholdMod = Math.min(10, (soulprint.fomo_index / 10));
-      // Panic decreases position size (0.5x to 1.5x)
-      panicSizeMod = 1 - (soulprint.panic_index - 50) / 100;
+      convictionMod = 1 + ((soulprint.conviction_index || 50) - 50) / 100;
+      fomoThresholdMod = Math.min(10, ((soulprint.fomo_index || 50) / 10));
+      panicSizeMod = 1 - ((soulprint.panic_index || 50) - 50) / 100;
+      privacyLevel = soulprint.privacy_level || 'public';
+      maxPositionSize = parseFloat(soulprint.max_position_size || "0.01");
+      approvalMode = soulprint.approval_mode || 'supervised';
+      tradingGuardrails = soulprint.trading_guardrails || 'hybrid';
       
-      console.log(`[Symbiosis] Active. Mods: Conviction(${convictionMod.toFixed(2)}), FOMO(-${fomoThresholdMod.toFixed(1)}), Panic(${panicSizeMod.toFixed(2)})`);
+      console.log(`[Symbiosis] Profile Active. Mode: ${approvalMode}, Sizing Cap: ${maxPositionSize} SOL, Style: ${tradingGuardrails}`);
+    } else {
+      console.log(`[Symbiosis] Fail-Safe Active. Mode: supervised, Sizing Cap: 0.003 SOL, Style: safe`);
     }
 
-    // Dynamic Buy Calculation (Consensus Aware + Symbiosis)
+    // Dynamic Buy Calculation (Consensus Aware + Symbiosis Guardrails)
     const baseBuy = 0.003;
     const consensusBoost = Math.min(0.007, (nextCount - 1) * 0.001);
-    const SYMBIOSIS_MULT = convictionMod * panicSizeMod;
-    const INTENDED_BUY = Math.min(MAX_SINGLE_BUY, (baseBuy + consensusBoost) * SYMBIOSIS_MULT);
+    
+    // Enforce trading safeguard levels
+    let symbiosisMult = convictionMod * panicSizeMod;
+    if (tradingGuardrails === 'degen') {
+      symbiosisMult = convictionMod; // Ignores panic sell indicators
+    } else if (tradingGuardrails === 'safe') {
+      const panicValue = soulprint ? soulprint.panic_index : 60;
+      symbiosisMult = convictionMod * panicSizeMod * (panicValue > 50 ? 0.5 : 1.0); // Halves size on high panic
+    }
+
+    const INTENDED_BUY = Math.min(maxPositionSize, (baseBuy + consensusBoost) * symbiosisMult);
     const TRADE_THRESHOLD = 80 - fomoThresholdMod;
 
     if (nextScore > TRADE_THRESHOLD) {
-      try {
-        const privateKey = Deno.env.get("PRIVATE_KEY");
-        const bagsApiKey = Deno.env.get("BAGS_API_KEY");
-        const rpcUrl = Deno.env.get("SOLANA_RPC_URL") || "https://solana-mainnet.g.alchemy.com/v2/jq4Zj9Zjor_oxzeIl_tx8";
-        
-        if (privateKey && bagsApiKey) {
+      if (approvalMode === 'supervised') {
+        // SUPERVISED MODE: Generate a pending suggestion rather than auto-buying
+        console.log(`[Symbiosis] Supervised limit hit. Registering trade recommendation for ${INTENDED_BUY} SOL.`);
+        try {
+          const now = new Date();
+          const tradeRecord = {
+            token_mint: tokenMint,
+            signature: "supervised_recommendation",
+            amount_sol: INTENDED_BUY,
+            vibe_score: Math.round(nextScore),
+            status: "pending_approval",
+            created_at: now.toISOString(),
+          };
+
+          await client.database.from("oracle_trades").insert(tradeRecord);
+          
+          await client.realtime.publish("oracle_trades", "new_trade", {
+            ...tradeRecord,
+          });
+        } catch (sugErr) {
+          console.error("Failed to insert supervised recommendation:", sugErr);
+        }
+      } else {
+        // AUTONOMOUS MODE
+        try {
+          const privateKey = Deno.env.get("PRIVATE_KEY");
+          const bagsApiKey = Deno.env.get("BAGS_API_KEY");
+          const rpcUrl = Deno.env.get("SOLANA_RPC_URL") || "https://solana-mainnet.g.alchemy.com/v2/jq4Zj9Zjor_oxzeIl_tx8";
+          
+          if (privateKey && bagsApiKey) {
           const { Keypair, Connection, LAMPORTS_PER_SOL, PublicKey } = await import("npm:@solana/web3.js");
           const { BagsSDK } = await import("npm:@bagsfm/bags-sdk");
           const bs58 = (await import("npm:bs58")).default;
@@ -428,7 +474,9 @@ export default async function (req: Request): Promise<Response> {
     return new Response(JSON.stringify({
       vibeScore: Math.round(finalScore),
       tradeSignature,
-      message: finalScore > TRADE_THRESHOLD ? "BULLISH! Trade executed." : "Vibe localized.",
+      message: finalScore > TRADE_THRESHOLD 
+        ? (approvalMode === 'supervised' ? "BULLISH! (Supervised recommendation logged)" : "BULLISH! Autonomous trade executed.") 
+        : "Vibe localized.",
       success: true
     }), {
       status: 200,

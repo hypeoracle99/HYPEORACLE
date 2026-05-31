@@ -11,6 +11,7 @@ import { OracleStatus } from './oracle-status'
 import { OracleTradeFeed } from './oracle-trade-feed'
 import { FuelOracle } from './fuel-oracle'
 import { AmbientBackground, ScoreGauge } from './ui-primitives'
+import { PwaInstallBanner } from './pwa-install-banner'
 import { MarketPulse } from './market-pulse'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
@@ -568,6 +569,7 @@ export function VibeDashboard() {
   return (
     <div className="relative min-h-screen">
       <AmbientBackground />
+      <PwaInstallBanner />
 
       {/* Hero section */}
 

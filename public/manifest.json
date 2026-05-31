@@ -1,18 +1,24 @@
 {
-  "name": "HypeOracle",
+  "name": "HypeOracle - Verifiable DePIN Sentiment Oracle",
   "short_name": "HypeOracle",
-  "description": "Real human vibes → on-chain Solana trades via Bags.fm",
+  "description": "Voice + vibration sensors turned into real-time verified on-chain trading signals on Solana.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#080808",
-  "theme_color": "#FF6B1A",
   "orientation": "portrait",
-  "icons": [],
-  "shortcuts": [
+  "background_color": "#050507",
+  "theme_color": "#FF6B1A",
+  "icons": [
     {
-      "name": "My Earnings",
-      "url": "/earnings",
-      "description": "View and claim your oracle fee earnings"
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

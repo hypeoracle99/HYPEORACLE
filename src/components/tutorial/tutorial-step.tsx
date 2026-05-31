@@ -9,6 +9,7 @@ export function TutorialStep({
     <li className="relative">
       <input
         type="checkbox"
+        aria-label={title}
         className="absolute top-[3px] h-4 w-4 cursor-pointer rounded-sm border border-[var(--border)] accent-[var(--foreground)]"
       />
       <div className="ml-8">

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { 
-  Zap, Coins, BrainCircuit, Wallet, ChevronRight 
+  Zap, Coins, BrainCircuit, Wallet, ChevronRight, Globe, TrendingUp
 } from 'lucide-react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
@@ -106,6 +106,30 @@ export function NavHeader() {
               color="#FF8C42"
             >
               Dashboard
+            </NavItem>
+            <NavItem 
+              href="/predict" 
+              icon={TrendingUp} 
+              active={pathname === '/predict'} 
+              color="#fbbf24"
+            >
+              Predict
+            </NavItem>
+            <NavItem 
+              href="/sandbox" 
+              icon={BrainCircuit} 
+              active={pathname === '/sandbox'} 
+              color="#06b6d4"
+            >
+              Sandbox
+            </NavItem>
+            <NavItem 
+              href="/market" 
+              icon={Globe} 
+              active={pathname === '/market'} 
+              color="#FF8C42"
+            >
+              Market
             </NavItem>
             {publicKey && (
               <>

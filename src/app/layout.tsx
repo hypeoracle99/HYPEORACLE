@@ -3,6 +3,7 @@ import './globals.css';
 import { SolanaProvider } from '@/components/solana-provider';
 import { NavHeader } from '@/components/nav-header';
 import { MobileNav } from '@/components/mobile-nav';
+import { PwaRegister } from '@/components/pwa-register';
 
 export const metadata: Metadata = {
   title: 'HypeOracle | Real Human Vibes → On-Chain Trades',
@@ -50,6 +51,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-body bg-[var(--bg-base)] text-[var(--text-primary)] overflow-x-hidden">
         <SolanaProvider>
+          <PwaRegister />
           <NavHeader />
           <main className="pb-24 lg:pb-0">
             {children}
