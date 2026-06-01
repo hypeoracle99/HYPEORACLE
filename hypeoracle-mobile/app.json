@@ -22,10 +22,16 @@
       "permissions": [
         "RECORD_AUDIO"
       ],
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.hypeoracle99.hypeoraclemobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6fc38b09-a662-47bd-bf02-1fd9910a0cc6"
+      }
     }
   }
 }

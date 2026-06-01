@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "21ef43d7-742e-442a-a1fd-6abc580889a4"
+      }
+    },
+    "android": {
+      "package": "com.hypeoracle99.testnextjs"
+    }
+  }
+}
