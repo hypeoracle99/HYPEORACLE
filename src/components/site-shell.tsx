@@ -30,12 +30,6 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         <div className="flex-1 w-full max-w-5xl p-5">{children}</div>
 
         <footer className="mx-auto flex w-full items-center justify-center gap-8 border-t border-[var(--border)] py-16 text-center text-xs">
-          <p>
-            Powered by{" "}
-            <a href="https://insforge.dev" target="_blank" rel="noreferrer" className="font-bold hover:underline">
-              InsForge
-            </a>
-          </p>
           <ThemeSwitcher />
         </footer>
       </div>

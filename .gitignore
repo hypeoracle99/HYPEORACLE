@@ -65,3 +65,8 @@ skills-lock.json
 HYPEORACLE_BUILD_KNOWLEDGE.md
 phase-*.md
 soulprint-nft.md
+
+# android builds
+*.apk
+**/*.apk
+

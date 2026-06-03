@@ -470,6 +470,7 @@ export default async function (req: Request): Promise<Response> {
         console.error("Auto-buy logic failed", e);
       }
     }
+  }
 
     return new Response(JSON.stringify({
       vibeScore: Math.round(finalScore),

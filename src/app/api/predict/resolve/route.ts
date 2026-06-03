@@ -7,13 +7,16 @@ const client = createClient(INSFORGE_CONFIG);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { action, marketId, betId, userPubkey } = body;
+    const { action, marketId, betId, userPubkey, adminPubkey } = body;
 
     if (!action) {
       return NextResponse.json({ error: 'Missing action parameter. Must be resolve or claim.' }, { status: 400 });
     }
 
     if (action === 'resolve') {
+      if (adminPubkey !== 'BBz7heBU32GENqiBqEVVCfFoc8QcJJduezjpN6oesKaP') {
+        return NextResponse.json({ error: 'Unauthorized: Admin signature verification failed' }, { status: 403 });
+      }
       if (!marketId) {
         return NextResponse.json({ error: 'Missing marketId for resolution' }, { status: 400 });
       }

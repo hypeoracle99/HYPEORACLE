@@ -130,6 +130,18 @@ export default function PredictCenter() {
   const [betPrediction, setBetPrediction] = useState<'yes' | 'no'>('yes');
   const [betAmount, setBetAmount] = useState<string>('0.05');
 
+  // Admin Oracle Pool Creator States
+  const [isCreatorOpen, setIsCreatorOpen] = useState(false);
+  const [newMarketTokenMint, setNewMarketTokenMint] = useState('5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS');
+  const [customTokenMint, setCustomTokenMint] = useState('');
+  const [newMarketQuestion, setNewMarketQuestion] = useState('');
+  const [newMarketTargetScore, setNewMarketTargetScore] = useState('75');
+  const [newMarketTimeframe, setNewMarketTimeframe] = useState('3'); // 3 days default
+  const [customResolutionDate, setCustomResolutionDate] = useState('');
+  const [creatorSubmitting, setCreatorSubmitting] = useState(false);
+  const [creatorError, setCreatorError] = useState<string | null>(null);
+  const [creatorSuccess, setCreatorSuccess] = useState<string | null>(null);
+
   // Load Prediction Data
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -236,6 +248,10 @@ export default function PredictCenter() {
 
   // Handle Debug Resolution (Allows manual resolution testing in hackathon context)
   async function handleDebugResolve(marketId: string) {
+    if (!publicKey || publicKey.toBase58() !== 'BBz7heBU32GENqiBqEVVCfFoc8QcJJduezjpN6oesKaP') {
+      setError('Unauthorized: Only the designated admin wallet can resolve pools.');
+      return;
+    }
     setSubmitting(true);
     setError(null);
     setSuccessMsg(null);
@@ -246,7 +262,8 @@ export default function PredictCenter() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'resolve',
-          marketId
+          marketId,
+          adminPubkey: publicKey.toBase58()
         })
       });
 
@@ -261,6 +278,76 @@ export default function PredictCenter() {
       setError(err.message || 'Resolution failed.');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  // Handle Admin Market Creation
+  async function handleCreateMarket(e: React.FormEvent) {
+    e.preventDefault();
+    if (!publicKey || publicKey.toBase58() !== 'BBz7heBU32GENqiBqEVVCfFoc8QcJJduezjpN6oesKaP') {
+      setCreatorError('Unauthorized: Only the designated admin wallet can create prediction pools.');
+      return;
+    }
+
+    const mint = newMarketTokenMint === 'custom' ? customTokenMint : newMarketTokenMint;
+    if (!mint || mint.trim().length < 32) {
+      setCreatorError('Please enter a valid Solana token mint address.');
+      return;
+    }
+
+    if (!newMarketQuestion || newMarketQuestion.trim().length < 10) {
+      setCreatorError('Please enter a descriptive sentiment question (min 10 characters).');
+      return;
+    }
+
+    const target = parseFloat(newMarketTargetScore);
+    if (isNaN(target) || target < 0 || target > 100) {
+      setCreatorError('Target sentiment score must be between 0 and 100.');
+      return;
+    }
+
+    let resDate = '';
+    if (newMarketTimeframe === 'custom') {
+      if (!customResolutionDate) {
+        setCreatorError('Please select a custom resolution date.');
+        return;
+      }
+      resDate = new Date(customResolutionDate).toISOString();
+    } else {
+      const days = parseInt(newMarketTimeframe);
+      resDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+    }
+
+    setCreatorSubmitting(true);
+    setCreatorError(null);
+    setCreatorSuccess(null);
+
+    try {
+      const res = await fetch('/api/predict/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenMint: mint,
+          question: newMarketQuestion,
+          targetScore: target,
+          resolutionDate: resDate,
+          adminPubkey: publicKey.toBase58()
+        })
+      });
+
+      const json = await res.json();
+      if (!res.ok || json.error) {
+        throw new Error(json.error || 'Failed to create prediction market pool.');
+      }
+
+      setCreatorSuccess(`Market successfully created! Token Mint: ${mint.slice(0, 4)}...${mint.slice(-4)}`);
+      setNewMarketQuestion('');
+      setCustomTokenMint('');
+      await loadData();
+    } catch (err: any) {
+      setCreatorError(err.message || 'Failed to submit prediction market to oracle database.');
+    } finally {
+      setCreatorSubmitting(false);
     }
   }
 
@@ -393,6 +480,194 @@ export default function PredictCenter() {
           ))}
         </div>
 
+        {/* Admin Oracle Pool Creator (only visible if admin wallet is connected) */}
+        <AnimatePresence>
+          {publicKey && publicKey.toBase58() === 'BBz7heBU32GENqiBqEVVCfFoc8QcJJduezjpN6oesKaP' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginBottom: 24 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="overflow-hidden animate-fade-in"
+            >
+              <div 
+                className="p-5 rounded-2xl border bg-black/40 text-left flex flex-col gap-4 relative overflow-hidden"
+                style={{ borderColor: 'rgba(255, 107, 26, 0.15)' }}
+              >
+                {/* Glowing subtle background dot */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded bg-orange-500/10 border border-orange-500/20 text-orange-400">
+                      <Zap className="w-3.5 h-3.5 animate-pulse" />
+                    </span>
+                    <div>
+                      <h3 className="font-display font-extrabold text-sm text-white uppercase tracking-wider">
+                        Oracle Pool Creator
+                      </h3>
+                      <p className="text-[9px] font-mono text-white/40">ADMIN PREDICTIVE INDEX CONTROL PANEL</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCreatorOpen(!isCreatorOpen);
+                      setCreatorError(null);
+                      setCreatorSuccess(null);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-[10px] font-mono font-bold transition-all cursor-pointer"
+                  >
+                    {isCreatorOpen ? '[✕ HIDE PANEL]' : '[🛠️ SHOW PANEL]'}
+                  </button>
+                </div>
+
+                {isCreatorOpen && (
+                  <motion.form
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    onSubmit={handleCreateMarket}
+                    className="flex flex-col gap-4"
+                  >
+                    {/* Warning & Success banners inside form */}
+                    {creatorError && (
+                      <div className="p-3 rounded-xl border bg-red-950/15 border-red-500/20 text-red-400 text-[10px] font-mono flex items-start gap-2">
+                        <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                        <span>{creatorError}</span>
+                      </div>
+                    )}
+                    {creatorSuccess && (
+                      <div className="p-3 rounded-xl border bg-green-950/15 border-green-500/20 text-green-400 text-[10px] font-mono flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                        <span>{creatorSuccess}</span>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Token Mint Dropdown & Custom Address */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[9.5px] font-mono text-white/50 tracking-widest uppercase">
+                          Target Token Mint
+                        </label>
+                        <select
+                          value={newMarketTokenMint}
+                          onChange={(e) => setNewMarketTokenMint(e.target.value)}
+                          className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-orange-500/40 cursor-pointer"
+                        >
+                          <option value="5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS">$HYPE (Current Protocol Token)</option>
+                          <option value="Bags222222222222222222222222222222222222222">$SOL (Solana Native)</option>
+                          <option value="DePIN11111111111111111111111111111111111111">$BONK (Meme Aggregate)</option>
+                          <option value="Wif444444444444444444444444444444444444444">$WIF (Sentiment Standard)</option>
+                          <option value="custom">-- Custom Token Mint --</option>
+                        </select>
+
+                        {newMarketTokenMint === 'custom' && (
+                          <input
+                            type="text"
+                            value={customTokenMint}
+                            onChange={(e) => setCustomTokenMint(e.target.value)}
+                            placeholder="Enter Solana Mint Address..."
+                            className="mt-2 p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs placeholder:text-white/25 outline-none focus:border-orange-500/40"
+                          />
+                        )}
+                      </div>
+
+                      {/* Target Score Selection */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[9.5px] font-mono text-white/50 tracking-widest uppercase">
+                          Target Sentiment Score (0 - 100)
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="range"
+                            min="10"
+                            max="90"
+                            value={newMarketTargetScore}
+                            onChange={(e) => setNewMarketTargetScore(e.target.value)}
+                            className="flex-1 accent-orange-500 cursor-pointer bg-white/10 rounded-lg h-2"
+                          />
+                          <span className="w-12 text-center p-2 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 font-mono text-xs font-bold">
+                            {newMarketTargetScore}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Question text box */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9.5px] font-mono text-white/50 tracking-widest uppercase">
+                        Vibe Sentiment Question
+                      </label>
+                      <input
+                        type="text"
+                        value={newMarketQuestion}
+                        onChange={(e) => setNewMarketQuestion(e.target.value)}
+                        placeholder="e.g. Will $SOL cross 80 during next party vibe cycle?"
+                        className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs placeholder:text-white/25 outline-none focus:border-orange-500/40"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Expiration Timeframe Selection */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[9.5px] font-mono text-white/50 tracking-widest uppercase">
+                          Oracle Resolution Timeframe
+                        </label>
+                        <select
+                          value={newMarketTimeframe}
+                          onChange={(e) => setNewMarketTimeframe(e.target.value)}
+                          className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-orange-500/40 cursor-pointer"
+                        >
+                          <option value="1">1 Day (Quick resolution)</option>
+                          <option value="3">3 Days (Medium timeframe)</option>
+                          <option value="7">7 Days (Standard weekly cycle)</option>
+                          <option value="custom">-- Custom Date & Time --</option>
+                        </select>
+
+                        {newMarketTimeframe === 'custom' && (
+                          <input
+                            type="datetime-local"
+                            value={customResolutionDate}
+                            onChange={(e) => setCustomResolutionDate(e.target.value)}
+                            className="mt-2 p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-orange-500/40 cursor-pointer"
+                          />
+                        )}
+                      </div>
+
+                      {/* Form Submission Action */}
+                      <div className="flex items-end">
+                        <button
+                          type="submit"
+                          disabled={creatorSubmitting}
+                          className="w-full p-3 rounded-xl font-display font-extrabold text-xs tracking-wider transition-all duration-300 flex items-center justify-center gap-2 border hover:shadow-[0_0_15px_rgba(255,107,26,0.15)] cursor-pointer"
+                          style={{
+                            background: 'linear-gradient(135deg, #FF6B1A 0%, #FF8C42 100%)',
+                            borderColor: '#FF6B1A',
+                            color: '#ffffff',
+                          }}
+                        >
+                          {creatorSubmitting ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                              LOGGING POOL TO ORACLE CONTEXT...
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="w-3.5 h-3.5 text-white" />
+                              LAUNCH PREDICTIVE ORACLE POOL
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.form>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Tab Selection pills */}
         <div className="flex items-center gap-1.5 mb-6 border-b border-white/5 pb-4">
           {[
@@ -499,15 +774,17 @@ export default function PredictCenter() {
                             PLACE PREDICTION
                           </button>
                           
-                          {/* Hackathon Manual Resolve triggers */}
-                          <button
-                            onClick={() => handleDebugResolve(market.id)}
-                            disabled={submitting}
-                            className="py-2 px-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white text-[10px] font-mono transition-all flex items-center gap-1"
-                            title="Simulate Oracle Resolution"
-                          >
-                            <Zap className="w-3 h-3 text-orange-400" /> RESOLVE
-                          </button>
+                          {/* Hackathon Manual Resolve triggers (only visible if admin wallet connected) */}
+                          {publicKey && publicKey.toBase58() === 'BBz7heBU32GENqiBqEVVCfFoc8QcJJduezjpN6oesKaP' && (
+                            <button
+                              onClick={() => handleDebugResolve(market.id)}
+                              disabled={submitting}
+                              className="py-2 px-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white text-[10px] font-mono transition-all flex items-center gap-1 cursor-pointer"
+                              title="Simulate Oracle Resolution"
+                            >
+                              <Zap className="w-3 h-3 text-orange-400" /> RESOLVE
+                            </button>
+                          )}
                         </div>
                       </motion.div>
                     );

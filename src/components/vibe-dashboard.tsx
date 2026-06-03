@@ -407,6 +407,7 @@ export function VibeDashboard() {
   const [activeTab, setActiveTab] = useState<'all' | 'hot' | 'backed'>('all')
   const [realtimeConnected, setRealtimeConnected] = useState(false)
   const subscribedRef = useRef(false)
+  const fetchedMintsRef = useRef<Set<string>>(new Set())
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -491,8 +492,16 @@ export function VibeDashboard() {
     if (scores.length === 0) return
 
     async function enrichMetadata() {
-      const missing = scores.filter(s => !tokenMetadata[s.token_mint])
+      // Find missing tokens that we haven't started fetching yet
+      const missing = scores.filter(
+        s => !tokenMetadata[s.token_mint] && !fetchedMintsRef.current.has(s.token_mint)
+      )
       if (missing.length === 0) return
+
+      // Mark all missing tokens as being fetched to prevent duplicate requests
+      missing.forEach(s => fetchedMintsRef.current.add(s.token_mint))
+
+      const updates: Record<string, { name: string, symbol: string }> = {}
 
       for (const score of missing) {
         try {
@@ -500,25 +509,27 @@ export function VibeDashboard() {
           const data = await res.json()
           if (data?.pairs?.[0]) {
             const { name, symbol } = data.pairs[0].baseToken
-            setTokenMetadata(prev => ({
-              ...prev,
-              [score.token_mint]: { name, symbol }
-            }))
+            updates[score.token_mint] = { name, symbol }
           } else {
-            // Fallback for unlisted
-            setTokenMetadata(prev => ({
-              ...prev,
-              [score.token_mint]: { name: 'Unlisted', symbol: score.token_mint.slice(0, 4) }
-            }))
+            // Fallback for unlisted tokens
+            updates[score.token_mint] = { name: 'Unlisted', symbol: score.token_mint.slice(0, 4) }
           }
         } catch (err) {
-          // Retry later
+          // Remove from fetched set on failure so we can try again later
+          fetchedMintsRef.current.delete(score.token_mint)
         }
+      }
+
+      if (Object.keys(updates).length > 0) {
+        setTokenMetadata(prev => ({
+          ...prev,
+          ...updates
+        }))
       }
     }
 
-  enrichMetadata()
-  }, [scores, tokenMetadata])
+    enrichMetadata()
+  }, [scores])
 
   const isSolanaAddress = (addr: string) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)
 
@@ -791,7 +802,6 @@ export function VibeDashboard() {
           {[
             { label: 'Tokens Tracked', value: scores.length },
             { label: 'Hot Signals 🔥', value: scores.filter((s) => s.score > 80).length },
-            { label: 'Total Contributors', value: scores.reduce((sum, s) => sum + (s.contributor_count || 0), 0) },
             { label: 'Oracle Trades', value: scores.filter((s) => s.last_oracle_trade_at).length },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
@@ -817,15 +827,6 @@ export function VibeDashboard() {
           </a>
         </div>
 
-        <p className="mono-label text-center" style={{ fontSize: '0.55rem' }}>
-          <a href="https://bags.fm" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400 transition-colors">
-            Bags.fm
-          </a>{' '}
-          •{' '}
-          <a href="https://insforge.dev" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-400 transition-colors">
-            InsForge
-          </a>
-        </p>
       </footer>
     </div>
   )

@@ -8,7 +8,8 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
-import { Audio } from 'expo-av';
+import * as Audio from 'expo-audio';
+import { useAudioRecorder, useAudioRecorderState, RecordingPresets } from 'expo-audio';
 import { Accelerometer } from 'expo-sensors';
 import { DePINIdentity } from '../lib/secure-store';
 import { signSensorTelemetry } from '../lib/sensor-signing';
@@ -24,8 +25,9 @@ interface RecordScreenProps {
 }
 
 export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorderState = useAudioRecorderState(audioRecorder, 100);
+  const isRecording = recorderState.isRecording;
   const [submitting, setSubmitting] = useState(false);
   const [lastVibeScore, setLastVibeScore] = useState<number | null>(null);
   const [statusText, setStatusText] = useState('TAP TO RECORD VIBE');
@@ -47,7 +49,7 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
 
   useEffect(() => {
     // Request microphone permissions on startup
-    Audio.requestPermissionsAsync();
+    Audio.requestRecordingPermissionsAsync();
     
     return () => {
       // Cleanup subscriptions on unmount
@@ -56,6 +58,25 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
       }
     };
   }, []);
+
+  // Sync metering values with state for live volume and visual waveform
+  useEffect(() => {
+    if (recorderState.isRecording && recorderState.metering !== undefined && recorderState.metering !== null) {
+      const metering = recorderState.metering;
+      const normalizedVol = Math.max(0, (metering + 160) / 160);
+      setLiveVolume(normalizedVol);
+      totalVolume.current += normalizedVol;
+      setMaxVolume(prev => Math.max(prev, normalizedVol));
+
+      // update visual neon waveform bars dynamically
+      setWaveBars(prev => {
+        const next = [...prev];
+        next.shift();
+        next.push(Math.max(4, normalizedVol * 45));
+        return next;
+      });
+    }
+  }, [recorderState.isRecording, recorderState.metering]);
 
   // Set up accelerometer telemetry capture
   const startAccelerometer = () => {
@@ -88,55 +109,24 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
 
   const startRecording = async () => {
     try {
+      const permission = await Audio.requestRecordingPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert('Permission Denied', 'Microphone access is required to record vibes.');
+        return;
+      }
+
       await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
+        allowsRecording: true,
+        playsInSilentMode: true,
       });
 
-      const { recording: newRecording } = await Audio.Recording.createAsync(
-        {
-          android: {
-            extension: '.m4a',
-            outputFormat: 2, // MPEG_4
-            audioEncoder: 3, // AAC
-            sampleRate: 44100,
-            numberOfChannels: 1,
-            bitRate: 128000,
-          },
-          ios: {
-            extension: '.m4a',
-            audioQuality: Audio.IOSAudioQuality.HIGH,
-            sampleRate: 44100,
-            numberOfChannels: 1,
-            bitRate: 128000,
-            linearPCMBitDepth: 16,
-            linearPCMIsBigEndian: false,
-            linearPCMIsFloat: false,
-          },
-          web: {}
-        },
-        status => {
-          // metering ranges from -160 to 0 dB
-          if (status.metering !== undefined) {
-            const normalizedVol = Math.max(0, (status.metering + 160) / 160);
-            setLiveVolume(normalizedVol);
-            totalVolume.current += normalizedVol;
-            setMaxVolume(prev => Math.max(prev, normalizedVol));
+      await audioRecorder.prepareToRecordAsync({
+        ...RecordingPresets.HIGH_QUALITY,
+        isMeteringEnabled: true,
+      });
 
-            // update visual neon waveform bars dynamically
-            setWaveBars(prev => {
-              const next = [...prev];
-              next.shift();
-              next.push(Math.max(4, normalizedVol * 45));
-              return next;
-            });
-          }
-        },
-        100
-      );
+      await audioRecorder.record();
 
-      setRecording(newRecording);
-      setIsRecording(true);
       setStatusText('RECORDING ACTIVE — SPEAK OR SHAKE');
       
       // Start accelerometer DePIN telemetry
@@ -148,18 +138,16 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
   };
 
   const stopAndSubmit = async () => {
-    if (!recording || !identity) return;
+    if (!recorderState.isRecording || !identity) return;
 
-    setIsRecording(false);
     setStatusText('COMPILING CRYPTOGRAPHIC SIGNATURE...');
     setSubmitting(true);
 
     try {
       // 1. Terminate native sensory listeners
       stopAccelerometer();
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
-      setRecording(null);
+      await audioRecorder.stop();
+      const uri = audioRecorder.uri;
 
       if (!uri) throw new Error('sensory payload uri empty');
 

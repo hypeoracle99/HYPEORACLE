@@ -2,6 +2,13 @@ import * as SecureStore from 'expo-secure-store';
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
+// Polyfill PRNG for tweetnacl in React Native environment where global.crypto is missing
+nacl.setPRNG((x, n) => {
+  for (let i = 0; i < n; i++) {
+    x[i] = Math.floor(Math.random() * 256) ^ (Date.now() & 0xff) ^ (i & 0xff);
+  }
+});
+
 const KEYPAIR_STORAGE_KEY = 'hypeoracle_depin_secret_key';
 
 export interface DePINIdentity {
@@ -9,6 +16,7 @@ export interface DePINIdentity {
   secretKey: string;
   rawPublicKey: Uint8Array;
   rawSecretKey: Uint8Array;
+  isExternal?: boolean;
 }
 
 /**
@@ -71,6 +79,18 @@ export async function importPrivateWalletKey(base58Key: string): Promise<DePINId
     };
   } catch (error) {
     console.error('[SecureStore] Failed to import keypair:', error);
+    throw error;
+  }
+}
+
+/**
+ * Deletes the stored keypair from SecureStore.
+ */
+export async function clearStoredDePINKeypair(): Promise<void> {
+  try {
+    await SecureStore.deleteItemAsync(KEYPAIR_STORAGE_KEY);
+  } catch (error) {
+    console.error('[SecureStore] Failed to delete DePIN keypair:', error);
     throw error;
   }
 }

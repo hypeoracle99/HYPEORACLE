@@ -141,7 +141,7 @@ export function MarketPulse() {
               <h3 className="text-sm font-display font-bold text-white uppercase tracking-tight">Collective Consciousness</h3>
             </div>
             <p className="text-xs text-white/60 leading-relaxed font-mono">
-              The HypeOracle has aggregated recent vocal signatures from {data.total_contributors} participants. 
+              The HypeOracle has aggregated recent on-chain vocal signatures. 
               {score > 60 
                 ? " Market optimism is scaling, driven by strong 'Hope' and 'Confidence' metrics. This suggests a potential expansion phase."
                 : score < 40 

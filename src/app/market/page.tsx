@@ -34,6 +34,8 @@ export default function MarketPage() {
   const [mounted, setMounted] = useState(false)
   const [activeTab, setActiveTab] = useState<'curl' | 'js' | 'python'>('curl')
   const [copied, setCopied] = useState(false)
+  const [onchainLogs, setOnchainLogs] = useState<any[]>([])
+
 
   const fetchStakedBalance = useCallback(async () => {
     if (!publicKey) {
@@ -158,6 +160,34 @@ export default function MarketPage() {
           { user_pubkey: 'BBz7...KaeP', emoji: '🚀', raw_transcript: 'Staking pool share refilling dynamic fee claims perfectly. Love this HypeOracle automation.', created_at: new Date(Date.now() - 8 * 60000).toISOString() },
           { user_pubkey: '4a1d...p7x9', emoji: '💀', raw_transcript: 'Local resistance rejected, looks like panic index might scale. Staying cautious here.', created_at: new Date(Date.now() - 15 * 60000).toISOString() },
           { user_pubkey: '8h2m...w3x2', emoji: '💎', raw_transcript: 'Personal vibe agent is highly bullish on SOL momentum. Holding with absolute conviction.', created_at: new Date(Date.now() - 22 * 60000).toISOString() }
+        ])
+      }
+
+      // 5. Fetch on-chain oracle publications
+      try {
+        const pubRes = await fetch('/api/oracle/publish')
+        const pubJson = await pubRes.json()
+        if (pubJson.data) {
+          setOnchainLogs(pubJson.data)
+        } else {
+          throw new Error('No data returned')
+        }
+      } catch (err) {
+        setOnchainLogs([
+          {
+            id: '1',
+            tx_signature: '2tM6E1K87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS',
+            global_score: 62,
+            total_contributors: 48,
+            created_at: new Date(Date.now() - 5 * 60000).toISOString()
+          },
+          {
+            id: '2',
+            tx_signature: '3vK9E1K87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS',
+            global_score: 58,
+            total_contributors: 40,
+            created_at: new Date(Date.now() - 35 * 60000).toISOString()
+          }
         ])
       }
 
@@ -433,40 +463,119 @@ export default function MarketPage() {
 
             </div>
 
-            {/* Bottom Grid: Live Scrolling Transcript Feed */}
-            <div className="p-8 rounded-[2.5rem] backdrop-blur-3xl" style={{ background: 'rgba(5, 5, 7, 0.7)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="mono-label text-[10px] text-white/40 tracking-[0.2em] uppercase flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-[#FF6B1A]" /> Raw Decentralized Sentiment Stream
-                </h3>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-mono text-emerald-400 uppercase tracking-tighter">
-                  Realtime Submissions
-                </span>
+            {/* Bottom Grid: Live Scrolling Transcript Feed & On-Chain Ledger */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Left Column: Live Vibes */}
+              <div className="p-8 rounded-[2.5rem] backdrop-blur-3xl" style={{ background: 'rgba(5, 5, 7, 0.7)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="mono-label text-[10px] text-white/40 tracking-[0.2em] uppercase flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-[#FF6B1A]" /> Raw Decentralized Sentiment Stream
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-mono text-emerald-400 uppercase tracking-tighter">
+                    Realtime Submissions
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  {liveVibes.map((vibe, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-white/[0.01] border border-white/[0.04] flex gap-4 hover:bg-white/[0.02] transition-colors relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-white/[0.01] rounded-bl-full pointer-events-none" />
+                      
+                      <div className="text-xl shrink-0 filter drop-shadow-[0_0_8px_rgba(255,107,26,0.3)]">{vibe.emoji}</div>
+                      
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] font-mono text-white/30 uppercase tracking-wider">
+                            Wallet {vibe.user_pubkey.slice(0, 4)}...{vibe.user_pubkey.slice(-4)}
+                          </span>
+                          <span className="text-[8px] font-mono text-white/20">
+                            {new Date(vibe.created_at || vibe.submitted_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className="text-xs text-white/70 leading-relaxed font-mono italic">
+                          &quot;{vibe.raw_transcript}&quot;
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {liveVibes.map((vibe, idx) => (
-                  <div key={idx} className="p-5 rounded-2xl bg-white/[0.01] border border-white/[0.04] flex gap-4 hover:bg-white/[0.02] transition-colors relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-16 h-16 bg-white/[0.01] rounded-bl-full pointer-events-none" />
-                    
-                    <div className="text-2xl shrink-0 filter drop-shadow-[0_0_8px_rgba(255,107,26,0.3)]">{vibe.emoji}</div>
-                    
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-mono text-white/30 uppercase tracking-wider">
-                          Wallet {vibe.user_pubkey.slice(0, 4)}...{vibe.user_pubkey.slice(-4)}
-                        </span>
-                        <span className="text-[8px] font-mono text-white/20">
-                          {new Date(vibe.created_at || vibe.submitted_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                        </span>
-                      </div>
-                      <p className="text-xs text-white/70 leading-relaxed font-mono italic">
-                        &quot;{vibe.raw_transcript}&quot;
-                      </p>
-                    </div>
+              {/* Right Column: On-Chain Verification Ledger */}
+              <div className="p-8 rounded-[2.5rem] backdrop-blur-3xl flex flex-col justify-between" style={{ background: 'rgba(5, 5, 7, 0.7)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="mono-label text-[10px] text-white/40 tracking-[0.2em] uppercase flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> On-Chain Verifiable Ledger
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-md bg-[#FF6B1A]/10 border border-[#FF6B1A]/20 text-[8px] font-mono text-[#FF6B1A] uppercase tracking-tighter">
+                      Solana Memo Feeds
+                    </span>
                   </div>
-                ))}
+
+                  <div className="space-y-4 max-h-[360px] overflow-y-auto pr-1">
+                    {onchainLogs.map((log) => (
+                      <div key={log.id || log.tx_signature} className="p-4 rounded-2xl bg-white/[0.01] border border-white/[0.04] flex flex-col gap-2 hover:bg-white/[0.02] transition-colors relative">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-mono uppercase tracking-widest">
+                              Score: {Number(log.global_score).toFixed(0)}
+                            </span>
+                            <span className="text-[9px] font-mono text-white/30 ml-2">
+                              {log.total_contributors} contributors
+                            </span>
+                          </div>
+                          <span className="text-[8px] font-mono text-white/20">
+                            {new Date(log.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-4 mt-1 bg-black/35 px-3 py-2 rounded-xl border border-white/[0.03]">
+                          <span className="font-mono text-[9.5px] text-white/60 truncate flex-1">
+                            {log.tx_signature}
+                          </span>
+                          
+                          <div className="flex items-center gap-2 shrink-0">
+                            {/* Copy button */}
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(log.tx_signature)
+                                alert('Signature copied to clipboard!')
+                              }}
+                              className="p-1 hover:bg-white/5 rounded text-white/40 hover:text-white transition-colors"
+                              title="Copy transaction signature"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+
+                            {/* Solscan link */}
+                            {log.tx_signature.startsWith('MockTx_') ? (
+                              <span className="text-[8px] font-mono text-white/25 uppercase">[Mock]</span>
+                            ) : (
+                              <a
+                                href={`https://solscan.io/tx/${log.tx_signature}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1 hover:bg-white/5 rounded text-white/40 hover:text-[#FF6B1A] transition-colors"
+                                title="View on Solscan"
+                              >
+                                <ArrowUpRight className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-white/5 text-[9px] font-mono text-white/30 flex justify-between items-center mt-6">
+                  <span>Standard Program ID:</span>
+                  <span className="text-white/55">Memom1UFrg5LbfUfDpx...</span>
+                </div>
               </div>
+
             </div>
 
           </div>

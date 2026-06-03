@@ -6,9 +6,13 @@
     "@insforge/sdk": "^1.3.0",
     "bs58": "^6.0.0",
     "expo": "~56.0.8",
-    "expo-av": "^16.0.8",
+    "expo-asset": "~56.0.15",
+    "expo-audio": "~56.0.11",
+    "expo-clipboard": "~56.0.3",
+    "expo-dev-client": "~56.0.18",
     "expo-secure-store": "^56.0.4",
     "expo-sensors": "^56.0.5",
+    "expo-splash-screen": "~56.0.10",
     "expo-status-bar": "~56.0.4",
     "lucide-react-native": "^1.17.0",
     "react": "19.2.3",
@@ -22,15 +26,18 @@
   },
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "private": true,
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "exclude": ["expo-av", "expo-modules-jsi"]
+        "exclude": [
+          "expo-av",
+          "expo-modules-jsi"
+        ]
       }
     }
   }
