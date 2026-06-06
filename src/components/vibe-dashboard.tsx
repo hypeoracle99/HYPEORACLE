@@ -825,6 +825,10 @@ export function VibeDashboard() {
             <MessageSquare className="w-4 h-4" />
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest hidden sm:inline">Discord</span>
           </a>
+          <Link href="/privacy" className="group flex items-center gap-2 text-white/40 hover:text-orange-400 transition-colors">
+            <Shield className="w-4 h-4" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest hidden sm:inline">Privacy Policy</span>
+          </Link>
         </div>
 
       </footer>
