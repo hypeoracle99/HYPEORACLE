@@ -72,7 +72,7 @@ export default function PrivacyPolicy() {
               We do not sell, rent, or distribute any user identifiers or sensor metrics to marketing networks or third parties. 
             </p>
             <p>
-              All financial prediction transactions, claims, and staking actions occur directly on the decentralized Solana blockchain. Transactions are transparent, public, and secured by your wallet's cryptography.
+              All financial prediction transactions, claims, and staking actions occur directly on the decentralized Solana blockchain. Transactions are transparent, public, and secured by your wallet&apos;s cryptography.
             </p>
           </section>
 
