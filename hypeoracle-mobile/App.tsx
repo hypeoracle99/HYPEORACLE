@@ -546,12 +546,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   tabBar: {
-    height: 68,
+    height: 88,
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.05)',
     backgroundColor: '#0a0a0f',
-    paddingBottom: 8,
+    paddingBottom: 24,
   },
   tabItem: {
     flex: 1,
