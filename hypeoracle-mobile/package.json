@@ -4,7 +4,11 @@
   "main": "index.ts",
   "dependencies": {
     "@insforge/sdk": "^1.3.0",
+    "@react-native-community/slider": "^5.2.0",
+    "@solana/spl-token": "^0.4.14",
+    "@solana/web3.js": "^1.98.4",
     "bs58": "^6.0.0",
+    "buffer": "^6.0.3",
     "expo": "~56.0.8",
     "expo-asset": "~56.0.15",
     "expo-audio": "~56.0.11",

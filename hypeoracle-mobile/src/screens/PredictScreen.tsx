@@ -9,10 +9,17 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
+  RefreshControl,
+  ScrollView,
 } from 'react-native';
+import Svg, { Polyline, Line, Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { Connection, PublicKey, Transaction, SystemProgram, Keypair, sendAndConfirmTransaction } from '@solana/web3.js';
 import { client } from '../lib/insforge';
 import { DePINIdentity } from '../lib/secure-store';
 import { TrendingUp, Zap, Clock, Coins, CheckCircle, ArrowUpRight } from 'lucide-react-native';
+
+const RPC_ENDPOINT = 'https://api.mainnet-beta.solana.com';
+const ORACLE_TREASURY_PUBKEY = new PublicKey('BBz7heBU32GENqiBqEVVCfFoc8QcJJduezjpN6oesKaP');
 
 interface PredictScreenProps {
   identity: DePINIdentity | null;
@@ -27,6 +34,7 @@ interface Market {
   status: string;
   total_yes_pool: number;
   total_no_pool: number;
+  final_score?: number;
   outcome?: 'yes' | 'no';
 }
 
@@ -36,24 +44,141 @@ interface Bet {
   user_pubkey: string;
   prediction: 'yes' | 'no';
   amount: number;
+  claimed: boolean;
   created_at: string;
   market?: Market;
 }
 
+// Mobile-friendly Custom SVG Sentiment Trend Chart
+function VibeMiniChart({ tokenMint, targetScore, status, outcome }: { tokenMint: string; targetScore: number; status: string; outcome?: string }) {
+  const padding = 3;
+  const height = 45;
+  const width = 220;
+
+  const points = useMemo(() => {
+    let seed = 0;
+    for (let i = 0; i < tokenMint.length; i++) {
+      seed += tokenMint.charCodeAt(i);
+    }
+    
+    const count = 10;
+    const values: number[] = [];
+    let current = 50 + (seed % 20); // start around 50-70
+    
+    for (let i = 0; i < count; i++) {
+      const stepSeed = Math.sin(seed + i) * 15;
+      current = Math.max(30, Math.min(95, current + stepSeed));
+      values.push(current);
+    }
+
+    if (status === 'resolved') {
+      if (outcome === 'yes') {
+        values[count - 1] = Math.max(targetScore + 3, values[count - 1]);
+      } else {
+        values[count - 1] = Math.min(targetScore - 3, values[count - 1]);
+      }
+    }
+    
+    return values;
+  }, [tokenMint, targetScore, status, outcome]);
+
+  const { svgPoints, pathD, lastCircleY } = useMemo(() => {
+    const step = width / (points.length - 1);
+    const mapped = points.map((p, i) => {
+      const x = i * step;
+      const y = padding + ((95 - p) / (95 - 30)) * (height - padding * 2);
+      return { x, y };
+    });
+
+    const svgPoints = mapped.map(pt => `${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
+    
+    let pathDStr = `M 0 45`;
+    mapped.forEach(pt => {
+      pathDStr += ` L ${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`;
+    });
+    pathDStr += ` L 220 45 Z`;
+
+    const lastCircleYVal = mapped[mapped.length - 1]?.y || 0;
+
+    return { svgPoints, pathD: pathDStr, lastCircleY: lastCircleYVal };
+  }, [points]);
+
+  const targetY = useMemo(() => {
+    return padding + ((95 - targetScore) / (95 - 30)) * (height - padding * 2);
+  }, [targetScore]);
+
+  const strokeColor = status === 'resolved' 
+    ? (outcome === 'yes' ? '#22c55e' : '#ef4444') 
+    : '#FF6B1A';
+
+  const gradId = `grad-${tokenMint.slice(0, 8)}-${status}`;
+
+  return (
+    <View style={styles.chartWrapper}>
+      <View style={styles.chartMeta}>
+        <Text style={styles.chartTitle}>SENTIMENT TREND</Text>
+        <Text style={styles.chartTarget}>
+          Target: <Text style={styles.chartTargetVal}>{targetScore.toFixed(0)}</Text>
+        </Text>
+      </View>
+      <View style={styles.chartSvgContainer}>
+        <Svg width={width} height={height} viewBox="0 0 220 45">
+          <Defs>
+            <LinearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0%" stopColor={strokeColor} stopOpacity={0.2} />
+              <Stop offset="100%" stopColor={strokeColor} stopOpacity={0.0} />
+            </LinearGradient>
+          </Defs>
+          
+          <Line 
+            x1="0" 
+            y1={targetY} 
+            x2="220" 
+            y2={targetY} 
+            stroke="rgba(255,107,26,0.2)" 
+            strokeWidth="1" 
+            strokeDasharray="3,3" 
+          />
+
+          <Path
+            d={pathD}
+            fill={`url(#${gradId})`}
+          />
+
+          <Polyline
+            fill="none"
+            stroke={strokeColor}
+            strokeWidth="1.5"
+            points={svgPoints}
+          />
+
+          <Circle
+            cx="220"
+            cy={lastCircleY}
+            r="2.5"
+            fill={strokeColor}
+          />
+        </Svg>
+      </View>
+    </View>
+  );
+}
+
 export function PredictScreen({ identity }: PredictScreenProps) {
-  const [activeTab, setActiveTab] = useState<'pools' | 'my-bets'>('pools');
+  const [activeTab, setActiveTab] = useState<'pools' | 'my-bets' | 'resolved'>('pools');
   const [markets, setMarkets] = useState<Market[]>([]);
   const [bets, setBets] = useState<Bet[]>([]);
+  const [stakedAmount, setStakedAmount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
   const [betPrediction, setBetPrediction] = useState<'yes' | 'no'>('yes');
   const [betAmount, setBetAmount] = useState('0.05');
   const [submitting, setSubmitting] = useState(false);
 
   const fetchMarketsAndBets = useCallback(async () => {
-    setLoading(true);
     try {
-      // 1. Fetch active markets directly from InsForge
+      // 1. Fetch prediction markets directly from InsForge
       const { data: marketData, error: marketError } = await client.database
         .from('vibe_prediction_markets')
         .select('*')
@@ -62,7 +187,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
       if (marketError) throw marketError;
       setMarkets(marketData || []);
 
-      // 2. Fetch user bets if staker identity is loaded
+      // 2. Fetch user bets and staking details if staker identity is loaded
       if (identity) {
         const { data: betData, error: betError } = await client.database
           .from('vibe_prediction_bets')
@@ -75,22 +200,53 @@ export function PredictScreen({ identity }: PredictScreenProps) {
 
         if (betError) throw betError;
         setBets(betData || []);
+
+        try {
+          const { data: stakingInfo } = await client.database
+            .from('user_staking')
+            .select('staked_amount')
+            .eq('user_pubkey', identity.publicKey)
+            .single();
+
+          if (stakingInfo && stakingInfo.staked_amount) {
+            setStakedAmount(parseFloat(stakingInfo.staked_amount));
+          } else {
+            setStakedAmount(0);
+          }
+        } catch (_) {
+          setStakedAmount(0);
+        }
       }
     } catch (err: any) {
       console.error('[PredictScreen] Sync failure:', err);
       Alert.alert('Connection Stalled', 'Failed to retrieve active prediction pools. Retrying sync.');
-    } finally {
-      setLoading(false);
     }
   }, [identity]);
 
+  const loadData = async () => {
+    setLoading(true);
+    await fetchMarketsAndBets();
+    setLoading(false);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchMarketsAndBets();
+    setRefreshing(false);
+  };
+
   useEffect(() => {
-    fetchMarketsAndBets();
+    loadData();
   }, [fetchMarketsAndBets]);
 
+  // Handle Placing an On-Chain Bet
   const handlePlaceBet = async () => {
     if (!identity) {
       Alert.alert('Node Unauthenticated', 'Verify your staker DePIN identity first.');
+      return;
+    }
+    if (identity.isExternal) {
+      Alert.alert('Signing Blocked', 'External wallets must sign transactions via their native apps. Built-in Wallet only supports local DePIN key pairs.');
       return;
     }
     if (!selectedMarket || !betAmount) return;
@@ -103,7 +259,33 @@ export function PredictScreen({ identity }: PredictScreenProps) {
 
     setSubmitting(true);
     try {
-      // 1. Record staker's custom prediction
+      // 1. Initialize Connection and verify staker balance
+      const connection = new Connection(RPC_ENDPOINT, 'confirmed');
+      const stakerWallet = Keypair.fromSecretKey(identity.rawSecretKey);
+      
+      const balance = await connection.getBalance(stakerWallet.publicKey);
+      const requiredLamports = Math.floor(parsedAmount * 1e9) + 5000; // Transfer amount + estimated fee
+
+      if (balance < requiredLamports) {
+        Alert.alert('Insolvent Wallet', `Insufficient funds in built-in wallet. You need at least ${(requiredLamports / 1e9).toFixed(4)} SOL.`);
+        setSubmitting(false);
+        return;
+      }
+
+      // 2. Build on-chain SOL transfer transaction to the Oracle Treasury
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: stakerWallet.publicKey,
+          toPubkey: ORACLE_TREASURY_PUBKEY,
+          lamports: Math.floor(parsedAmount * 1e9),
+        })
+      );
+
+      // 3. Sign and broadcast to the Solana network
+      const signature = await sendAndConfirmTransaction(connection, transaction, [stakerWallet]);
+      console.log('[PredictScreen] On-chain transfer confirmed:', signature);
+
+      // 4. Record staker's custom prediction in InsForge database
       const { data: betResult, error: betError } = await client.database
         .from('vibe_prediction_bets')
         .insert({
@@ -118,7 +300,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
 
       if (betError) throw betError;
 
-      // 2. Aggregate pool updates atomically in the market
+      // 5. Aggregate pool updates atomically in the market
       const isYes = betPrediction === 'yes';
       const yesPool = parseFloat(selectedMarket.total_yes_pool as any || '0');
       const noPool = parseFloat(selectedMarket.total_no_pool as any || '0');
@@ -134,26 +316,119 @@ export function PredictScreen({ identity }: PredictScreenProps) {
 
       if (marketUpdateError) throw marketUpdateError;
 
-      Alert.alert('Position Staked!', `Log complete: ${parsedAmount} SOL on ${betPrediction.toUpperCase()}.`);
+      Alert.alert(
+        'Position Staked!',
+        `On-chain transaction confirmed!\n\nStaked ${parsedAmount} SOL on ${betPrediction.toUpperCase()}.\n\nTx Hash: ${signature.slice(0, 16)}...`
+      );
       setSelectedMarket(null);
       fetchMarketsAndBets();
     } catch (err: any) {
       console.error('[PredictScreen] Bet error:', err);
-      Alert.alert('Tx Aborted', err.message || 'Failed to submit on-chain staker position.');
+      Alert.alert('Transaction Failed', err.message || 'Failed to submit on-chain staker position.');
     } finally {
       setSubmitting(false);
     }
   };
 
+  // Handle Claiming Payouts via Edge Function
+  const handleClaimPayout = async (betId: string) => {
+    if (!identity) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('https://9s8ct2b5.functions.insforge.app/claim-prediction-payout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bet_id: betId,
+          user_pubkey: identity.publicKey,
+        })
+      });
+
+      const json = await res.json();
+      if (!res.ok || json.error) {
+        throw new Error(json.error || 'Failed to claim prediction winnings.');
+      }
+
+      Alert.alert(
+        'Payout Credited!',
+        `Successfully claimed payout of ${json.claimed_amount.toFixed(4)} SOL!\n\nSignature: ${json.signature?.slice(0, 16)}...`
+      );
+      fetchMarketsAndBets();
+    } catch (err: any) {
+      console.error('[PredictScreen] Payout Claim failure:', err);
+      Alert.alert('Claim Blocked', err.message || 'Winnings distribution failed.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Memoized staker tier stats
+  const activeBoostTier = useMemo(() => {
+    if (stakedAmount >= 10000) return { name: 'VIBE PROPHET', desc: '+5% Winnings / 0% Payout Fee' };
+    if (stakedAmount >= 1000) return { name: 'SENTIMENT SEER', desc: '+2% Winnings / 0.5% Payout Fee' };
+    return { name: 'BASE ORACLE', desc: '1.0x Payouts / 1.0% Payout Fee' };
+  }, [stakedAmount]);
+
+  // Calculate dynamic simulated payouts for the modal
+  const simulatedPayout = useMemo(() => {
+    if (!selectedMarket) return { gross: 0, net: 0, odds: 0, fee: 1.0, multiplier: 1.0, tierName: 'Base Oracle' };
+    const yesPool = parseFloat(selectedMarket.total_yes_pool as any || '0');
+    const noPool = parseFloat(selectedMarket.total_no_pool as any || '0');
+    const userBet = parseFloat(betAmount || '0');
+    
+    if (isNaN(userBet) || userBet <= 0) return { gross: 0, net: 0, odds: 0, fee: 1.0, multiplier: 1.0, tierName: 'Base Oracle' };
+
+    const totalPool = yesPool + noPool + userBet;
+    const winningPool = betPrediction === 'yes' ? yesPool + userBet : noPool + userBet;
+
+    const gross = (userBet / winningPool) * totalPool;
+    
+    let feeDiscount = 0;
+    let multiplier = 1.0;
+    let tierName = 'Base Oracle';
+
+    if (stakedAmount >= 10000) {
+      feeDiscount = 1.0;
+      multiplier = 1.05;
+      tierName = 'Vibe Prophet';
+    } else if (stakedAmount >= 1000) {
+      feeDiscount = 0.5;
+      multiplier = 1.02;
+      tierName = 'Sentiment Seer';
+    }
+
+    const appliedFee = 1.0 * (1 - feeDiscount);
+    const net = gross * (1 - (appliedFee / 100)) * multiplier;
+    const odds = userBet > 0 ? net / userBet : 1;
+
+    return {
+      gross: parseFloat(gross.toFixed(4)),
+      net: parseFloat(net.toFixed(4)),
+      odds: parseFloat(odds.toFixed(2)),
+      fee: appliedFee,
+      multiplier,
+      tierName
+    };
+  }, [selectedMarket, betPrediction, betAmount, stakedAmount]);
+
   const activePools = useMemo(() => {
     return markets.filter(m => m.status === 'active');
   }, [markets]);
 
-  // Memoized card rendering to optimize 60fps scrolling
+  const resolvedPools = useMemo(() => {
+    return markets.filter(m => m.status === 'resolved');
+  }, [markets]);
+
+  // Card Rendering for Active and Resolved markets
   const renderMarketItem = useCallback(({ item }: { item: Market }) => {
-    const totalPool = (parseFloat(item.total_yes_pool as any || 0) + parseFloat(item.total_no_pool as any || 0));
+    const isResolved = item.status === 'resolved';
+    const yesPool = parseFloat(item.total_yes_pool as any || 0);
+    const noPool = parseFloat(item.total_no_pool as any || 0);
+    const total = yesPool + noPool;
+    const yesPct = total > 0 ? (yesPool / total) * 100 : 50;
+
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, isResolved && styles.cardResolved]}>
         <View style={styles.cardHeader}>
           <View style={styles.mintBadge}>
             <Coins size={10} color="#FF6B1A" />
@@ -161,52 +436,86 @@ export function PredictScreen({ identity }: PredictScreenProps) {
               Mint: {item.token_mint.slice(0, 4)}...{item.token_mint.slice(-4)}
             </Text>
           </View>
-          <View style={styles.statusBadge}>
-            <Zap size={10} color="#06b6d4" />
-            <Text style={styles.statusText}>ACTIVE</Text>
-          </View>
+          {isResolved ? (
+            <View style={[styles.statusBadge, styles.badgeResolved]}>
+              <CheckCircle size={10} color="#22c55e" />
+              <Text style={[styles.statusText, { color: '#22c55e' }]}>RESOLVED</Text>
+            </View>
+          ) : (
+            <View style={styles.statusBadge}>
+              <Zap size={10} color="#06b6d4" />
+              <Text style={styles.statusText}>ACTIVE</Text>
+            </View>
+          )}
         </View>
 
-        <Text style={styles.questionText}>{item.question}</Text>
+        <Text style={[styles.questionText, isResolved && styles.textMuted]}>{item.question}</Text>
 
-        <View style={styles.statsContainer}>
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>TARGET VIBE</Text>
-            <Text style={styles.targetVal}>{item.target_score}</Text>
+        <VibeMiniChart 
+          tokenMint={item.token_mint} 
+          targetScore={item.target_score} 
+          status={item.status} 
+          outcome={item.outcome} 
+        />
+
+        {isResolved ? (
+          <View style={styles.resolvedOutcomeBox}>
+            <View style={styles.outcomeMeta}>
+              <Text style={styles.outcomeLabel}>OUTCOME</Text>
+              <Text style={[styles.outcomeValue, item.outcome === 'yes' ? styles.textYes : styles.textNo]}>
+                {item.outcome?.toUpperCase()}
+              </Text>
+            </View>
+            <View style={styles.outcomeMetaRight}>
+              <Text style={styles.outcomeLabel}>FINAL VIBE</Text>
+              <Text style={styles.outcomeScore}>{item.final_score}</Text>
+            </View>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statLabel}>TOTAL POOL</Text>
-            <Text style={styles.poolVal}>{totalPool.toFixed(2)} SOL</Text>
+        ) : (
+          <View style={styles.progressContainer}>
+            <View style={styles.progressLabels}>
+              <Text style={styles.progressText}>YES: {yesPct.toFixed(0)}% ({yesPool.toFixed(2)} SOL)</Text>
+              <Text style={styles.progressText}>NO: {(100 - yesPct).toFixed(0)}% ({noPool.toFixed(2)} SOL)</Text>
+            </View>
+            <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarYes, { width: `${yesPct}%` }]} />
+              <View style={[styles.progressBarNo, { width: `${100 - yesPct}%` }]} />
+            </View>
           </View>
-        </View>
+        )}
 
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[styles.actionBtn, styles.btnYes]}
-            onPress={() => {
-              setSelectedMarket(item);
-              setBetPrediction('yes');
-            }}
-          >
-            <Text style={styles.btnText}>BULLISH (YES)</Text>
-          </TouchableOpacity>
+        {!isResolved && (
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.btnYes]}
+              onPress={() => {
+                setSelectedMarket(item);
+                setBetPrediction('yes');
+              }}
+            >
+              <Text style={styles.btnText}>BULLISH (YES)</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.actionBtn, styles.btnNo]}
-            onPress={() => {
-              setSelectedMarket(item);
-              setBetPrediction('no');
-            }}
-          >
-            <Text style={styles.btnText}>BEARISH (NO)</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.btnNo]}
+              onPress={() => {
+                setSelectedMarket(item);
+                setBetPrediction('no');
+              }}
+            >
+              <Text style={styles.btnText}>BEARISH (NO)</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     );
   }, []);
 
   const renderBetItem = useCallback(({ item }: { item: Bet }) => {
     const market = item.market;
+    const isResolved = market?.status === 'resolved';
+    const isWinner = isResolved && item.prediction === market?.outcome;
+
     return (
       <View style={styles.betCard}>
         <View style={styles.cardHeader}>
@@ -218,34 +527,78 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           </View>
         </View>
         <Text style={styles.betQuestion}>{market?.question || 'Sentiment pool question'}</Text>
+        
         <View style={styles.betStats}>
-          <Text style={styles.betAmountText}>
-            Staked Amount: <Text style={styles.accentText}>{item.amount} SOL</Text>
-          </Text>
-          <View style={styles.dateContainer}>
-            <Clock size={10} color="rgba(255,255,255,0.4)" />
-            <Text style={styles.dateText}>
-              {new Date(item.created_at).toLocaleDateString()}
+          <View>
+            <Text style={styles.betAmountText}>
+              Staked Size: <Text style={styles.accentText}>{item.amount} SOL</Text>
             </Text>
+            {isResolved && (
+              <Text style={styles.outcomeDesc}>
+                Outcome: <Text style={isWinner ? styles.textYes : styles.textMuted}>{market?.outcome?.toUpperCase()}</Text> (Final: {market?.final_score})
+              </Text>
+            )}
+          </View>
+
+          <View style={styles.claimSection}>
+            {isResolved ? (
+              isWinner ? (
+                item.claimed ? (
+                  <View style={styles.claimedBadge}>
+                    <CheckCircle size={10} color="#22c55e" />
+                    <Text style={styles.claimedText}>CLAIMED</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.claimBtn}
+                    onPress={() => handleClaimPayout(item.id)}
+                    disabled={submitting}
+                  >
+                    <ArrowUpRight size={10} color="#22c55e" />
+                    <Text style={styles.claimBtnText}>CLAIM WINNINGS</Text>
+                  </TouchableOpacity>
+                )
+              ) : (
+                <View style={styles.lossBadge}>
+                  <Text style={styles.lossText}>RESOLVED LOSS</Text>
+                </View>
+              )
+            ) : (
+              <View style={styles.liveBadge}>
+                <Text style={styles.liveText}>LIVE MONITOR</Text>
+              </View>
+            )}
           </View>
         </View>
       </View>
     );
-  }, []);
+  }, [submitting]);
 
   const keyExtractor = useCallback((item: any) => item.id, []);
 
   return (
     <View style={styles.container}>
-      {/* Tab bar header */}
+      {/* Mini Stats Banner */}
+      <View style={styles.statsBanner}>
+        <View style={styles.statBannerItem}>
+          <Text style={styles.bannerLabel}>BOOST TIER</Text>
+          <Text style={styles.bannerValue}>{activeBoostTier.name}</Text>
+        </View>
+        <View style={styles.statBannerItem}>
+          <Text style={styles.bannerLabel}>BENEFIT RATES</Text>
+          <Text style={styles.bannerSubValue}>{activeBoostTier.desc}</Text>
+        </View>
+      </View>
+
+      {/* Tab Selector pills */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'pools' && styles.activeTab]}
           onPress={() => setActiveTab('pools')}
         >
-          <TrendingUp size={16} color={activeTab === 'pools' ? '#FF6B1A' : '#777'} />
+          <TrendingUp size={14} color={activeTab === 'pools' ? '#FF6B1A' : '#777'} />
           <Text style={[styles.tabLabel, activeTab === 'pools' && styles.activeTabLabel]}>
-            VIBE POOLS
+            ACTIVE
           </Text>
         </TouchableOpacity>
 
@@ -253,9 +606,19 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           style={[styles.tab, activeTab === 'my-bets' && styles.activeTab]}
           onPress={() => setActiveTab('my-bets')}
         >
-          <CheckCircle size={16} color={activeTab === 'my-bets' ? '#FF6B1A' : '#777'} />
+          <CheckCircle size={14} color={activeTab === 'my-bets' ? '#FF6B1A' : '#777'} />
           <Text style={[styles.tabLabel, activeTab === 'my-bets' && styles.activeTabLabel]}>
             MY FORECASTS
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'resolved' && styles.activeTab]}
+          onPress={() => setActiveTab('resolved')}
+        >
+          <Clock size={14} color={activeTab === 'resolved' ? '#FF6B1A' : '#777'} />
+          <Text style={[styles.tabLabel, activeTab === 'resolved' && styles.activeTabLabel]}>
+            RESOLVED
           </Text>
         </TouchableOpacity>
       </View>
@@ -263,7 +626,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
       {loading ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#FF6B1A" />
-          <Text style={styles.loadingText}>Syncing Oracle pools...</Text>
+          <Text style={styles.loadingText}>Syncing consensus index...</Text>
         </View>
       ) : activeTab === 'pools' ? (
         <FlatList
@@ -271,9 +634,23 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           renderItem={renderMarketItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.listContainer}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No active prediction pools found.</Text>
+            </View>
+          }
+        />
+      ) : activeTab === 'resolved' ? (
+        <FlatList
+          data={resolvedPools}
+          renderItem={renderMarketItem}
+          keyExtractor={keyExtractor}
+          contentContainerStyle={styles.listContainer}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No past resolved pools found.</Text>
             </View>
           }
         />
@@ -283,6 +660,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           renderItem={renderBetItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.listContainer}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>Your logged forecasts will appear here.</Text>
@@ -324,6 +702,22 @@ export function PredictScreen({ identity }: PredictScreenProps) {
               placeholderTextColor="rgba(255,255,255,0.2)"
             />
 
+            {/* Estimated Staker Payout Preview */}
+            <View style={styles.simulatedContainer}>
+              <View style={styles.simRow}>
+                <Text style={styles.simLabel}>Oracle Tier Bonus:</Text>
+                <Text style={styles.simVal}>{simulatedPayout.multiplier === 1 ? '1.00x (Base)' : `${simulatedPayout.multiplier.toFixed(2)}x (${simulatedPayout.tierName})`}</Text>
+              </View>
+              <View style={styles.simRow}>
+                <Text style={styles.simLabel}>Est. Odds Multiplier:</Text>
+                <Text style={[styles.simVal, { color: '#fbbf24' }]}>{simulatedPayout.odds.toFixed(2)}x</Text>
+              </View>
+              <View style={styles.simRow}>
+                <Text style={styles.simLabel}>Est. Net Return:</Text>
+                <Text style={[styles.simVal, { color: '#22c55e' }]}>{simulatedPayout.net.toFixed(4)} SOL</Text>
+              </View>
+            </View>
+
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={[styles.modalBtn, styles.cancelBtn]}
@@ -341,7 +735,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
                   <ActivityIndicator size="small" color="#050507" />
                 ) : (
                   <>
-                    <Text style={[styles.btnLabel, { color: '#050507' }]}>CONFIRM</Text>
+                    <Text style={[styles.btnLabel, { color: '#050507' }]}>STAKE ON-CHAIN</Text>
                     <ArrowUpRight size={14} color="#050507" />
                   </>
                 )}
@@ -359,6 +753,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#050507',
   },
+  statsBanner: {
+    backgroundColor: '#0c0c12',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statBannerItem: {
+    flex: 1,
+  },
+  bannerLabel: {
+    fontFamily: 'monospace',
+    fontSize: 8,
+    color: '#FF6B1A',
+    fontWeight: 'bold',
+    letterSpacing: 1.5,
+  },
+  bannerValue: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 2,
+  },
+  bannerSubValue: {
+    fontSize: 10,
+    fontFamily: 'monospace',
+    color: 'rgba(255,255,255,0.5)',
+    marginTop: 2,
+  },
   tabContainer: {
     flexDirection: 'row',
     borderBottomWidth: 1,
@@ -370,8 +795,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    gap: 8,
+    paddingVertical: 14,
+    gap: 6,
   },
   activeTab: {
     borderBottomWidth: 2,
@@ -379,10 +804,10 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontFamily: 'monospace',
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 'bold',
     color: 'rgba(255,255,255,0.4)',
-    letterSpacing: 1.5,
+    letterSpacing: 1,
   },
   activeTabLabel: {
     color: '#FF6B1A',
@@ -397,7 +822,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     color: 'rgba(255,255,255,0.5)',
     marginTop: 12,
-    fontSize: 12,
+    fontSize: 11,
   },
   listContainer: {
     padding: 16,
@@ -410,7 +835,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontFamily: 'monospace',
     color: 'rgba(255,255,255,0.3)',
-    fontSize: 12,
+    fontSize: 11,
   },
   card: {
     backgroundColor: '#0d0d14',
@@ -419,6 +844,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
+  },
+  cardResolved: {
+    borderColor: 'rgba(255,255,255,0.02)',
+    backgroundColor: '#07070a',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -450,6 +879,9 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     gap: 4,
   },
+  badgeResolved: {
+    backgroundColor: 'rgba(34,197,94,0.08)',
+  },
   statusText: {
     fontFamily: 'monospace',
     fontSize: 9,
@@ -457,62 +889,141 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   questionText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#ffffff',
     fontWeight: '600',
-    lineHeight: 20,
-    marginBottom: 16,
+    lineHeight: 18,
+    marginBottom: 10,
   },
-  statsContainer: {
+  textMuted: {
+    color: 'rgba(255,255,255,0.4)',
+  },
+  // Custom SVG Trend Chart Styles
+  chartWrapper: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.03)',
+    borderRadius: 12,
+    padding: 8,
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
   },
-  statBox: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.02)',
+  chartMeta: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  chartTitle: {
+    fontFamily: 'monospace',
+    fontSize: 7.5,
+    color: 'rgba(255,255,255,0.3)',
+    letterSpacing: 1.5,
+  },
+  chartTarget: {
+    fontSize: 10,
+    fontFamily: 'monospace',
+    color: 'rgba(255,255,255,0.6)',
+    marginTop: 2,
+  },
+  chartTargetVal: {
+    color: '#FF6B1A',
+    fontWeight: 'bold',
+  },
+  chartSvgContainer: {
+    width: 220,
+    height: 45,
+    overflow: 'hidden',
+  },
+  progressContainer: {
+    marginBottom: 12,
+  },
+  progressLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  progressText: {
+    fontSize: 9,
+    fontFamily: 'monospace',
+    color: 'rgba(255,255,255,0.5)',
+  },
+  progressBarBg: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    flexDirection: 'row',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+  },
+  progressBarYes: {
+    height: '100%',
+    backgroundColor: '#FF6B1A',
+  },
+  progressBarNo: {
+    height: '100%',
+    backgroundColor: '#06b6d4',
+  },
+  resolvedOutcomeBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.03)',
   },
-  statLabel: {
+  outcomeMeta: {
+    flexDirection: 'column',
+  },
+  outcomeMetaRight: {
+    alignItems: 'flex-end',
+  },
+  outcomeLabel: {
     fontFamily: 'monospace',
     fontSize: 8,
     color: 'rgba(255,255,255,0.4)',
     letterSpacing: 1,
-    marginBottom: 4,
   },
-  targetVal: {
-    fontSize: 16,
+  outcomeValue: {
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#fbbf24',
+    marginTop: 2,
   },
-  poolVal: {
-    fontSize: 16,
+  outcomeScore: {
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#06b6d4',
+    color: '#fff',
+    marginTop: 2,
+  },
+  textYes: {
+    color: '#22c55e',
+  },
+  textNo: {
+    color: '#ef4444',
   },
   buttonRow: {
     flexDirection: 'row',
     gap: 12,
+    marginTop: 4,
   },
   actionBtn: {
     flex: 1,
-    height: 48, // Touch target compliance (minimum 44pt/48dp)
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
   },
   btnYes: {
-    backgroundColor: 'rgba(34,197,94,0.1)',
+    backgroundColor: 'rgba(34,197,94,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(34,197,94,0.3)',
+    borderColor: 'rgba(34,197,94,0.25)',
   },
   btnNo: {
-    backgroundColor: 'rgba(239,68,68,0.1)',
+    backgroundColor: 'rgba(239,68,68,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(239,68,68,0.3)',
+    borderColor: 'rgba(239,68,68,0.25)',
   },
   btnText: {
     fontFamily: 'monospace',
@@ -555,6 +1066,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: 'rgba(255,255,255,0.7)',
     marginVertical: 10,
+    lineHeight: 18,
   },
   betStats: {
     flexDirection: 'row',
@@ -566,21 +1078,81 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   betAmountText: {
-    fontSize: 12,
+    fontSize: 11,
     color: 'rgba(255,255,255,0.5)',
+  },
+  outcomeDesc: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.4)',
+    marginTop: 2,
   },
   accentText: {
     color: '#FF6B1A',
     fontWeight: 'bold',
   },
-  dateContainer: {
+  claimSection: {
+    alignItems: 'flex-end',
+  },
+  claimedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(34,197,94,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(34,197,94,0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
     gap: 4,
   },
-  dateText: {
-    fontSize: 10,
+  claimedText: {
+    fontFamily: 'monospace',
+    fontSize: 9,
+    color: '#22c55e',
+    fontWeight: 'bold',
+  },
+  lossBadge: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  lossText: {
+    fontFamily: 'monospace',
+    fontSize: 9,
     color: 'rgba(255,255,255,0.4)',
+  },
+  liveBadge: {
+    backgroundColor: 'rgba(255,107,26,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,107,26,0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  liveText: {
+    fontFamily: 'monospace',
+    fontSize: 8.5,
+    color: '#FF6B1A',
+    fontWeight: 'bold',
+  },
+  claimBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(34,197,94,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(34,197,94,0.3)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 4,
+  },
+  claimBtnText: {
+    fontFamily: 'monospace',
+    fontSize: 9,
+    color: '#22c55e',
+    fontWeight: 'bold',
   },
   modalBg: {
     flex: 1,
@@ -607,7 +1179,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 11,
     color: 'rgba(255,255,255,0.4)',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   selectedChoiceBox: {
     flexDirection: 'row',
@@ -616,7 +1188,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.02)',
     padding: 12,
     borderRadius: 12,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   choiceLabel: {
     fontSize: 13,
@@ -646,11 +1218,35 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.1)',
     borderRadius: 12,
     color: '#fff',
-    height: 48, // Minimum touch targets compliance
+    height: 48,
     paddingHorizontal: 16,
     fontSize: 16,
     fontFamily: 'monospace',
+    marginBottom: 16,
+  },
+  simulatedContainer: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.03)',
+    borderRadius: 12,
+    padding: 12,
     marginBottom: 24,
+    gap: 6,
+  },
+  simRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  simLabel: {
+    fontFamily: 'monospace',
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.4)',
+  },
+  simVal: {
+    fontFamily: 'monospace',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   modalButtons: {
     flexDirection: 'row',
@@ -659,7 +1255,7 @@ const styles = StyleSheet.create({
   },
   modalBtn: {
     flex: 1,
-    height: 48, // Touch target compliance (minimum 44pt/48dp)
+    height: 48,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',

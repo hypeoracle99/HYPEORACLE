@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
   Linking,
+  ScrollView,
 } from 'react-native';
 import bs58 from 'bs58';
 import { getOrCreateDePINKeypair, importPrivateWalletKey, clearStoredDePINKeypair, DePINIdentity } from './src/lib/secure-store';
@@ -17,7 +18,11 @@ import { RecordScreen } from './src/screens/RecordScreen';
 import { PredictScreen } from './src/screens/PredictScreen';
 import { SoulprintScreen } from './src/screens/SoulprintScreen';
 import { OracleFeedScreen } from './src/screens/OracleFeedScreen';
-import { Mic, TrendingUp, Award, Settings, Key, ShieldCheck, X, Copy, RotateCcw, Smartphone, CheckCircle, Eye, EyeOff, Cpu } from 'lucide-react-native';
+import { WalletHub } from './src/screens/WalletHub';
+import { StakeScreen } from './src/screens/StakeScreen';
+import { AgentScreen } from './src/screens/AgentScreen';
+import { EarningsScreen } from './src/screens/EarningsScreen';
+import { Mic, TrendingUp, Award, Settings, Key, ShieldCheck, X, Copy, RotateCcw, Smartphone, CheckCircle, Eye, EyeOff, Cpu, Wallet, BrainCircuit, Coins } from 'lucide-react-native';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'record' | 'predict' | 'oracle' | 'soulprint'>('record');
@@ -34,6 +39,7 @@ export default function App() {
   const [showBackup, setShowBackup] = useState(false);
   const [showPrivateKey, setShowPrivateKey] = useState(false);
   const [activeImportTab, setActiveImportTab] = useState<'phantom' | 'privateKey'>('phantom');
+  const [hubTab, setHubTab] = useState<'wallet' | 'staking' | 'agent' | 'earnings' | 'identity'>('wallet');
 
   const loadIdentity = async () => {
     setLoadingIdentity(true);
@@ -276,166 +282,208 @@ export default function App() {
         </TouchableOpacity>
       </View>
 
-      {/* Node settings and key importer modal */}
+      {/* Oracle Node Hub Full Screen Modal */}
       {settingsOpen && (
-        <View style={StyleSheet.absoluteFill}>
-          <View style={styles.modalBg}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeaderRow}>
-                <Text style={styles.modalHeader}>NODE IDENTITY CONFIG</Text>
-                <TouchableOpacity onPress={() => setSettingsOpen(false)}>
-                  <X size={20} color="rgba(255,255,255,0.4)" />
+        <View style={styles.hubModalContainer}>
+          <View style={styles.hubHeader}>
+            <TouchableOpacity onPress={() => setSettingsOpen(false)}>
+              <X size={22} color="#fff" />
+            </TouchableOpacity>
+            <Text style={styles.hubHeaderTitle}>ORACLE NODE HUB</Text>
+            <View style={{ width: 22 }} />
+          </View>
+
+          {/* Hub Tab Bar */}
+          <View style={styles.hubTabBar}>
+            {[
+              { id: 'wallet', label: 'WALLET', icon: Wallet },
+              { id: 'staking', label: 'STAKE', icon: Coins },
+              { id: 'agent', label: 'AGENT', icon: BrainCircuit },
+              { id: 'earnings', label: 'EARN', icon: Award },
+              { id: 'identity', label: 'SETUP', icon: Key },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const active = hubTab === tab.id;
+              return (
+                <TouchableOpacity
+                  key={tab.id}
+                  style={[styles.hubTabItem, active && styles.hubTabItemActive]}
+                  onPress={() => {
+                    setHubTab(tab.id as any);
+                    setShowBackup(false);
+                  }}
+                >
+                  <Icon size={16} color={active ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+                  <Text style={[styles.hubTabLabel, active && styles.hubTabLabelActive]}>
+                    {tab.label}
+                  </Text>
                 </TouchableOpacity>
-              </View>
+              );
+            })}
+          </View>
 
-              {identity && (
-                <View style={styles.activeKeyBox}>
-                  <View style={styles.keyHeader}>
-                    <ShieldCheck size={14} color="#10b981" />
-                    <Text style={styles.keyHeaderText}>
-                      {identity.isExternal ? 'PHANTOM WALLET ACTIVE ID' : 'SECURE KEYCHAIN ACTIVE ID'}
-                    </Text>
-                  </View>
-                  <Text style={styles.keyString}>{identity.publicKey}</Text>
-
-                  {/* Seed phrase/Private key backup for local wallets */}
-                  {!identity.isExternal && identity.secretKey ? (
-                    <View style={styles.backupContainer}>
-                      <TouchableOpacity
-                        style={styles.backupHeaderBtn}
-                        onPress={() => setShowBackup(!showBackup)}
-                      >
-                        <Key size={12} color="rgba(255,255,255,0.5)" />
-                        <Text style={styles.backupHeaderText}>
-                          {showBackup ? 'Hide Local Private Key Backup' : 'Show Local Private Key Backup'}
-                        </Text>
-                      </TouchableOpacity>
-                      
-                      {showBackup && (
-                        <View style={styles.backupContent}>
-                          <Text style={styles.privateKeyText} numberOfLines={2} selectable={true}>
-                            {showPrivateKey ? identity.secretKey : '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••'}
-                          </Text>
-                          <View style={styles.backupActionRow}>
-                            <TouchableOpacity
-                              style={styles.backupActionBtn}
-                              onPress={() => setShowPrivateKey(!showPrivateKey)}
-                            >
-                              {showPrivateKey ? <EyeOff size={14} color="#fff" /> : <Eye size={14} color="#fff" />}
-                              <Text style={styles.backupActionText}>{showPrivateKey ? 'Mask' : 'Reveal'}</Text>
-                            </TouchableOpacity>
-                            
-                            <TouchableOpacity
-                              style={styles.backupActionBtn}
-                              onPress={() => {
-                                try {
-                                  const Clipboard = require('expo-clipboard');
-                                  Clipboard.setStringAsync(identity.secretKey)
-                                    .then(() => {
-                                      Alert.alert('Copied', 'Base58 private key copied to clipboard.');
-                                    })
-                                    .catch((err: any) => {
-                                      console.warn('[App] Clipboard setStringAsync rejected:', err);
-                                      Alert.alert(
-                                        'Copy Helper',
-                                        'Automatic clipboard copy is not supported in this client. Please reveal and long-press the key to copy it manually.'
-                                      );
-                                    });
-                                } catch (err) {
-                                  console.warn('[App] expo-clipboard require failed:', err);
-                                  Alert.alert(
-                                    'Copy Helper',
-                                    'Automatic clipboard copy is not supported in this client. Please reveal and long-press the key to copy it manually.'
-                                  );
-                                }
-                              }}
-                            >
-                              <Copy size={14} color="#fff" />
-                              <Text style={styles.backupActionText}>Copy</Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      )}
+          {/* Screen Content Wrapper */}
+          <View style={styles.hubContent}>
+            {hubTab === 'wallet' ? (
+              <WalletHub identity={identity} />
+            ) : hubTab === 'staking' ? (
+              <StakeScreen identity={identity} />
+            ) : hubTab === 'agent' ? (
+              <AgentScreen identity={identity} />
+            ) : hubTab === 'earnings' ? (
+              <EarningsScreen identity={identity} />
+            ) : (
+              /* Original Settings / Identity Configuration panel */
+              <ScrollView style={styles.setupScrollContainer} contentContainerStyle={styles.setupScrollContent}>
+                {identity && (
+                  <View style={styles.activeKeyBox}>
+                    <View style={styles.keyHeader}>
+                      <ShieldCheck size={14} color="#10b981" />
+                      <Text style={styles.keyHeaderText}>
+                        {identity.isExternal ? 'PHANTOM WALLET ACTIVE ID' : 'SECURE KEYCHAIN ACTIVE ID'}
+                      </Text>
                     </View>
-                  ) : null}
-                </View>
-              )}
+                    <Text style={styles.keyString}>{identity.publicKey}</Text>
 
-              <View style={styles.modalTabContainer}>
-                <TouchableOpacity
-                  style={[styles.modalTab, activeImportTab === 'phantom' && styles.modalTabActive]}
-                  onPress={() => setActiveImportTab('phantom')}
-                >
-                  <Smartphone size={14} color={activeImportTab === 'phantom' ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
-                  <Text style={[styles.modalTabLabel, activeImportTab === 'phantom' && styles.modalTabLabelActive]}>
-                    PHANTOM WALLET
-                  </Text>
-                </TouchableOpacity>
+                    {/* Seed phrase/Private key backup for local wallets */}
+                    {!identity.isExternal && identity.secretKey ? (
+                      <View style={styles.backupContainer}>
+                        <TouchableOpacity
+                          style={styles.backupHeaderBtn}
+                          onPress={() => setShowBackup(!showBackup)}
+                        >
+                          <Key size={12} color="rgba(255,255,255,0.5)" />
+                          <Text style={styles.backupHeaderText}>
+                            {showBackup ? 'Hide Local Private Key Backup' : 'Show Local Private Key Backup'}
+                          </Text>
+                        </TouchableOpacity>
+                        
+                        {showBackup && (
+                          <View style={styles.backupContent}>
+                            <Text style={styles.privateKeyText} numberOfLines={2} selectable={true}>
+                              {showPrivateKey ? identity.secretKey : '••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••'}
+                            </Text>
+                            <View style={styles.backupActionRow}>
+                              <TouchableOpacity
+                                style={styles.backupActionBtn}
+                                onPress={() => setShowPrivateKey(!showPrivateKey)}
+                              >
+                                {showPrivateKey ? <EyeOff size={14} color="#fff" /> : <Eye size={14} color="#fff" />}
+                                <Text style={styles.backupActionText}>{showPrivateKey ? 'Mask' : 'Reveal'}</Text>
+                              </TouchableOpacity>
+                              
+                              <TouchableOpacity
+                                style={styles.backupActionBtn}
+                                onPress={() => {
+                                  try {
+                                    const Clipboard = require('expo-clipboard');
+                                    Clipboard.setStringAsync(identity.secretKey)
+                                      .then(() => {
+                                        Alert.alert('Copied', 'Base58 private key copied to clipboard.');
+                                      })
+                                      .catch((err: any) => {
+                                        console.warn('[App] Clipboard setStringAsync rejected:', err);
+                                        Alert.alert(
+                                          'Copy Helper',
+                                          'Automatic clipboard copy is not supported in this client. Please reveal and long-press the key to copy it manually.'
+                                        );
+                                      });
+                                  } catch (err) {
+                                    console.warn('[App] expo-clipboard require failed:', err);
+                                    Alert.alert(
+                                      'Copy Helper',
+                                      'Automatic clipboard copy is not supported in this client. Please reveal and long-press the key to copy it manually.'
+                                    );
+                                  }
+                                }}
+                              >
+                                <Copy size={14} color="#fff" />
+                                <Text style={styles.backupActionText}>Copy</Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        )}
+                      </View>
+                    ) : null}
+                  </View>
+                )}
+
+                <View style={styles.modalTabContainer}>
+                  <TouchableOpacity
+                    style={[styles.modalTab, activeImportTab === 'phantom' && styles.modalTabActive]}
+                    onPress={() => setActiveImportTab('phantom')}
+                  >
+                    <Smartphone size={14} color={activeImportTab === 'phantom' ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+                    <Text style={[styles.modalTabLabel, activeImportTab === 'phantom' && styles.modalTabLabelActive]}>
+                      PHANTOM WALLET
+                    </Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity
+                    style={[styles.modalTab, activeImportTab === 'privateKey' && styles.modalTabActive]}
+                    onPress={() => setActiveImportTab('privateKey')}
+                  >
+                    <Key size={14} color={activeImportTab === 'privateKey' ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+                    <Text style={[styles.modalTabLabel, activeImportTab === 'privateKey' && styles.modalTabLabelActive]}>
+                      PRIVATE KEY
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {activeImportTab === 'phantom' ? (
+                  <View style={styles.phantomConnectContainer}>
+                    <Text style={styles.importerSub}>
+                      Link HypeOracle securely to your Phantom App. Your private keys never leave Phantom.
+                    </Text>
+                    
+                    <TouchableOpacity
+                      style={styles.phantomBtn}
+                      onPress={handleConnectPhantom}
+                    >
+                      <Smartphone size={16} color="#050507" />
+                      <Text style={styles.phantomBtnText}>CONNECT WITH PHANTOM</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View style={styles.importerBox}>
+                    <Text style={styles.importerSub}>
+                      Paste your raw Base58 secret key (64 bytes) to synchronize your dynamic level on-chain:
+                    </Text>
+                    <TextInput
+                      style={styles.keyInput}
+                      secureTextEntry={true}
+                      value={importedKey}
+                      onChangeText={setImportedKey}
+                      placeholder="Paste raw Base58 Solana private key..."
+                      placeholderTextColor="rgba(255,255,255,0.2)"
+                    />
+                    
+                    <TouchableOpacity
+                      style={styles.importBtn}
+                      onPress={handleImportKey}
+                      disabled={importing}
+                    >
+                      {importing ? (
+                        <ActivityIndicator size="small" color="#050507" />
+                      ) : (
+                        <Text style={styles.importBtnText}>PROVISION PRIVATE KEY</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                )}
                 
-                <TouchableOpacity
-                  style={[styles.modalTab, activeImportTab === 'privateKey' && styles.modalTabActive]}
-                  onPress={() => setActiveImportTab('privateKey')}
-                >
-                  <Key size={14} color={activeImportTab === 'privateKey' ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
-                  <Text style={[styles.modalTabLabel, activeImportTab === 'privateKey' && styles.modalTabLabelActive]}>
-                    PRIVATE KEY
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {activeImportTab === 'phantom' ? (
-                <View style={styles.phantomConnectContainer}>
-                  <Text style={styles.importerSub}>
-                    Link HypeOracle securely to your Phantom App. Your private keys never leave Phantom.
-                  </Text>
-                  
+                {/* Generate new local node key option */}
+                <View style={styles.resetContainer}>
                   <TouchableOpacity
-                    style={styles.phantomBtn}
-                    onPress={handleConnectPhantom}
+                    style={styles.resetBtn}
+                    onPress={handleResetLocalIdentity}
                   >
-                    <Smartphone size={16} color="#050507" />
-                    <Text style={styles.phantomBtnText}>CONNECT WITH PHANTOM</Text>
+                    <RotateCcw size={12} color="rgba(255,255,255,0.4)" />
+                    <Text style={styles.resetBtnText}>GENERATE FRESH LOCAL IDENTITY</Text>
                   </TouchableOpacity>
                 </View>
-              ) : (
-                <View style={styles.importerBox}>
-                  <Text style={styles.importerSub}>
-                    Paste your raw Base58 secret key (64 bytes) to synchronize your dynamic level on-chain:
-                  </Text>
-                  <TextInput
-                    style={styles.keyInput}
-                    secureTextEntry={true}
-                    value={importedKey}
-                    onChangeText={setImportedKey}
-                    placeholder="Paste raw Base58 Solana private key..."
-                    placeholderTextColor="rgba(255,255,255,0.2)"
-                  />
-                  
-                  <TouchableOpacity
-                    style={styles.importBtn}
-                    onPress={handleImportKey}
-                    disabled={importing}
-                  >
-                    {importing ? (
-                      <ActivityIndicator size="small" color="#050507" />
-                    ) : (
-                      <Text style={styles.importBtnText}>PROVISION PRIVATE KEY</Text>
-                    )}
-                  </TouchableOpacity>
-                </View>
-              )}
-              
-              {/* Generate new local node key option */}
-              <View style={styles.resetContainer}>
-                <TouchableOpacity
-                  style={styles.resetBtn}
-                  onPress={handleResetLocalIdentity}
-                >
-                  <RotateCcw size={12} color="rgba(255,255,255,0.4)" />
-                  <Text style={styles.resetBtnText}>GENERATE FRESH LOCAL IDENTITY</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+              </ScrollView>
+            )}
           </View>
         </View>
       )}
@@ -750,5 +798,70 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'rgba(255,255,255,0.4)',
     letterSpacing: 1,
+  },
+  hubModalContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#050507',
+    zIndex: 1000,
+    elevation: 20,
+  },
+  hubHeader: {
+    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: '#0a0a0f',
+  },
+  hubHeaderTitle: {
+    fontFamily: 'monospace',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FF6B1A',
+    letterSpacing: 2,
+  },
+  hubTabBar: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: '#0d0d14',
+  },
+  hubTabItem: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  hubTabItemActive: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#FF6B1A',
+  },
+  hubTabLabel: {
+    fontFamily: 'monospace',
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: 'rgba(255,255,255,0.4)',
+    letterSpacing: 0.5,
+  },
+  hubTabLabelActive: {
+    color: '#FF6B1A',
+  },
+  hubContent: {
+    flex: 1,
+    backgroundColor: '#050507',
+  },
+  setupScrollContainer: {
+    flex: 1,
+  },
+  setupScrollContent: {
+    padding: 20,
+    paddingBottom: 40,
   },
 });

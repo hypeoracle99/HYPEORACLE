@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  Platform,
 } from 'react-native';
 import * as Audio from 'expo-audio';
 import { useAudioRecorder, useAudioRecorderState, RecordingPresets } from 'expo-audio';
@@ -172,26 +173,46 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
 
       // 3. Formulate raw DePIN submission payload
       const formData = new FormData();
-      formData.append('voice', {
-        uri: uri,
-        name: 'depin-sensor-oracle.m4a',
-        type: 'audio/m4a',
-      } as any);
+      
+      if (Platform.OS === 'web') {
+        // Convert local audio URI to a standard Blob for Web compatibility
+        const audioRes = await fetch(uri);
+        const audioBlob = await audioRes.blob();
+        formData.append('voice', audioBlob, 'depin-sensor-oracle.m4a');
+      } else {
+        // Native mobile expects React Native's custom FormData object format for files
+        formData.append('voice', {
+          uri: uri,
+          name: 'depin-sensor-oracle.m4a',
+          type: 'audio/m4a',
+        } as any);
+      }
       formData.append('emoji', emoji);
       formData.append('token_mint', 'So11111111111111111111111111111111111111112'); // Mock SOL mint
       formData.append('user_pubkey', identity.publicKey);
       formData.append('sensor_data', JSON.stringify(signedMetadata));
 
-      // 4. Secure submission to active InsForge Edge Function
-      const res = await fetch('https://9s8ct2b5.functions.insforge.app/submit-vibe', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${INSFORGE_CONFIG.anonKey}`,
-        },
-        body: formData,
+      // 4. Secure submission using XMLHttpRequest to avoid native fetch FormDataPart errors in React Native 0.85
+      const responseText = await new Promise<string>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://9s8ct2b5.functions.insforge.app/submit-vibe');
+        xhr.setRequestHeader('Authorization', `Bearer ${INSFORGE_CONFIG.anonKey}`);
+        
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(xhr.responseText);
+          } else {
+            reject(new Error(`Server returned status code ${xhr.status}: ${xhr.responseText}`));
+          }
+        };
+        
+        xhr.onerror = () => {
+          reject(new Error('Network request failed'));
+        };
+        
+        xhr.send(formData);
       });
 
-      const responseText = await res.text();
       let resJson: any = {};
       try {
         resJson = JSON.parse(responseText);
@@ -199,7 +220,7 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
         resJson = { error: responseText };
       }
 
-      if (!res.ok || resJson.error) {
+      if (resJson.error) {
         throw new Error(resJson.error || 'Server validation failed.');
       }
 
