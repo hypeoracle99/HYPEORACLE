@@ -36,7 +36,8 @@
     "plugins": [
       "expo-splash-screen",
       "expo-audio",
-      "expo-asset"
+      "expo-asset",
+      "./plugins/withRemoveActivityRecognition"
     ]
   }
 }

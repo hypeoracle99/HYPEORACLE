@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { 
-  Zap, Coins, BrainCircuit, Wallet, ChevronRight, Globe, TrendingUp
+  Zap, Coins, BrainCircuit, Wallet, ChevronRight, Globe, TrendingUp, Users
 } from 'lucide-react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
@@ -130,6 +130,14 @@ export function NavHeader() {
               color="#FF8C42"
             >
               Market
+            </NavItem>
+            <NavItem 
+              href="/community" 
+              icon={Users} 
+              active={pathname.startsWith('/community')} 
+              color="#FFAA00"
+            >
+              Community
             </NavItem>
             {publicKey && (
               <>

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import { 
-  Zap, Coins, BrainCircuit, Activity, TrendingUp
+  Zap, Coins, BrainCircuit, Activity, TrendingUp, Users
 } from 'lucide-react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
@@ -14,9 +14,9 @@ export function MobileNav() {
 
   const navItems = [
     { href: '/', icon: Zap, label: 'Dashboard', color: '#FF6B1A' },
+    { href: '/community', icon: Users, label: 'Quests', color: '#FFAA00' },
     { href: '/predict', icon: TrendingUp, label: 'Predict', color: '#fbbf24' },
     { href: '/sandbox', icon: BrainCircuit, label: 'Sandbox', color: '#06b6d4' },
-    { href: '/stake', icon: Activity, label: 'Stake', color: '#FF8C42' },
     { href: '/my-agent', icon: BrainCircuit, label: 'Agent', color: '#10b981' },
   ]
 
