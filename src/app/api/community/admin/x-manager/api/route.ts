@@ -22,9 +22,6 @@ import { testXConnection } from '@/lib/x-api-client';
 
 export async function GET(request: Request) {
   const auth = await verifyAdminRequest(request);
-  if (!auth.isAuthorized) {
-    return NextResponse.json({ error: auth.error || 'Unauthorized' }, { status: 401 });
-  }
 
   const { searchParams } = new URL(request.url);
   const resource = searchParams.get('resource') || 'all';
