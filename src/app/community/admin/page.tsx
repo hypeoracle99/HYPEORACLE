@@ -346,7 +346,7 @@ export default function AdminCommandCenter() {
     { id: 'rewards', label: 'Rewards', icon: Award },
     { id: 'sentiment', label: 'Sentiment', icon: HeartPulse },
     { id: 'ai_agent', label: 'AI Growth Agent', icon: Bot },
-    { id: 'social_content', label: 'Social Content', icon: Send },
+    { id: 'social_content', label: 'AI X Manager (𝕏)', icon: Sparkles },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -373,6 +373,14 @@ export default function AdminCommandCenter() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href="/admin/x-manager"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#FF6B1A] to-[#FFAA00] text-black text-xs font-display font-black shadow-[0_0_20px_rgba(255,107,26,0.4)] hover:brightness-110 active:scale-95 transition-all"
+            >
+              <span className="font-mono font-bold text-sm">𝕏</span>
+              <span>AI X MANAGER</span>
+              <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+            </Link>
             <Link
               href="/community"
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-white/80 transition-all"
@@ -457,6 +465,15 @@ export default function AdminCommandCenter() {
               </button>
             );
           })}
+          <div className="h-5 w-[1px] bg-white/10 mx-1 shrink-0" />
+          <Link
+            href="/admin/x-manager"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono font-bold text-[#FFAA00] bg-[#FFAA00]/10 hover:bg-[#FFAA00]/20 border border-[#FFAA00]/30 transition-all whitespace-nowrap shrink-0"
+          >
+            <span className="font-mono font-bold">𝕏</span>
+            <span>Open Dedicated Social Suite</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
         {/* TAB 1: OVERVIEW */}
@@ -509,6 +526,44 @@ export default function AdminCommandCenter() {
               >
                 Open AI Cockpit
               </button>
+            </div>
+
+            {/* AI X Manager Social Operations Banner Card */}
+            <div className="p-5 rounded-2xl bg-gradient-to-r from-white/[0.04] via-[#FF6B1A]/15 to-[#FFAA00]/10 border border-[#FF6B1A]/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_0_25px_rgba(255,107,26,0.15)]">
+              <div className="flex items-start gap-3">
+                <div className="p-3 rounded-xl bg-black border border-[#FF6B1A]/50 text-[#FFAA00] shrink-0">
+                  <span className="text-2xl font-bold font-mono leading-none">𝕏</span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-display font-bold text-white">
+                      AI X (Twitter) Autonomous Social Manager
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full bg-[#10B981]/20 border border-[#10B981]/30 text-[#10B981] text-[9px] font-mono font-bold">
+                      Online / Autopilot Ready
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/70 max-w-2xl mt-1">
+                    Manage @HypeOracle official presence, schedule automated background posts, generate protocol-grounded tweets, and review community mentions.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => setActiveTab('social_content')}
+                  className="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-mono text-white/80 transition-all"
+                >
+                  Quick Drafts
+                </button>
+                <Link
+                  href="/admin/x-manager"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#FF6B1A] to-[#FFAA00] text-black text-xs font-display font-black shadow-[0_0_15px_rgba(255,107,26,0.35)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+                >
+                  <span>Launch Dedicated Suite</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
 
             {/* Active Quests vs Recent Completions */}
