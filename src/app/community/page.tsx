@@ -9,7 +9,7 @@ import {
   Zap, Trophy, Users, Shield, ArrowRight, CheckCircle2, 
   ExternalLink, Copy, Check, Radio, Sparkles, TrendingUp,
   Share2, Flame, Award, ChevronRight, Lock, Activity,
-  Info, AlertCircle, RefreshCw
+  Info, AlertCircle, RefreshCw, Bot
 } from 'lucide-react';
 import { AmbientBackground, ScoreGauge } from '@/components/ui-primitives';
 import { 
@@ -156,7 +156,14 @@ export default function CommunityQuestHub() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Link 
+              href="/admin/x-manager"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF6B1A]/10 hover:bg-[#FF6B1A]/20 border border-[#FF6B1A]/30 text-xs font-mono text-[#FF6B1A] transition-all active:scale-95 font-bold"
+            >
+              <Bot className="w-3.5 h-3.5" />
+              <span>AI X Manager</span>
+            </Link>
             <Link 
               href="/community/admin"
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-white/80 transition-all active:scale-95"

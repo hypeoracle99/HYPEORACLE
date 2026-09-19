@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { 
-  Zap, Coins, BrainCircuit, Wallet, ChevronRight, Globe, TrendingUp, Users
+  Zap, Coins, BrainCircuit, Wallet, ChevronRight, Globe, TrendingUp, Users, Bot
 } from 'lucide-react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
@@ -138,6 +138,14 @@ export function NavHeader() {
               color="#FFAA00"
             >
               Community
+            </NavItem>
+            <NavItem 
+              href="/admin/x-manager" 
+              icon={Bot} 
+              active={pathname.startsWith('/admin/x-manager')} 
+              color="#FF6B1A"
+            >
+              AI X Manager
             </NavItem>
             {publicKey && (
               <>
