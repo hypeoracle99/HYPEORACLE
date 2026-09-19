@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/community/cron/social-autopilot",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
