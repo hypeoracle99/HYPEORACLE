@@ -2,7 +2,7 @@
   "expo": {
     "name": "hypeoracle-mobile",
     "slug": "hypeoracle-mobile",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -22,6 +22,7 @@
       "permissions": [
         "RECORD_AUDIO"
       ],
+      "versionCode": 2,
       "predictiveBackGestureEnabled": false,
       "package": "com.hypeoracle99.hypeoraclemobile"
     },
