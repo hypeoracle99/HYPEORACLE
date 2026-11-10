@@ -14,6 +14,7 @@ import {
 import bs58 from 'bs58';
 import { getOrCreateDePINKeypair, importPrivateWalletKey, clearStoredDePINKeypair, DePINIdentity } from './src/lib/secure-store';
 import { generateEphemeralKeyPair, buildConnectUrl, decryptPhantomResponse } from './src/lib/phantom';
+import { HomeScreen } from './src/screens/HomeScreen';
 import { RecordScreen } from './src/screens/RecordScreen';
 import { MarketScreen } from './src/screens/MarketScreen';
 import { PredictScreen } from './src/screens/PredictScreen';
@@ -45,10 +46,11 @@ import {
   Users,
   Sparkles,
   Trophy,
+  Flame,
 } from 'lucide-react-native';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'record' | 'market' | 'predict' | 'community' | 'hub'>('record');
+  const [activeTab, setActiveTab] = useState<'home' | 'market' | 'predict' | 'community' | 'hub'>('home');
   const [identity, setIdentity] = useState<DePINIdentity | null>(null);
   const [loadingIdentity, setLoadingIdentity] = useState(true);
   
@@ -272,8 +274,8 @@ export default function App() {
             <ActivityIndicator size="large" color="#FF6B1A" />
             <Text style={styles.loadingText}>Unlocking Secure Keychain...</Text>
           </View>
-        ) : activeTab === 'record' ? (
-          <RecordScreen identity={identity} onVibeSubmitted={handleVibeSubmitted} />
+        ) : activeTab === 'home' ? (
+          <HomeScreen identity={identity} onNavigateTab={setActiveTab} />
         ) : activeTab === 'market' ? (
           <MarketScreen identity={identity} />
         ) : activeTab === 'predict' ? (
@@ -464,12 +466,12 @@ export default function App() {
       {/* Cyberpunk custom Bottom Tab Navigation in Thumb Zone (5 Core Tabs) */}
       <View style={styles.tabBar}>
         <TouchableOpacity
-          style={[styles.tabItem, activeTab === 'record' && styles.activeTabItem]}
-          onPress={() => setActiveTab('record')}
+          style={[styles.tabItem, activeTab === 'home' && styles.activeTabItem]}
+          onPress={() => setActiveTab('home')}
         >
-          <Mic size={20} color={activeTab === 'record' ? '#FF6B1A' : 'rgba(255,255,255,0.3)'} />
-          <Text style={[styles.tabLabel, activeTab === 'record' && styles.activeTabLabel]}>
-            RECORD
+          <Flame size={20} color={activeTab === 'home' ? '#FF6B1A' : 'rgba(255,255,255,0.3)'} />
+          <Text style={[styles.tabLabel, activeTab === 'home' && styles.activeTabLabel]}>
+            HOME
           </Text>
         </TouchableOpacity>
 
