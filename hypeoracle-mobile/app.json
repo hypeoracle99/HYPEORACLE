@@ -22,7 +22,6 @@
       "permissions": [
         "RECORD_AUDIO"
       ],
-      "versionCode": 2,
       "predictiveBackGestureEnabled": false,
       "package": "com.hypeoracle99.hypeoraclemobile"
     },

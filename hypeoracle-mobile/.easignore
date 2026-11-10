@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Android build outputs & local caches (Prevents EBUSY checksums.lock errors)
+android/.gradle/
+android/build/
+android/app/build/
+android/.cxx/
+android/.idea/
+android/*.iml
+android/app/*.iml
+
+# iOS build outputs & local caches
+ios/Pods/
+ios/build/
+ios/*.xcworkspace
+ios/*.xcodeproj
+
+# Binaries & local screenshots
+*.apk
+*.aab
+emulator_current.png
+screen*.png
+screenshot*.png
