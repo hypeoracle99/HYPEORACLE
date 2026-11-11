@@ -16,6 +16,7 @@ import Svg, { Polyline, Line, Path, Circle, Defs, LinearGradient, Stop } from 'r
 import { Connection, PublicKey, Transaction, SystemProgram, Keypair, sendAndConfirmTransaction } from '@solana/web3.js';
 import { client } from '../lib/insforge';
 import { DePINIdentity } from '../lib/secure-store';
+import { THEME } from '../lib/theme';
 import { TrendingUp, Zap, Clock, Coins, CheckCircle, ArrowUpRight } from 'lucide-react-native';
 
 const RPC_ENDPOINT = 'https://api.mainnet-beta.solana.com';
@@ -109,7 +110,7 @@ function VibeMiniChart({ tokenMint, targetScore, status, outcome }: { tokenMint:
 
   const strokeColor = status === 'resolved' 
     ? (outcome === 'yes' ? '#22c55e' : '#ef4444') 
-    : '#FF6B1A';
+    : THEME.primary;
 
   const gradId = `grad-${tokenMint.slice(0, 8)}-${status}`;
 
@@ -431,7 +432,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
       <View style={[styles.card, isResolved && styles.cardResolved]}>
         <View style={styles.cardHeader}>
           <View style={styles.mintBadge}>
-            <Coins size={10} color="#FF6B1A" />
+            <Coins size={10} color={THEME.primary} />
             <Text style={styles.mintText}>
               Mint: {item.token_mint.slice(0, 4)}...{item.token_mint.slice(-4)}
             </Text>
@@ -596,7 +597,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           style={[styles.tab, activeTab === 'pools' && styles.activeTab]}
           onPress={() => setActiveTab('pools')}
         >
-          <TrendingUp size={14} color={activeTab === 'pools' ? '#FF6B1A' : '#777'} />
+          <TrendingUp size={14} color={activeTab === 'pools' ? THEME.primary : '#777'} />
           <Text style={[styles.tabLabel, activeTab === 'pools' && styles.activeTabLabel]}>
             ACTIVE
           </Text>
@@ -606,7 +607,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           style={[styles.tab, activeTab === 'my-bets' && styles.activeTab]}
           onPress={() => setActiveTab('my-bets')}
         >
-          <CheckCircle size={14} color={activeTab === 'my-bets' ? '#FF6B1A' : '#777'} />
+          <CheckCircle size={14} color={activeTab === 'my-bets' ? THEME.primary : '#777'} />
           <Text style={[styles.tabLabel, activeTab === 'my-bets' && styles.activeTabLabel]}>
             MY FORECASTS
           </Text>
@@ -616,7 +617,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           style={[styles.tab, activeTab === 'resolved' && styles.activeTab]}
           onPress={() => setActiveTab('resolved')}
         >
-          <Clock size={14} color={activeTab === 'resolved' ? '#FF6B1A' : '#777'} />
+          <Clock size={14} color={activeTab === 'resolved' ? THEME.primary : '#777'} />
           <Text style={[styles.tabLabel, activeTab === 'resolved' && styles.activeTabLabel]}>
             RESOLVED
           </Text>
@@ -625,7 +626,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
 
       {loading ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#FF6B1A" />
+          <ActivityIndicator size="large" color={THEME.primary} />
           <Text style={styles.loadingText}>Syncing consensus index...</Text>
         </View>
       ) : activeTab === 'pools' ? (
@@ -634,7 +635,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           renderItem={renderMarketItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.listContainer}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No active prediction pools found.</Text>
@@ -647,7 +648,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           renderItem={renderMarketItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.listContainer}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No past resolved pools found.</Text>
@@ -660,7 +661,7 @@ export function PredictScreen({ identity }: PredictScreenProps) {
           renderItem={renderBetItem}
           keyExtractor={keyExtractor}
           contentContainerStyle={styles.listContainer}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>Your logged forecasts will appear here.</Text>
@@ -768,7 +769,7 @@ const styles = StyleSheet.create({
   bannerLabel: {
     fontFamily: 'monospace',
     fontSize: 8,
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontWeight: 'bold',
     letterSpacing: 1.5,
   },
@@ -800,7 +801,7 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: '#FF6B1A',
+    borderBottomColor: THEME.primary,
   },
   tabLabel: {
     fontFamily: 'monospace',
@@ -810,7 +811,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   activeTabLabel: {
-    color: '#FF6B1A',
+    color: THEME.primary,
   },
   centerContainer: {
     flex: 1,
@@ -858,7 +859,7 @@ const styles = StyleSheet.create({
   mintBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,107,26,0.08)',
+    backgroundColor: 'rgba(0,255,136,0.08)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -867,7 +868,7 @@ const styles = StyleSheet.create({
   mintText: {
     fontFamily: 'monospace',
     fontSize: 9,
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontWeight: 'bold',
   },
   statusBadge: {
@@ -927,7 +928,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   chartTargetVal: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontWeight: 'bold',
   },
   chartSvgContainer: {
@@ -959,7 +960,7 @@ const styles = StyleSheet.create({
   },
   progressBarYes: {
     height: '100%',
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
   },
   progressBarNo: {
     height: '100%',
@@ -1087,7 +1088,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   accentText: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontWeight: 'bold',
   },
   claimSection: {
@@ -1124,9 +1125,9 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.4)',
   },
   liveBadge: {
-    backgroundColor: 'rgba(255,107,26,0.08)',
+    backgroundColor: 'rgba(0,255,136,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.2)',
+    borderColor: 'rgba(0,255,136,0.2)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
@@ -1134,7 +1135,7 @@ const styles = StyleSheet.create({
   liveText: {
     fontFamily: 'monospace',
     fontSize: 8.5,
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontWeight: 'bold',
   },
   claimBtn: {
@@ -1165,13 +1166,13 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     padding: 24,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,107,26,0.3)',
+    borderTopColor: 'rgba(0,255,136,0.3)',
   },
   modalHeader: {
     fontFamily: 'monospace',
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: THEME.primary,
     letterSpacing: 1.5,
     marginBottom: 4,
   },
@@ -1266,7 +1267,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.05)',
   },
   confirmBtn: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
   },
   btnLabel: {
     fontFamily: 'monospace',

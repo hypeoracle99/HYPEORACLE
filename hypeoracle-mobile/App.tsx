@@ -25,6 +25,7 @@ import { WalletHub } from './src/screens/WalletHub';
 import { StakeScreen } from './src/screens/StakeScreen';
 import { AgentScreen } from './src/screens/AgentScreen';
 import { EarningsScreen } from './src/screens/EarningsScreen';
+import { THEME } from './src/lib/theme';
 import {
   Mic,
   TrendingUp,
@@ -47,6 +48,8 @@ import {
   Sparkles,
   Trophy,
   Flame,
+  Activity,
+  Bell,
 } from 'lucide-react-native';
 
 export default function App() {
@@ -231,11 +234,17 @@ export default function App() {
     <View style={styles.safeBg}>
       <StatusBar barStyle="light-content" backgroundColor="#050507" />
       
-      {/* Header bar with In-App Wallet Prominence */}
+      {/* Header bar with In-App Wallet Prominence (Cyber-Emerald Theme) */}
       <View style={styles.header}>
         <View style={styles.titleGroup}>
-          <Text style={styles.headerTitle}>HYPEORACLE</Text>
-          <Text style={styles.headerSub}>DEPIN SENSOR CLIENT</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Activity size={18} color={THEME.primary} />
+            <Text style={styles.headerTitle}>HypeOracle</Text>
+          </View>
+          <View style={styles.onlineStatusRow}>
+            <View style={styles.onlineGreenDot} />
+            <Text style={styles.headerSub}>Oracle Online • Solana Mainnet</Text>
+          </View>
         </View>
 
         {/* Prominent In-App Wallet Quick Pill */}
@@ -248,7 +257,7 @@ export default function App() {
             }}
             activeOpacity={0.8}
           >
-            <Wallet size={14} color="#FF6B1A" />
+            <Wallet size={13} color={THEME.primary} />
             <Text style={styles.walletHeaderText}>
               {identity?.publicKey 
                 ? `${identity.publicKey.slice(0, 4)}...${identity.publicKey.slice(-4)}`
@@ -262,7 +271,7 @@ export default function App() {
             onPress={() => setSettingsOpen(true)}
             activeOpacity={0.8}
           >
-            <Settings size={18} color="#rgba(255,255,255,0.7)" />
+            <Settings size={18} color={THEME.textSecondary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -271,7 +280,7 @@ export default function App() {
       <View style={styles.contentView}>
         {loadingIdentity ? (
           <View style={styles.centerContainer}>
-            <ActivityIndicator size="large" color="#FF6B1A" />
+            <ActivityIndicator size="large" color={THEME.primary} />
             <Text style={styles.loadingText}>Unlocking Secure Keychain...</Text>
           </View>
         ) : activeTab === 'home' ? (
@@ -305,7 +314,7 @@ export default function App() {
                       setShowBackup(false);
                     }}
                   >
-                    <Icon size={15} color={active ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+                    <Icon size={15} color={active ? THEME.primary : 'rgba(255,255,255,0.4)'} />
                     <Text style={[styles.hubTabLabel, active && styles.hubTabLabelActive]}>
                       {tab.label}
                     </Text>
@@ -392,7 +401,7 @@ export default function App() {
                       style={[styles.modalTab, activeImportTab === 'phantom' && styles.modalTabActive]}
                       onPress={() => setActiveImportTab('phantom')}
                     >
-                      <Smartphone size={14} color={activeImportTab === 'phantom' ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+                      <Smartphone size={14} color={activeImportTab === 'phantom' ? THEME.primary : 'rgba(255,255,255,0.4)'} />
                       <Text style={[styles.modalTabLabel, activeImportTab === 'phantom' && styles.modalTabLabelActive]}>
                         PHANTOM
                       </Text>
@@ -401,7 +410,7 @@ export default function App() {
                       style={[styles.modalTab, activeImportTab === 'privateKey' && styles.modalTabActive]}
                       onPress={() => setActiveImportTab('privateKey')}
                     >
-                      <Key size={14} color={activeImportTab === 'privateKey' ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+                      <Key size={14} color={activeImportTab === 'privateKey' ? THEME.primary : 'rgba(255,255,255,0.4)'} />
                       <Text style={[styles.modalTabLabel, activeImportTab === 'privateKey' && styles.modalTabLabelActive]}>
                         BASE58 KEY
                       </Text>
@@ -463,13 +472,13 @@ export default function App() {
         )}
       </View>
 
-      {/* Cyberpunk custom Bottom Tab Navigation in Thumb Zone (5 Core Tabs) */}
+      {/* Cyber-Emerald custom Bottom Tab Navigation in Thumb Zone (5 Core Tabs) */}
       <View style={styles.tabBar}>
         <TouchableOpacity
           style={[styles.tabItem, activeTab === 'home' && styles.activeTabItem]}
           onPress={() => setActiveTab('home')}
         >
-          <Flame size={20} color={activeTab === 'home' ? '#FF6B1A' : 'rgba(255,255,255,0.3)'} />
+          <Activity size={20} color={activeTab === 'home' ? THEME.primary : THEME.textMuted} />
           <Text style={[styles.tabLabel, activeTab === 'home' && styles.activeTabLabel]}>
             HOME
           </Text>
@@ -479,7 +488,7 @@ export default function App() {
           style={[styles.tabItem, activeTab === 'market' && styles.activeTabItem]}
           onPress={() => setActiveTab('market')}
         >
-          <TrendingUp size={20} color={activeTab === 'market' ? '#FF6B1A' : 'rgba(255,255,255,0.3)'} />
+          <TrendingUp size={20} color={activeTab === 'market' ? THEME.primary : THEME.textMuted} />
           <Text style={[styles.tabLabel, activeTab === 'market' && styles.activeTabLabel]}>
             MARKET
           </Text>
@@ -489,7 +498,7 @@ export default function App() {
           style={[styles.tabItem, activeTab === 'predict' && styles.activeTabItem]}
           onPress={() => setActiveTab('predict')}
         >
-          <Sparkles size={20} color={activeTab === 'predict' ? '#FF6B1A' : 'rgba(255,255,255,0.3)'} />
+          <Sparkles size={20} color={activeTab === 'predict' ? THEME.primary : THEME.textMuted} />
           <Text style={[styles.tabLabel, activeTab === 'predict' && styles.activeTabLabel]}>
             PREDICT
           </Text>
@@ -499,7 +508,7 @@ export default function App() {
           style={[styles.tabItem, activeTab === 'community' && styles.activeTabItem]}
           onPress={() => setActiveTab('community')}
         >
-          <Users size={20} color={activeTab === 'community' ? '#FF6B1A' : 'rgba(255,255,255,0.3)'} />
+          <Users size={20} color={activeTab === 'community' ? THEME.primary : THEME.textMuted} />
           <Text style={[styles.tabLabel, activeTab === 'community' && styles.activeTabLabel]}>
             COMMUNITY
           </Text>
@@ -509,7 +518,7 @@ export default function App() {
           style={[styles.tabItem, activeTab === 'hub' && styles.activeTabItem]}
           onPress={() => setActiveTab('hub')}
         >
-          <Wallet size={20} color={activeTab === 'hub' ? '#FF6B1A' : 'rgba(255,255,255,0.3)'} />
+          <Wallet size={20} color={activeTab === 'hub' ? THEME.primary : THEME.textMuted} />
           <Text style={[styles.tabLabel, activeTab === 'hub' && styles.activeTabLabel]}>
             HUB
           </Text>
@@ -591,7 +600,7 @@ const styles = StyleSheet.create({
     height: 36,
   },
   walletHeaderText: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 10,
     fontWeight: 'bold',
@@ -600,26 +609,37 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#10b981',
+    backgroundColor: THEME.primary,
   },
   headerTitle: {
     fontFamily: 'monospace',
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: THEME.primary,
     letterSpacing: 2,
+  },
+  onlineStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 2,
+  },
+  onlineGreenDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: THEME.primary,
   },
   headerSub: {
     fontFamily: 'monospace',
     fontSize: 8,
-    color: 'rgba(255,255,255,0.3)',
-    letterSpacing: 1.5,
-    marginTop: 2,
+    color: 'rgba(255,255,255,0.4)',
+    letterSpacing: 1,
   },
   settingsBtn: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: 'rgba(255,107,26,0.05)',
+    backgroundColor: 'rgba(0,255,136,0.08)',
   },
   contentView: {
     flex: 1,
@@ -652,7 +672,7 @@ const styles = StyleSheet.create({
   },
   activeTabItem: {
     borderTopWidth: 2,
-    borderTopColor: '#FF6B1A',
+    borderTopColor: THEME.primary,
   },
   tabLabel: {
     fontFamily: 'monospace',
@@ -673,7 +693,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#0d0d14',
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.2)',
+    borderColor: 'rgba(0,255,136,0.25)',
     borderRadius: 24,
     padding: 24,
   },
@@ -687,7 +707,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 15,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: THEME.primary,
     letterSpacing: 1.5,
   },
   activeKeyBox: {
@@ -789,7 +809,7 @@ const styles = StyleSheet.create({
   modalTabActive: {
     backgroundColor: '#0d0d14',
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.15)',
+    borderColor: 'rgba(0,255,136,0.25)',
   },
   modalTabLabel: {
     fontFamily: 'monospace',
@@ -799,13 +819,13 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   modalTabLabelActive: {
-    color: '#FF6B1A',
+    color: THEME.primary,
   },
   phantomConnectContainer: {
     paddingVertical: 10,
   },
   phantomBtn: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
     height: 48,
     borderRadius: 12,
     flexDirection: 'row',
@@ -834,7 +854,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: THEME.primary,
     letterSpacing: 1.5,
   },
   importerSub: {
@@ -856,7 +876,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   importBtn: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
     height: 48, // Touch target compliance
     borderRadius: 12,
     alignItems: 'center',
@@ -914,7 +934,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: THEME.primary,
     letterSpacing: 2,
   },
   hubTabBar: {
@@ -932,7 +952,7 @@ const styles = StyleSheet.create({
   },
   hubTabItemActive: {
     borderBottomWidth: 2,
-    borderBottomColor: '#FF6B1A',
+    borderBottomColor: THEME.primary,
   },
   hubTabLabel: {
     fontFamily: 'monospace',
@@ -942,7 +962,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   hubTabLabelActive: {
-    color: '#FF6B1A',
+    color: THEME.primary,
   },
   hubContent: {
     flex: 1,

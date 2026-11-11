@@ -78,7 +78,7 @@ const ClaimRow = React.memo(({ claim, index }: { claim: Claim; index: number }) 
           <Text
             style={[
               styles.statusBadgeText,
-              { color: claim.claimed ? '#10b981' : '#FF6B1A' },
+              { color: claim.claimed ? '#10b981' : '#00FF88' },
             ]}
           >
             {claim.claimed ? '✓' : '⚡'}
@@ -97,7 +97,7 @@ const ClaimRow = React.memo(({ claim, index }: { claim: Claim; index: number }) 
         <Text
           style={[
             styles.earnedText,
-            { color: claim.claimed ? '#10b981' : '#FF6B1A' },
+            { color: claim.claimed ? '#10b981' : '#00FF88' },
           ]}
         >
           +{earnedSol} SOL
@@ -235,7 +235,7 @@ export function EarningsScreen({ identity }: EarningsScreenProps) {
 
         <View style={styles.statCard}>
           <Text style={styles.statLabel}>PENDING CLAIM</Text>
-          <Text style={[styles.statValue, { color: '#FF6B1A' }]}>
+          <Text style={[styles.statValue, { color: '#00FF88' }]}>
             {pendingSol.toFixed(5)}
           </Text>
           <Text style={styles.statUnit}>SOL</Text>
@@ -299,7 +299,7 @@ export function EarningsScreen({ identity }: EarningsScreenProps) {
               {claimResult.signature && (
                 <View style={styles.solscanLink}>
                   <Text style={styles.solscanText}>VIEW TX</Text>
-                  <ArrowUpRight size={10} color="#FF6B1A" />
+                  <ArrowUpRight size={10} color="#00FF88" />
                 </View>
               )}
             </TouchableOpacity>
@@ -334,7 +334,7 @@ export function EarningsScreen({ identity }: EarningsScreenProps) {
   if (loading && claims.length === 0) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#FF6B1A" />
+        <ActivityIndicator size="large" color="#00FF88" />
         <Text style={styles.loadingText}>RESOLVING EARNINGS LEDGER...</Text>
       </View>
     );
@@ -354,8 +354,8 @@ export function EarningsScreen({ identity }: EarningsScreenProps) {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor="#FF6B1A"
-            colors={['#FF6B1A']}
+            tintColor="#00FF88"
+            colors={['#00FF88']}
           />
         }
       />
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: '#00FF88',
     letterSpacing: 1,
     marginBottom: 8,
   },
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   claimButton: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: '#00FF88',
     height: 48,
     borderRadius: 12,
     alignItems: 'center',
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
   solscanText: {
     fontSize: 9,
     fontFamily: 'monospace',
-    color: '#FF6B1A',
+    color: '#00FF88',
   },
   panelInfo: {
     flexDirection: 'row',

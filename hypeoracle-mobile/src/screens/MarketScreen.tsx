@@ -15,6 +15,7 @@ import {
 import Svg, { Path, Defs, LinearGradient, Stop, Line } from 'react-native-svg';
 import { client } from '../lib/insforge';
 import { DePINIdentity } from '../lib/secure-store';
+import { THEME } from '../lib/theme';
 import {
   TrendingUp,
   Activity,
@@ -56,62 +57,62 @@ const DEFAULT_MARKET_TOKENS: MarketToken[] = [
     mint: '5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS',
     symbol: 'HYPE',
     name: 'HypeOracle Protocol',
-    hypeScore: 94,
-    confidence: 0.96,
+    hypeScore: 96.8,
+    confidence: 0.98,
     contributorCount: 486,
-    change24h: +28.4,
-    bondingCurvePercent: 78.5,
+    change24h: +42.7,
+    bondingCurvePercent: 88.5,
     priceSol: 0.0042,
     status: 'raging',
-    history: [62, 68, 74, 71, 80, 89, 94],
+    history: [65, 72, 78, 85, 91, 94, 96.8],
   },
   {
     mint: 'So11111111111111111111111111111111111111112',
     symbol: 'SOL',
     name: 'Solana',
-    hypeScore: 86,
-    confidence: 0.92,
+    hypeScore: 93.1,
+    confidence: 0.95,
     contributorCount: 842,
-    change24h: +14.2,
+    change24h: +12.3,
     bondingCurvePercent: 100,
     priceSol: 1.0,
     status: 'raging',
-    history: [75, 78, 80, 79, 82, 85, 86],
+    history: [78, 80, 84, 82, 88, 91, 93.1],
   },
   {
     mint: 'DezXAZ8z7PnrFcPykJzi56854ec165hah36E1erZyNMX',
     symbol: 'BONK',
     name: 'Bonk',
-    hypeScore: 78,
-    confidence: 0.88,
+    hypeScore: 90.4,
+    confidence: 0.91,
     contributorCount: 520,
-    change24h: +6.8,
+    change24h: +11.9,
     bondingCurvePercent: 100,
     priceSol: 0.00000021,
-    status: 'bullish',
-    history: [65, 70, 68, 72, 75, 74, 78],
+    status: 'raging',
+    history: [68, 72, 70, 79, 83, 87, 90.4],
   },
   {
     mint: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     symbol: 'WIF',
     name: 'dogwifhat',
-    hypeScore: 74,
-    confidence: 0.85,
+    hypeScore: 88.7,
+    confidence: 0.89,
     contributorCount: 380,
-    change24h: -3.4,
+    change24h: +9.6,
     bondingCurvePercent: 100,
     priceSol: 0.0125,
-    status: 'neutral',
-    history: [82, 80, 78, 76, 75, 72, 74],
+    status: 'bullish',
+    history: [72, 75, 78, 81, 80, 85, 88.7],
   },
   {
     mint: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN',
     symbol: 'JUP',
     name: 'Jupiter Exchange',
-    hypeScore: 82,
-    confidence: 0.89,
+    hypeScore: 85.2,
+    confidence: 0.88,
     contributorCount: 410,
-    change24h: +9.1,
+    change24h: +8.1,
     bondingCurvePercent: 100,
     priceSol: 0.0078,
     status: 'bullish',
@@ -137,15 +138,14 @@ function MiniSparkline({ data, isPositive, chartWidth = 90, chartHeight = 36 }: 
   }, '');
 
   const areaPath = `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${chartHeight} L ${points[0].x.toFixed(1)} ${chartHeight} Z`;
-
-  const strokeColor = isPositive ? '#10b981' : '#ef4444';
+  const strokeColor = isPositive ? THEME.primary : THEME.bearish;
   const gradId = `grad_${Math.random().toString(36).substring(2, 7)}`;
 
   return (
     <Svg width={chartWidth} height={chartHeight}>
       <Defs>
         <LinearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor={strokeColor} stopOpacity="0.3" />
+          <Stop offset="0" stopColor={strokeColor} stopOpacity="0.35" />
           <Stop offset="1" stopColor={strokeColor} stopOpacity="0.0" />
         </LinearGradient>
       </Defs>
@@ -179,8 +179,8 @@ function LargeSentimentChart({ data }: { data: number[] }) {
     <Svg width={chartWidth} height={chartHeight}>
       <Defs>
         <LinearGradient id="heroGradient" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#FF6B1A" stopOpacity="0.4" />
-          <Stop offset="1" stopColor="#FF6B1A" stopOpacity="0.0" />
+          <Stop offset="0" stopColor={THEME.primary} stopOpacity="0.35" />
+          <Stop offset="1" stopColor={THEME.primary} stopOpacity="0.0" />
         </LinearGradient>
       </Defs>
       {/* 80 Hype Threshold Trigger Line */}
@@ -189,12 +189,12 @@ function LargeSentimentChart({ data }: { data: number[] }) {
         y1={chartHeight - padding - ((80 - min) / (max - min)) * (chartHeight - padding * 2)}
         x2={chartWidth}
         y2={chartHeight - padding - ((80 - min) / (max - min)) * (chartHeight - padding * 2)}
-        stroke="rgba(255,107,26,0.3)"
+        stroke="rgba(0, 255, 136, 0.3)"
         strokeDasharray="4 4"
         strokeWidth="1"
       />
       <Path d={areaPath} fill="url(#heroGradient)" />
-      <Path d={linePath} fill="none" stroke="#FF6B1A" strokeWidth="2.5" strokeLinecap="round" />
+      <Path d={linePath} fill="none" stroke={THEME.primary} strokeWidth="2.5" strokeLinecap="round" />
     </Svg>
   );
 }
@@ -217,10 +217,10 @@ export function MarketScreen({ identity }: MarketScreenProps) {
         .order('score', { ascending: false });
 
       if (data && data.length > 0) {
-        // Merge with existing token metadata
+        // Merge with existing token metadata if available
       }
     } catch (err) {
-      // Fallbacks active
+      // Keep state resilient
     } finally {
       setRefreshing(false);
     }
@@ -262,11 +262,10 @@ export function MarketScreen({ identity }: MarketScreenProps) {
     if (!selectedToken) return;
     setSwapping(true);
     try {
-      // Simulate Bags.fm / Jupiter routing
       await new Promise((resolve) => setTimeout(resolve, 1200));
 
       Alert.alert(
-        '🔥 Hype Swap Executed!',
+        '⚡ Hype Swap Executed!',
         `Successfully bought ${swapAmount} SOL worth of $${selectedToken.symbol} at Hype Score ${selectedToken.hypeScore}.`
       );
       setSwapModalOpen(false);
@@ -282,11 +281,11 @@ export function MarketScreen({ identity }: MarketScreenProps) {
       {/* Search & Filter Bar */}
       <View style={styles.searchBarRow}>
         <View style={styles.searchInputWrap}>
-          <Search size={15} color="rgba(255,255,255,0.4)" />
+          <Search size={15} color={THEME.textMuted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search token mint or symbol..."
-            placeholderTextColor="rgba(255,255,255,0.3)"
+            placeholderTextColor={THEME.textDim}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -296,13 +295,13 @@ export function MarketScreen({ identity }: MarketScreenProps) {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 60 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />}
       >
         {/* Collective Hype Banner Card */}
         <View style={styles.heroCard}>
           <View style={styles.heroTopRow}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Flame size={18} color="#FF6B1A" />
+              <Activity size={18} color={THEME.primary} />
               <Text style={styles.heroTitle}>AGGREGATE SOLANA HYPE INDEX</Text>
             </View>
             <View style={styles.liveIndicator}>
@@ -312,10 +311,10 @@ export function MarketScreen({ identity }: MarketScreenProps) {
           </View>
 
           <View style={styles.heroScoreRow}>
-            <Text style={styles.heroScoreNum}>88.4</Text>
+            <Text style={styles.heroScoreNum}>96.8</Text>
             <View style={{ marginLeft: 12 }}>
               <View style={styles.heroStatusPill}>
-                <Text style={styles.heroStatusText}>🔥 RAGING BULLISH</Text>
+                <Text style={styles.heroStatusText}>⚡ STRONG HYPE</Text>
               </View>
               <Text style={styles.heroSubtext}>Trigger threshold &gt;80 reached across 6 tokens</Text>
             </View>
@@ -323,10 +322,10 @@ export function MarketScreen({ identity }: MarketScreenProps) {
 
           {/* SVG Hero Sentiment Chart */}
           <View style={styles.chartWrapper}>
-            <LargeSentimentChart data={[64, 71, 78, 75, 84, 86, 88.4]} />
+            <LargeSentimentChart data={[64, 71, 78, 85, 91, 94, 96.8]} />
             <View style={styles.chartLegend}>
               <Text style={styles.legendText}>7D SENTIMENT MOMENTUM</Text>
-              <Text style={styles.legendThreshold}>DASHED LINE: AUTO-BUY THRESHOLD (80)</Text>
+              <Text style={styles.legendThreshold}>DASHED: AUTO-BUY THRESHOLD (80)</Text>
             </View>
           </View>
         </View>
@@ -363,7 +362,7 @@ export function MarketScreen({ identity }: MarketScreenProps) {
                     <Text style={styles.tokenSymbol}>${token.symbol}</Text>
                     {isHighHype && (
                       <View style={styles.hotBadge}>
-                        <Flame size={10} color="#FF6B1A" />
+                        <Zap size={10} color={THEME.primary} />
                         <Text style={styles.hotBadgeText}>BUY TRIGGER</Text>
                       </View>
                     )}
@@ -400,7 +399,7 @@ export function MarketScreen({ identity }: MarketScreenProps) {
                 {/* SVG Sparkline */}
                 <View style={{ alignItems: 'flex-end', marginLeft: 16 }}>
                   <MiniSparkline data={token.history} isPositive={isPositive} />
-                  <Text style={[styles.changeText, { color: isPositive ? '#10b981' : '#ef4444' }]}>
+                  <Text style={[styles.changeText, { color: isPositive ? THEME.primary : THEME.bearish }]}>
                     {isPositive ? '+' : ''}{token.change24h}% (24H)
                   </Text>
                 </View>
@@ -416,7 +415,7 @@ export function MarketScreen({ identity }: MarketScreenProps) {
                   onPress={() => handleOpenSwap(token)}
                   activeOpacity={0.8}
                 >
-                  <Zap size={14} color="#050507" />
+                  <Zap size={14} color={THEME.onPrimary} />
                   <Text style={styles.swapActionText}>1-TAP HYPE BUY</Text>
                 </TouchableOpacity>
               </View>
@@ -432,7 +431,7 @@ export function MarketScreen({ identity }: MarketScreenProps) {
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Zap size={18} color="#FF6B1A" />
+                  <Zap size={18} color={THEME.primary} />
                   <Text style={styles.modalTitle}>BAGS HYPE SWAP</Text>
                 </View>
                 <TouchableOpacity onPress={() => setSwapModalOpen(false)}>
@@ -451,11 +450,11 @@ export function MarketScreen({ identity }: MarketScreenProps) {
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
                   <Text style={styles.infoLabel}>CURRENT HYPE SCORE</Text>
-                  <Text style={[styles.infoValue, { color: '#FF6B1A' }]}>{selectedToken.hypeScore}/100 🔥</Text>
+                  <Text style={[styles.infoValue, { color: THEME.primary }]}>{selectedToken.hypeScore}/100 ⚡</Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={styles.infoLabel}>DYNAMIC FEE SHARE</Text>
-                  <Text style={[styles.infoValue, { color: '#10b981' }]}>1.0% to contributors</Text>
+                  <Text style={[styles.infoValue, { color: THEME.primary }]}>1.0% to contributors</Text>
                 </View>
               </View>
 
@@ -466,7 +465,7 @@ export function MarketScreen({ identity }: MarketScreenProps) {
                 value={swapAmount}
                 onChangeText={setSwapAmount}
                 placeholder="0.1"
-                placeholderTextColor="rgba(255,255,255,0.3)"
+                placeholderTextColor={THEME.textDim}
               />
 
               <TouchableOpacity
@@ -475,11 +474,11 @@ export function MarketScreen({ identity }: MarketScreenProps) {
                 disabled={swapping}
               >
                 {swapping ? (
-                  <ActivityIndicator size="small" color="#050507" />
+                  <ActivityIndicator size="small" color={THEME.onPrimary} />
                 ) : (
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <Text style={styles.confirmSwapText}>EXECUTE SWAP VIA BAGS.FM</Text>
-                    <ArrowUpRight size={16} color="#050507" />
+                    <ArrowUpRight size={16} color={THEME.onPrimary} />
                   </View>
                 )}
               </TouchableOpacity>
@@ -494,7 +493,7 @@ export function MarketScreen({ identity }: MarketScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050507',
+    backgroundColor: THEME.bg,
     paddingHorizontal: 16,
     paddingTop: 12,
   },
@@ -504,25 +503,25 @@ const styles = StyleSheet.create({
   searchInputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0a0a10',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 12,
+    borderColor: THEME.border,
+    borderRadius: THEME.radiusMd,
     paddingHorizontal: 14,
-    height: 48, // 48px touch target compliance
+    height: 48,
     gap: 8,
   },
   searchInput: {
     flex: 1,
-    color: '#fff',
+    color: THEME.text,
     fontFamily: 'monospace',
     fontSize: 12,
   },
   heroCard: {
-    backgroundColor: '#0a0a12',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.25)',
-    borderRadius: 16,
+    borderColor: THEME.borderAccent,
+    borderRadius: THEME.radiusLg,
     padding: 16,
     marginBottom: 14,
   },
@@ -533,7 +532,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   heroTitle: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 10.5,
     fontWeight: 'bold',
@@ -543,7 +542,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: 'rgba(16,185,129,0.1)',
+    backgroundColor: 'rgba(0, 255, 136, 0.1)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
@@ -552,10 +551,10 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#10b981',
+    backgroundColor: THEME.primary,
   },
   liveText: {
-    color: '#10b981',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 9,
     fontWeight: 'bold',
@@ -566,13 +565,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   heroScoreNum: {
-    color: '#fff',
+    color: THEME.text,
     fontFamily: 'monospace',
     fontSize: 32,
     fontWeight: 'bold',
   },
   heroStatusPill: {
-    backgroundColor: 'rgba(255,107,26,0.15)',
+    backgroundColor: 'rgba(0, 255, 136, 0.15)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -580,13 +579,13 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   heroStatusText: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 10,
     fontWeight: 'bold',
   },
   heroSubtext: {
-    color: 'rgba(255,255,255,0.45)',
+    color: THEME.textSecondary,
     fontSize: 10,
   },
   chartWrapper: {
@@ -600,12 +599,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   legendText: {
-    color: 'rgba(255,255,255,0.4)',
+    color: THEME.textMuted,
     fontFamily: 'monospace',
     fontSize: 8.5,
   },
   legendThreshold: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 8.5,
   },
@@ -617,35 +616,35 @@ const styles = StyleSheet.create({
   filterBtn: {
     flex: 1,
     paddingVertical: 8,
-    backgroundColor: '#0a0a10',
+    backgroundColor: THEME.bgCard,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: THEME.border,
     alignItems: 'center',
   },
   filterBtnActive: {
-    borderColor: 'rgba(255,107,26,0.3)',
-    backgroundColor: 'rgba(255,107,26,0.1)',
+    borderColor: THEME.borderAccentStrong,
+    backgroundColor: 'rgba(0, 255, 136, 0.1)',
   },
   filterBtnText: {
-    color: 'rgba(255,255,255,0.4)',
+    color: THEME.textMuted,
     fontFamily: 'monospace',
     fontSize: 9,
     fontWeight: 'bold',
   },
   filterBtnTextActive: {
-    color: '#FF6B1A',
+    color: THEME.primary,
   },
   tokenCard: {
-    backgroundColor: '#0a0a12',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: THEME.border,
     borderRadius: 14,
     padding: 14,
     marginBottom: 10,
   },
   tokenCardHighHype: {
-    borderColor: 'rgba(255,107,26,0.35)',
+    borderColor: THEME.borderAccent,
   },
   tokenTopRow: {
     flexDirection: 'row',
@@ -654,7 +653,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   tokenSymbol: {
-    color: '#fff',
+    color: THEME.text,
     fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'monospace',
@@ -663,19 +662,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
-    backgroundColor: 'rgba(255,107,26,0.15)',
+    backgroundColor: 'rgba(0, 255, 136, 0.12)',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
   },
   hotBadgeText: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 8.5,
     fontWeight: 'bold',
   },
   tokenName: {
-    color: 'rgba(255,255,255,0.45)',
+    color: THEME.textSecondary,
     fontSize: 11,
     marginTop: 2,
   },
@@ -687,24 +686,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   scoreBadgeHot: {
-    backgroundColor: 'rgba(255,107,26,0.15)',
+    backgroundColor: 'rgba(0, 255, 136, 0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.4)',
+    borderColor: THEME.borderAccent,
   },
   scoreBadgeNormal: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   scoreValue: {
-    color: '#fff',
+    color: THEME.text,
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'monospace',
   },
   scoreValueHot: {
-    color: '#FF6B1A',
+    color: THEME.primary,
   },
   scoreScale: {
-    color: 'rgba(255,255,255,0.4)',
+    color: THEME.textMuted,
     fontSize: 10,
     fontFamily: 'monospace',
     marginLeft: 2,
@@ -713,30 +712,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#050507',
+    backgroundColor: THEME.bgSurface,
     borderRadius: 10,
     padding: 10,
     marginBottom: 12,
   },
   middleLabel: {
-    color: 'rgba(255,255,255,0.4)',
+    color: THEME.textMuted,
     fontFamily: 'monospace',
     fontSize: 8.5,
     marginBottom: 6,
   },
   progressBarBg: {
     height: 5,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 3,
     overflow: 'hidden',
     marginBottom: 4,
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
   },
   bondingText: {
-    color: '#10b981',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 9,
     fontWeight: 'bold',
@@ -753,13 +752,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   contributorsText: {
-    color: 'rgba(255,255,255,0.4)',
+    color: THEME.textMuted,
     fontSize: 10,
     fontFamily: 'monospace',
   },
   swapActionBtn: {
-    height: 48, // 48px touch target compliance
-    backgroundColor: '#FF6B1A',
+    height: 48,
+    backgroundColor: THEME.primary,
     borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -768,7 +767,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   swapActionText: {
-    color: '#050507',
+    color: THEME.onPrimary,
     fontFamily: 'monospace',
     fontSize: 11,
     fontWeight: 'bold',
@@ -782,9 +781,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: '#0a0a12',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.3)',
+    borderColor: THEME.borderAccentStrong,
     borderRadius: 16,
     padding: 20,
     width: '100%',
@@ -797,47 +796,47 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalTitle: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 14,
     fontWeight: 'bold',
     letterSpacing: 1,
   },
   modalDesc: {
-    color: 'rgba(255,255,255,0.6)',
+    color: THEME.textSecondary,
     fontSize: 12,
     lineHeight: 17,
     marginBottom: 16,
   },
   tokenInfoBox: {
-    backgroundColor: '#050507',
+    backgroundColor: THEME.bgSurface,
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
   },
   infoLabel: {
-    color: 'rgba(255,255,255,0.4)',
+    color: THEME.textMuted,
     fontFamily: 'monospace',
     fontSize: 9.5,
   },
   infoValue: {
-    color: '#fff',
+    color: THEME.text,
     fontFamily: 'monospace',
     fontSize: 11,
     fontWeight: 'bold',
   },
   inputLabel: {
-    color: 'rgba(255,255,255,0.5)',
+    color: THEME.textSecondary,
     fontFamily: 'monospace',
     fontSize: 9.5,
     marginBottom: 6,
   },
   amountInput: {
-    backgroundColor: '#050507',
+    backgroundColor: THEME.bgSurface,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: THEME.border,
     borderRadius: 10,
-    color: '#fff',
+    color: THEME.text,
     fontFamily: 'monospace',
     fontSize: 14,
     height: 48,
@@ -846,17 +845,16 @@ const styles = StyleSheet.create({
   },
   confirmSwapBtn: {
     height: 48,
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   confirmSwapText: {
-    color: '#050507',
+    color: THEME.onPrimary,
     fontFamily: 'monospace',
     fontSize: 11,
     fontWeight: 'bold',
     letterSpacing: 0.5,
   },
 });
-

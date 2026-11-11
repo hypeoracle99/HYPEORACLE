@@ -92,7 +92,7 @@ export function SoulprintScreen({ identity }: SoulprintScreenProps) {
       return {
         level: 1,
         name: 'GENESIS NODE',
-        color: '#FF6B1A', // Fire Orange
+        color: '#00FF88', // Fire Orange
         glow: 'rgba(255,107,26,0.15)',
         desc: 'Standard DePIN staker node. Voice recording sensors enabled.'
       };
@@ -168,7 +168,7 @@ export function SoulprintScreen({ identity }: SoulprintScreenProps) {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#FF6B1A" />
+        <ActivityIndicator size="large" color="#00FF88" />
         <Text style={styles.loadingText}>Syncing staker node...</Text>
       </View>
     );
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   mintButton: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: '#00FF88',
     height: 48, // Touch target compliance
     borderRadius: 12,
     alignItems: 'center',

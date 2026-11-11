@@ -142,7 +142,7 @@ export function OracleFeedScreen({ identity }: OracleFeedScreenProps) {
                 style={styles.actionBtn}
                 onPress={() => handleViewOnSolscan(item.tx_signature)}
               >
-                <ArrowUpRight size={12} color="#FF6B1A" />
+                <ArrowUpRight size={12} color="#00FF88" />
               </TouchableOpacity>
             </View>
           </View>
@@ -161,7 +161,7 @@ export function OracleFeedScreen({ identity }: OracleFeedScreenProps) {
   return (
     <View style={styles.container}>
       <View style={styles.banner}>
-        <Cpu size={16} color="#FF6B1A" />
+        <Cpu size={16} color="#00FF88" />
         <Text style={styles.bannerText}>
           VERIFIED SOLANA MEMO LEDGER LOGS
         </Text>
@@ -169,7 +169,7 @@ export function OracleFeedScreen({ identity }: OracleFeedScreenProps) {
 
       {loading ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#FF6B1A" />
+          <ActivityIndicator size="large" color="#00FF88" />
           <Text style={styles.loadingText}>Reading Solana ledger feed...</Text>
         </View>
       ) : (
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: '#00FF88',
     letterSpacing: 1,
   },
   centerContainer: {

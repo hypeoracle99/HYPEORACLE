@@ -30,6 +30,7 @@ import {
   ChevronDown,
 } from 'lucide-react-native';
 import { DePINIdentity } from '../lib/secure-store';
+import { THEME } from '../lib/theme';
 
 // Set global Buffer polyfill using globalThis
 if (typeof (globalThis as any).Buffer === 'undefined') {
@@ -265,7 +266,7 @@ export function WalletHub({ identity }: WalletHubProps) {
   if (loading && balances.length === 0) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#FF6B1A" />
+        <ActivityIndicator size="large" color={THEME.primary} />
         <Text style={styles.loadingText}>CONNECTING TO SOLANA BLOCKCHAIN...</Text>
       </View>
     );
@@ -294,7 +295,7 @@ export function WalletHub({ identity }: WalletHubProps) {
                 setRevealKey(false);
               }}
             >
-              <Icon size={14} color={active ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+              <Icon size={14} color={active ? THEME.primary : 'rgba(255,255,255,0.4)'} />
               <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
                 {tab.label}
               </Text>
@@ -311,8 +312,8 @@ export function WalletHub({ identity }: WalletHubProps) {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={handleRefresh}
-              tintColor="#FF6B1A"
-              colors={['#FF6B1A']}
+              tintColor={THEME.primary}
+              colors={[THEME.primary]}
             />
           ) : undefined
         }
@@ -336,7 +337,7 @@ export function WalletHub({ identity }: WalletHubProps) {
                 style={styles.copyBtnMini}
                 onPress={() => copyToClipboard(identity?.publicKey || '', 'Wallet Address')}
               >
-                <Copy size={10} color="#FF6B1A" />
+                <Copy size={10} color={THEME.primary} />
                 <Text style={styles.copyBtnText}>COPY ADDRESS</Text>
               </TouchableOpacity>
             </View>
@@ -404,7 +405,7 @@ export function WalletHub({ identity }: WalletHubProps) {
                     : 'Select token'}
                 </Text>
               </View>
-              <ChevronDown size={14} color="#FF6B1A" />
+              <ChevronDown size={14} color={THEME.primary} />
             </TouchableOpacity>
 
             {showTokenSelector && (
@@ -573,7 +574,7 @@ export function WalletHub({ identity }: WalletHubProps) {
                   );
                 }}
               >
-                <Eye size={14} color="#FF6B1A" />
+                <Eye size={14} color={THEME.primary} />
                 <Text style={styles.revealBtnText}>REVEAL STAKER SECRET KEY</Text>
               </TouchableOpacity>
             )}
@@ -620,7 +621,7 @@ const styles = StyleSheet.create({
   },
   tabItemActive: {
     borderBottomWidth: 2,
-    borderBottomColor: '#FF6B1A',
+    borderBottomColor: THEME.primary,
   },
   tabLabel: {
     fontFamily: 'monospace',
@@ -630,7 +631,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   tabLabelActive: {
-    color: '#FF6B1A',
+    color: THEME.primary,
   },
   scrollContainer: {
     flex: 1,
@@ -691,9 +692,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255,107,26,0.05)',
+    backgroundColor: 'rgba(0,255,136,0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.2)',
+    borderColor: 'rgba(0,255,136,0.25)',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -702,7 +703,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 8,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: THEME.primary,
     letterSpacing: 0.5,
   },
   sectionHeader: {
@@ -830,7 +831,7 @@ const styles = StyleSheet.create({
   maxText: {
     fontFamily: 'monospace',
     fontSize: 8,
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontWeight: 'bold',
     marginBottom: 6,
   },
@@ -896,7 +897,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
   sendBtn: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
     height: 48,
     borderRadius: 12,
     alignItems: 'center',
@@ -904,7 +905,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   disabledSendBtn: {
-    backgroundColor: 'rgba(255,107,26,0.2)',
+    backgroundColor: 'rgba(0,255,136,0.2)',
     opacity: 0.5,
   },
   sendBtnContent: {
@@ -987,7 +988,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 10,
@@ -1026,8 +1027,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.3)',
-    backgroundColor: 'rgba(255,107,26,0.03)',
+    borderColor: 'rgba(0,255,136,0.3)',
+    backgroundColor: 'rgba(0,255,136,0.05)',
     borderRadius: 12,
     height: 48,
   },
@@ -1035,7 +1036,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: THEME.primary,
     letterSpacing: 0.5,
   },
   privateKeyBox: {
@@ -1070,7 +1071,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
     height: 38,
     borderRadius: 8,
   },

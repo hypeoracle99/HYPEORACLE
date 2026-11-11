@@ -105,7 +105,7 @@ export function AgentScreen({ identity }: AgentScreenProps) {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#FF6B1A" />
+        <ActivityIndicator size="large" color="#00FF88" />
         <Text style={styles.loadingText}>SYNTHESIZING COGNITIVE PROFILE...</Text>
       </View>
     );
@@ -140,7 +140,7 @@ export function AgentScreen({ identity }: AgentScreenProps) {
           <View style={styles.agentCard}>
             <View style={styles.agentHeader}>
               <View style={styles.avatarCircle}>
-                <BrainCircuit size={28} color="#FF6B1A" />
+                <BrainCircuit size={28} color="#00FF88" />
               </View>
               <View>
                 <Text style={styles.agentName}>{profile.agent_name.toUpperCase()}</Text>
@@ -192,7 +192,7 @@ export function AgentScreen({ identity }: AgentScreenProps) {
               {autonomyUnlocked ? (
                 <Unlock size={14} color="#10b981" />
               ) : (
-                <Lock size={14} color="#FF6B1A" />
+                <Lock size={14} color="#00FF88" />
               )}
             </View>
             <Text style={styles.panelDesc}>
@@ -245,9 +245,9 @@ export function AgentScreen({ identity }: AgentScreenProps) {
               maximumValue={0.05}
               step={0.001}
               value={Number(profile.max_position_size) || 0.01}
-              minimumTrackTintColor="#FF6B1A"
+              minimumTrackTintColor="#00FF88"
               maximumTrackTintColor="rgba(255,255,255,0.05)"
-              thumbTintColor="#FF6B1A"
+              thumbTintColor="#00FF88"
               onSlidingComplete={(val: number) => handleUpdateSetting('max_position_size', val)}
             />
           </View>
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: '#00FF88',
     letterSpacing: 1.5,
     marginVertical: 12,
   },
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   trainButton: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: '#00FF88',
     width: '100%',
     height: 48,
     borderRadius: 12,
@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: '#00FF88',
   },
   slider: {
     width: '100%',
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.3)',
   },
   gridBtnTextActive: {
-    color: '#FF6B1A',
+    color: '#00FF88',
   },
   gridBtnDesc: {
     fontSize: 8,
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: '#00FF88',
     letterSpacing: 1,
   },
 });

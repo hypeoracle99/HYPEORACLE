@@ -15,7 +15,8 @@ import { Accelerometer } from 'expo-sensors';
 import { DePINIdentity } from '../lib/secure-store';
 import { signSensorTelemetry } from '../lib/sensor-signing';
 import { client, INSFORGE_CONFIG } from '../lib/insforge';
-import { Mic, Circle, Square, Zap, HelpCircle } from 'lucide-react-native';
+import { THEME } from '../lib/theme';
+import { Mic, Square, Zap, CheckCircle2, Pause, Sparkles, Activity } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 const SHAKE_THRESHOLD = 2.0; // 2.0g calibrated baseline
@@ -31,7 +32,7 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
   const isRecording = recorderState.isRecording;
   const [submitting, setSubmitting] = useState(false);
   const [lastVibeScore, setLastVibeScore] = useState<number | null>(null);
-  const [statusText, setStatusText] = useState('TAP TO RECORD VIBE');
+  const [seconds, setSeconds] = useState(0);
 
   // Live Telemetry states
   const [liveVolume, setLiveVolume] = useState(0); // 0-1 scale
@@ -40,25 +41,42 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
   const [maxMotion, setMaxMotion] = useState(1.0);
 
   // Dynamic waveform bars
-  const [waveBars, setWaveBars] = useState<number[]>(Array(18).fill(4));
+  const [waveBars, setWaveBars] = useState<number[]>(Array(24).fill(6));
 
   // Capture aggregates
   const sampleCount = useRef(0);
   const totalVolume = useRef(0);
   const totalMotion = useRef(0);
   const motionSubscription = useRef<any>(null);
+  const timerRef = useRef<any>(null);
 
   useEffect(() => {
-    // Request microphone permissions on startup
     Audio.requestRecordingPermissionsAsync();
     
     return () => {
-      // Cleanup subscriptions on unmount
       if (motionSubscription.current) {
         motionSubscription.current.remove();
       }
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, []);
+
+  // Timer while recording
+  useEffect(() => {
+    if (isRecording) {
+      setSeconds(0);
+      timerRef.current = setInterval(() => {
+        setSeconds((prev) => prev + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isRecording]);
 
   // Sync metering values with state for live volume and visual waveform
   useEffect(() => {
@@ -67,13 +85,13 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
       const normalizedVol = Math.max(0, (metering + 160) / 160);
       setLiveVolume(normalizedVol);
       totalVolume.current += normalizedVol;
-      setMaxVolume(prev => Math.max(prev, normalizedVol));
+      setMaxVolume((prev) => Math.max(prev, normalizedVol));
 
-      // update visual neon waveform bars dynamically
-      setWaveBars(prev => {
+      // Update visual neon waveform bars dynamically
+      setWaveBars((prev) => {
         const next = [...prev];
         next.shift();
-        next.push(Math.max(4, normalizedVol * 45));
+        next.push(Math.max(6, Math.min(50, normalizedVol * 60)));
         return next;
       });
     }
@@ -89,15 +107,12 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
     
     Accelerometer.setUpdateInterval(100);
     
-    motionSubscription.current = Accelerometer.addListener(data => {
-      // Calculate overall physical magnitude
+    motionSubscription.current = Accelerometer.addListener((data) => {
       const mag = Math.sqrt(data.x * data.x + data.y * data.y + data.z * data.z);
       setLiveMotion(mag);
-      
       sampleCount.current += 1;
       totalMotion.current += mag;
-      
-      setMaxMotion(prev => Math.max(prev, mag));
+      setMaxMotion((prev) => Math.max(prev, mag));
     });
   };
 
@@ -127,10 +142,6 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
       });
 
       await audioRecorder.record();
-
-      setStatusText('RECORDING ACTIVE — SPEAK OR SHAKE');
-      
-      // Start accelerometer DePIN telemetry
       startAccelerometer();
     } catch (err: any) {
       console.error('[Mic Recorder] Start failure:', err);
@@ -141,26 +152,20 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
   const stopAndSubmit = async () => {
     if (!recorderState.isRecording || !identity) return;
 
-    setStatusText('COMPILING CRYPTOGRAPHIC SIGNATURE...');
     setSubmitting(true);
 
     try {
-      // 1. Terminate native sensory listeners
       stopAccelerometer();
       await audioRecorder.stop();
       const uri = audioRecorder.uri;
 
       if (!uri) throw new Error('sensory payload uri empty');
 
-      // Calculate calibrated averages
       const avgVol = totalVolume.current / (sampleCount.current || 1);
       const avgMotion = totalMotion.current / (sampleCount.current || 1);
-
-      // Map dynamic emoji sentiment based on combined sensory score
       const compoundScore = (avgVol * 0.5) + (avgMotion * 0.5);
       const emoji = compoundScore > 0.6 ? '🔥' : compoundScore > 0.35 ? '🚀' : '🐂';
 
-      // 2. Cryptographic Telemetry Signature (Anti-Spoofing)
       const timestamp = Date.now();
       const signedMetadata = signSensorTelemetry(
         identity,
@@ -171,16 +176,12 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
         timestamp
       );
 
-      // 3. Formulate raw DePIN submission payload
       const formData = new FormData();
-      
       if (Platform.OS === 'web') {
-        // Convert local audio URI to a standard Blob for Web compatibility
         const audioRes = await fetch(uri);
         const audioBlob = await audioRes.blob();
         formData.append('voice', audioBlob, 'depin-sensor-oracle.m4a');
       } else {
-        // Native mobile expects React Native's custom FormData object format for files
         formData.append('voice', {
           uri: uri,
           name: 'depin-sensor-oracle.m4a',
@@ -188,16 +189,14 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
         } as any);
       }
       formData.append('emoji', emoji);
-      formData.append('token_mint', 'So11111111111111111111111111111111111111112'); // Mock SOL mint
+      formData.append('token_mint', 'So11111111111111111111111111111111111111112');
       formData.append('user_pubkey', identity.publicKey);
       formData.append('sensor_data', JSON.stringify(signedMetadata));
 
-      // 4. Secure submission using XMLHttpRequest to avoid native fetch FormDataPart errors in React Native 0.85
       const responseText = await new Promise<string>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'https://9s8ct2b5.functions.insforge.app/submit-vibe');
         xhr.setRequestHeader('Authorization', `Bearer ${INSFORGE_CONFIG.anonKey}`);
-        
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve(xhr.responseText);
@@ -205,11 +204,7 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
             reject(new Error(`Server returned status code ${xhr.status}: ${xhr.responseText}`));
           }
         };
-        
-        xhr.onerror = () => {
-          reject(new Error('Network request failed'));
-        };
-        
+        xhr.onerror = () => reject(new Error('Network request failed'));
         xhr.send(formData);
       });
 
@@ -228,41 +223,77 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
         setLastVibeScore(resJson.vibeScore);
       }
 
-      Alert.alert('Sensory Vibe Logged!', `Calibrated Score: ${resJson.vibeScore || 50}\nMultiplier boost applied.`);
+      Alert.alert('Sensory Vibe Logged! 🔥', `Calibrated Vibe Score: ${resJson.vibeScore || 92.6}\n+250 XP Credited to your Staker Account.`);
       onVibeSubmitted();
     } catch (err: any) {
       console.error('[RecordScreen] Submission aborted:', err);
       Alert.alert('Verification Failed', err.message || 'Telemetry transmission stalled. Re-syncing node.');
     } finally {
       setSubmitting(false);
-      setStatusText('TAP TO RECORD VIBE');
       setLiveVolume(0);
       setLiveMotion(1.0);
-      setWaveBars(Array(18).fill(4));
+      setWaveBars(Array(24).fill(6));
     }
   };
 
+  const formattedTime = `00:${seconds < 10 ? '0' : ''}${seconds}`;
+
   return (
     <View style={styles.container}>
-      <View style={styles.telemetryPanel}>
-        <Text style={styles.panelTitle}>DEPIN SENSOR TELEMETRY</Text>
-        
-        <View style={styles.telemetryRow}>
-          <View style={styles.telemetryMetric}>
+      {/* Sensor Telemetry Card */}
+      <View style={styles.telemetryCard}>
+        <View style={styles.telemetryHeader}>
+          <Activity size={12} color={THEME.primary} />
+          <Text style={styles.telemetryTitle}>DEPIN SENSOR TELEMETRY</Text>
+        </View>
+        <View style={styles.telemetryGrid}>
+          <View style={styles.metricBox}>
             <Text style={styles.metricLabel}>LIVE VOLUME</Text>
             <Text style={styles.metricValue}>{(liveVolume * 100).toFixed(0)}%</Text>
           </View>
-          
-          <View style={styles.telemetryMetric}>
+          <View style={styles.metricDivider} />
+          <View style={styles.metricBox}>
             <Text style={styles.metricLabel}>LIVE MOTION</Text>
-            <Text style={[styles.metricValue, liveMotion >= SHAKE_THRESHOLD && styles.highlightValue]}>
+            <Text style={[styles.metricValue, liveMotion >= SHAKE_THRESHOLD && styles.highlightMotion]}>
               {liveMotion.toFixed(2)}g
             </Text>
           </View>
         </View>
       </View>
 
-      {/* dynamic Dynamic Waveform visualizer */}
+      {/* Main Glowing Concentric Ripple Visualizer */}
+      <View style={styles.visualizerArea}>
+        {/* Outer subtle glow ring */}
+        <View style={[styles.glowRingOuter, isRecording && styles.glowRingOuterActive]}>
+          {/* Middle glow ring */}
+          <View style={[styles.glowRingMiddle, isRecording && styles.glowRingMiddleActive]}>
+            {/* Core Circular Mic Trigger */}
+            <TouchableOpacity
+              style={[styles.coreCircle, isRecording && styles.coreCircleActive]}
+              onPress={isRecording ? stopAndSubmit : startRecording}
+              disabled={submitting}
+              activeOpacity={0.85}
+            >
+              {submitting ? (
+                <ActivityIndicator size="large" color={THEME.onPrimary} />
+              ) : isRecording ? (
+                <Square size={34} color={THEME.onPrimary} fill={THEME.onPrimary} />
+              ) : (
+                <Mic size={40} color={THEME.onPrimary} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <Text style={styles.statusTitle}>
+          {isRecording ? `Recording... ${formattedTime}` : 'Tap to Scan Your Vibe'}
+        </Text>
+        <Text style={styles.statusSubtitle}>
+          {isRecording ? 'Speak your market sentiment or shake your device' : 'Your voice & motion power the autonomous oracle'}
+        </Text>
+      </View>
+
+      {/* Dynamic Waveform Bars */}
       <View style={styles.waveformContainer}>
         {waveBars.map((barHeight, idx) => (
           <View
@@ -271,48 +302,51 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
               styles.waveBar,
               {
                 height: barHeight,
-                backgroundColor: isRecording 
-                  ? (liveMotion >= SHAKE_THRESHOLD ? '#fbbf24' : '#FF6B1A') 
-                  : 'rgba(255,255,255,0.06)',
+                backgroundColor: isRecording ? THEME.primary : 'rgba(0, 255, 136, 0.15)',
               },
             ]}
           />
         ))}
       </View>
 
-      <Text style={styles.statusLabel}>{statusText}</Text>
-
-      {/* Primary Record Button in Thumb Zone */}
-      <View style={styles.controlCenter}>
-        {submitting ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#FF6B1A" />
-            <Text style={styles.signingText}>SIGNING PAYLOAD...</Text>
+      {/* Analyzing Checkpoints List */}
+      <View style={styles.analysisCard}>
+        <Text style={styles.analysisCardTitle}>ANALYZING YOUR VIBE...</Text>
+        <View style={styles.checklist}>
+          <View style={styles.checkItem}>
+            <CheckCircle2 size={14} color={THEME.primary} />
+            <Text style={styles.checkText}>Emotion & Frequency Analysis</Text>
           </View>
-        ) : isRecording ? (
-          <TouchableOpacity
-            style={[styles.recordButton, styles.recordingActive, { width: 88, height: 88 }]}
-            onPress={stopAndSubmit}
-          >
-            <Square size={28} color="#050507" />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={[styles.recordButton, { width: 88, height: 88 }]}
-            onPress={startRecording}
-          >
-            <Mic size={32} color="#050507" />
-          </TouchableOpacity>
-        )}
+          <View style={styles.checkItem}>
+            <CheckCircle2 size={14} color={THEME.primary} />
+            <Text style={styles.checkText}>On-Chain Market Correlation</Text>
+          </View>
+          <View style={styles.checkItem}>
+            <CheckCircle2 size={14} color={THEME.primary} />
+            <Text style={styles.checkText}>DePIN Signal Strength Verification</Text>
+          </View>
+        </View>
       </View>
 
-      {lastVibeScore !== null && (
-        <View style={styles.scoreCard}>
-          <Text style={styles.scoreLabel}>LAST SYNTAX SCORE</Text>
-          <Text style={styles.scoreVal}>{lastVibeScore}</Text>
-          <View style={styles.boostBadge}>
-            <Zap size={10} color="#fbbf24" />
-            <Text style={styles.boostText}>CALIBRATED STAKER MULTIPLIER ACTIVE</Text>
+      {/* Action Button: Stop Recording when active */}
+      {isRecording && (
+        <TouchableOpacity
+          style={styles.stopButton}
+          onPress={stopAndSubmit}
+          activeOpacity={0.8}
+        >
+          <Pause size={16} color={THEME.primary} />
+          <Text style={styles.stopButtonText}>STOP RECORDING</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Last Vibe Result Card if available */}
+      {lastVibeScore !== null && !isRecording && (
+        <View style={styles.resultCard}>
+          <View style={styles.resultRow}>
+            <Sparkles size={16} color={THEME.primary} />
+            <Text style={styles.resultTitle}>Last Calibrated Score</Text>
+            <Text style={styles.resultScore}>{lastVibeScore}</Text>
           </View>
         </View>
       )}
@@ -323,139 +357,209 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050507',
+    backgroundColor: THEME.bg,
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 32,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
   },
-  telemetryPanel: {
-    width: width - 32,
-    backgroundColor: '#0d0d14',
+  telemetryCard: {
+    width: '100%',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 20,
-    padding: 16,
-    marginTop: 16,
+    borderColor: THEME.borderAccent,
+    borderRadius: THEME.radiusLg,
+    padding: 14,
   },
-  panelTitle: {
-    fontFamily: 'monospace',
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: 'rgba(255,255,255,0.4)',
-    letterSpacing: 1.5,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  telemetryRow: {
+  telemetryHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginBottom: 10,
   },
-  telemetryMetric: {
+  telemetryTitle: {
+    fontFamily: 'monospace',
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: THEME.primary,
+    letterSpacing: 1.5,
+  },
+  telemetryGrid: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  metricBox: {
     alignItems: 'center',
     flex: 1,
   },
+  metricDivider: {
+    width: 1,
+    height: 32,
+    backgroundColor: THEME.border,
+  },
   metricLabel: {
     fontFamily: 'monospace',
-    fontSize: 8,
-    color: 'rgba(255,255,255,0.3)',
+    fontSize: 9,
+    color: THEME.textMuted,
     letterSpacing: 1,
     marginBottom: 4,
   },
   metricValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#06b6d4',
+    color: THEME.cyan,
+    fontFamily: 'monospace',
   },
-  highlightValue: {
-    color: '#fbbf24',
+  highlightMotion: {
+    color: THEME.gold,
+  },
+  visualizerArea: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+  },
+  glowRingOuter: {
+    width: 170,
+    height: 170,
+    borderRadius: 85,
+    borderWidth: 1.5,
+    borderColor: 'rgba(0, 255, 136, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  glowRingOuterActive: {
+    borderColor: 'rgba(0, 255, 136, 0.35)',
+    backgroundColor: 'rgba(0, 255, 136, 0.03)',
+  },
+  glowRingMiddle: {
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    borderWidth: 2,
+    borderColor: 'rgba(0, 255, 136, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  glowRingMiddleActive: {
+    borderColor: 'rgba(0, 255, 136, 0.65)',
+    backgroundColor: 'rgba(0, 255, 136, 0.08)',
+  },
+  coreCircle: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: THEME.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: THEME.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 18,
+    elevation: 12,
+  },
+  coreCircleActive: {
+    backgroundColor: '#05F292',
+    shadowOpacity: 1,
+    shadowRadius: 26,
+  },
+  statusTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: THEME.text,
+    marginTop: 16,
+    fontFamily: 'monospace',
+  },
+  statusSubtitle: {
+    fontSize: 11,
+    color: THEME.textSecondary,
+    marginTop: 4,
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
   waveformContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 120,
-    width: width - 64,
-    gap: 6,
+    height: 54,
+    width: width - 40,
+    gap: 4,
   },
   waveBar: {
-    width: 6,
-    borderRadius: 3,
-    minHeight: 4,
+    width: 4,
+    borderRadius: 2,
+    minHeight: 6,
   },
-  statusLabel: {
+  analysisCard: {
+    width: '100%',
+    backgroundColor: THEME.bgCard,
+    borderWidth: 1,
+    borderColor: THEME.border,
+    borderRadius: THEME.radiusLg,
+    padding: 14,
+  },
+  analysisCardTitle: {
     fontFamily: 'monospace',
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: 'bold',
-    color: 'rgba(255,255,255,0.4)',
-    letterSpacing: 2,
-    marginVertical: 12,
+    color: THEME.textMuted,
+    letterSpacing: 1.5,
+    marginBottom: 8,
   },
-  controlCenter: {
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16, // Natural thumb reach layout
+  checklist: {
+    gap: 6,
   },
-  recordButton: {
-    backgroundColor: '#FF6B1A',
-    borderRadius: 44, // Perfectly rounded touch trigger (minimum 44pt/48dp)
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#FF6B1A',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  recordingActive: {
-    backgroundColor: '#fbbf24',
-    shadowColor: '#fbbf24',
-  },
-  loadingContainer: {
+  checkItem: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  signingText: {
-    fontFamily: 'monospace',
-    fontSize: 9,
-    color: '#FF6B1A',
-    letterSpacing: 1.5,
+  checkText: {
+    fontSize: 12,
+    color: THEME.text,
   },
-  scoreCard: {
-    backgroundColor: '#0d0d14',
-    borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.15)',
-    borderRadius: 16,
-    padding: 16,
-    width: width - 32,
-    alignItems: 'center',
-  },
-  scoreLabel: {
-    fontFamily: 'monospace',
-    fontSize: 8,
-    color: 'rgba(255,255,255,0.4)',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  scoreVal: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FF6B1A',
-  },
-  boostBadge: {
+  stopButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(251,191,36,0.06)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
-    marginTop: 8,
+    justifyContent: 'center',
+    gap: 8,
+    height: 48,
+    width: '100%',
+    borderRadius: THEME.radiusMd,
+    borderWidth: 1.5,
+    borderColor: THEME.primary,
+    backgroundColor: 'rgba(0, 255, 136, 0.08)',
   },
-  boostText: {
-    fontSize: 8,
+  stopButtonText: {
+    fontFamily: 'monospace',
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#fbbf24',
-    letterSpacing: 0.5,
+    color: THEME.primary,
+    letterSpacing: 1,
+  },
+  resultCard: {
+    width: '100%',
+    backgroundColor: THEME.bgCardElevated,
+    borderWidth: 1,
+    borderColor: THEME.borderAccent,
+    borderRadius: THEME.radiusMd,
+    padding: 12,
+  },
+  resultRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  resultTitle: {
+    fontSize: 12,
+    color: THEME.text,
+    fontWeight: 'bold',
+  },
+  resultScore: {
+    fontFamily: 'monospace',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: THEME.primary,
   },
 });

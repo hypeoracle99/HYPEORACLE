@@ -201,7 +201,7 @@ export function StakeScreen({ identity }: StakeScreenProps) {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#FF6B1A" />
+        <ActivityIndicator size="large" color="#00FF88" />
         <Text style={styles.loadingText}>SYNCING STAKING LEDGER...</Text>
       </View>
     );
@@ -239,7 +239,7 @@ export function StakeScreen({ identity }: StakeScreenProps) {
       {/* Main Staking Controls */}
       <View style={styles.panel}>
         <View style={styles.panelHeader}>
-          <Coins size={18} color="#FF6B1A" />
+          <Coins size={18} color="#00FF88" />
           <Text style={styles.panelTitle}>MANAGE STAKE POSITION</Text>
         </View>
 
@@ -253,7 +253,7 @@ export function StakeScreen({ identity }: StakeScreenProps) {
           </View>
           <View style={styles.positionCard}>
             <Text style={styles.positionLabel}>VIBE MULTIPLIER</Text>
-            <Text style={[styles.positionValue, { color: '#FF6B1A' }]}>
+            <Text style={[styles.positionValue, { color: '#00FF88' }]}>
               {multiplier.toFixed(2)}x
             </Text>
           </View>
@@ -336,7 +336,7 @@ export function StakeScreen({ identity }: StakeScreenProps) {
       {/* Stakers Leaderboard */}
       <View style={styles.panel}>
         <View style={styles.panelHeader}>
-          <TrendingUp size={18} color="#FF6B1A" />
+          <TrendingUp size={18} color="#00FF88" />
           <Text style={styles.panelTitle}>TOP ORACLE GUARDIANS</Text>
         </View>
 
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FF6B1A',
+    color: '#00FF88',
   },
   statSub: {
     fontFamily: 'monospace',
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   rewardLabel: {
     fontFamily: 'monospace',
     fontSize: 8,
-    color: '#FF6B1A',
+    color: '#00FF88',
     marginBottom: 2,
   },
   rewardValue: {
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.4)',
   },
   claimButton: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: '#00FF88',
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 10,
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(239,68,68,0.15)',
   },
   actionButton: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: '#00FF88',
     height: 48,
     borderRadius: 12,
     paddingHorizontal: 16,
@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   goldBadge: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: '#00FF88',
   },
   leaderBadgeText: {
     fontFamily: 'monospace',

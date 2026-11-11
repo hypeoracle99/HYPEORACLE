@@ -16,6 +16,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { client } from '../lib/insforge';
 import { DePINIdentity } from '../lib/secure-store';
+import { THEME } from '../lib/theme';
 import {
   Users,
   Trophy,
@@ -31,6 +32,7 @@ import {
   Radio,
   Sparkles,
   ArrowUpRight,
+  Star,
 } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
@@ -86,10 +88,10 @@ const DEFAULT_QUESTS: Quest[] = [
   {
     id: 'quest_depin_vibe',
     title: 'Stream Ambient Audio & Motion Vibe',
-    description: 'Use the Record tab to stream 5s acoustic + accelerometer telemetry to the DePIN oracle.',
+    description: 'Use the Scanner tab to stream 5s acoustic + accelerometer telemetry to the DePIN oracle.',
     category: 'depin',
     verificationType: 'depin_sensor',
-    xpReward: 100,
+    xpReward: 250,
     reputationReward: 25,
     currentCompletions: 312,
     isActive: true,
@@ -120,22 +122,22 @@ const DEFAULT_QUESTS: Quest[] = [
   },
   {
     id: 'quest_predict_bet',
-    title: 'Place a Prediction Market Stake',
-    description: 'Bet YES or NO on any token sentiment target in the Predict tab.',
+    title: 'Trade a Trending Token via Bags.fm',
+    description: 'Execute a verified 1-tap swap on any high sentiment token in the Market tab.',
     category: 'sentiment',
     verificationType: 'instant_click',
-    xpReward: 75,
-    reputationReward: 20,
+    xpReward: 500,
+    reputationReward: 50,
     currentCompletions: 220,
     isActive: true,
   },
   {
     id: 'quest_referral_share',
     title: 'Invite a Friend to HypeOracle',
-    description: 'Share your personal referral link. Earn 50 XP when they connect their wallet.',
+    description: 'Share your personal referral link. Earn 250 XP when they connect their wallet.',
     category: 'referral',
     verificationType: 'referral_count',
-    xpReward: 150,
+    xpReward: 250,
     reputationReward: 35,
     currentCompletions: 185,
     isActive: true,
@@ -143,11 +145,11 @@ const DEFAULT_QUESTS: Quest[] = [
 ];
 
 const DEFAULT_LEADERBOARD: Participant[] = [
-  { userPubkey: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU', username: 'sol_vibester', totalXp: 1850, reputationScore: 420, completedQuestsCount: 12, referralCode: 'HYPE_7XKX', qualifiedReferralsCount: 14, currentStreak: 6, tier: 'Ambassador' },
-  { userPubkey: '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLyNzkKqNppJ', username: 'hype_whale', totalXp: 1420, reputationScore: 310, completedQuestsCount: 9, referralCode: 'HYPE_3J98', qualifiedReferralsCount: 9, currentStreak: 5, tier: 'Oracle Vanguard' },
-  { userPubkey: '4uQeVj5tqViQh7yWWGStvkEG1Zmhx6uasJtWCJziofM', username: 'bags_trader', totalXp: 980, reputationScore: 210, completedQuestsCount: 6, referralCode: 'HYPE_4UQE', qualifiedReferralsCount: 5, currentStreak: 3, tier: 'Hype Scout' },
-  { userPubkey: '9aB8xQ2M1cK6wY7zE4vT8rP0sL5mN3jH2fD1gS4kL7p', username: 'crypto_sentry', totalXp: 720, reputationScore: 160, completedQuestsCount: 5, referralCode: 'HYPE_9AB8', qualifiedReferralsCount: 3, currentStreak: 4, tier: 'Vibester' },
-  { userPubkey: '2zC5vL8mN1kP4wY7zE9aB3jH6fD0gS2rT5xQ8mK1vP9', username: 'acoustic_node', totalXp: 510, reputationScore: 110, completedQuestsCount: 4, referralCode: 'HYPE_2ZC5', qualifiedReferralsCount: 2, currentStreak: 2, tier: 'Initiate' },
+  { userPubkey: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU', username: 'sol_vibester', totalXp: 3420, reputationScore: 420, completedQuestsCount: 12, referralCode: 'HYPE_7XKX', qualifiedReferralsCount: 14, currentStreak: 6, tier: 'Ambassador' },
+  { userPubkey: '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLyNzkKqNppJ', username: 'hype_whale', totalXp: 2840, reputationScore: 310, completedQuestsCount: 9, referralCode: 'HYPE_3J98', qualifiedReferralsCount: 9, currentStreak: 5, tier: 'Oracle Vanguard' },
+  { userPubkey: '4uQeVj5tqViQh7yWWGStvkEG1Zmhx6uasJtWCJziofM', username: 'bags_trader', totalXp: 1980, reputationScore: 210, completedQuestsCount: 6, referralCode: 'HYPE_4UQE', qualifiedReferralsCount: 5, currentStreak: 3, tier: 'Hype Scout' },
+  { userPubkey: '9aB8xQ2M1cK6wY7zE4vT8rP0sL5mN3jH2fD1gS4kL7p', username: 'crypto_sentry', totalXp: 1420, reputationScore: 160, completedQuestsCount: 5, referralCode: 'HYPE_9AB8', qualifiedReferralsCount: 3, currentStreak: 4, tier: 'Vibester' },
+  { userPubkey: '2zC5vL8mN1kP4wY7zE9aB3jH6fD0gS2rT5xQ8mK1vP9', username: 'acoustic_node', totalXp: 850, reputationScore: 110, completedQuestsCount: 4, referralCode: 'HYPE_2ZC5', qualifiedReferralsCount: 2, currentStreak: 2, tier: 'Initiate' },
 ];
 
 export function CommunityScreen({ identity }: CommunityScreenProps) {
@@ -161,23 +163,21 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
   const [completingId, setCompletingId] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
 
-  // Derive participant code
   const userPubkey = identity?.publicKey || '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
   const referralCode = `HYPE_${userPubkey.slice(0, 4).toUpperCase()}`;
   const referralLink = `https://hypeoracle.io/community?ref=${referralCode}`;
 
   const userStats = {
-    xp: 620 + (completedQuestIds.size - 1) * 75,
-    reputation: 140 + (completedQuestIds.size - 1) * 15,
-    tier: completedQuestIds.size >= 4 ? 'Hype Scout' : 'Vibester',
+    xp: 2840 + (completedQuestIds.size - 1) * 250,
+    reputation: 310 + (completedQuestIds.size - 1) * 25,
+    tier: completedQuestIds.size >= 4 ? 'Oracle Vanguard' : 'Hype Scout',
     completedCount: completedQuestIds.size,
-    rank: 4,
+    rank: 2,
   };
 
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      // Attempt to fetch from InsForge API or DB
       const { data: dbQuests, error } = await client.database
         .from('community_quests')
         .select('*')
@@ -188,7 +188,7 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
         setQuests(dbQuests);
       }
     } catch (err) {
-      // Fallback already populated
+      // Fallback populated
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -232,16 +232,13 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
     setCompletingId(quest.id);
 
     try {
-      // If quest has an external URL, open it
       if (quest.verificationConfig?.targetUrl) {
         if (quest.verificationConfig.targetUrl.startsWith('http')) {
           await Linking.openURL(quest.verificationConfig.targetUrl);
         }
       }
 
-      // Simulate network verification delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       setCompletedQuestIds((prev) => new Set([...prev, quest.id]));
 
       Alert.alert(
@@ -260,7 +257,7 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
     { id: 'social', label: 'SOCIAL' },
     { id: 'depin', label: 'DEPIN' },
     { id: 'community', label: 'COMMUNITY' },
-    { id: 'sentiment', label: 'SENTIMENT' },
+    { id: 'sentiment', label: 'TRADING' },
   ];
 
   const filteredQuests = quests.filter(
@@ -269,27 +266,27 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
 
   return (
     <View style={styles.container}>
-      {/* User Stats Card */}
+      {/* Rewards Header Card matching Mockup */}
       <View style={styles.headerCard}>
         <View style={styles.headerTopRow}>
           <View style={styles.userBadge}>
-            <Award size={14} color="#FF6B1A" />
+            <Star size={14} color={THEME.primary} />
             <Text style={styles.userTierText}>{userStats.tier.toUpperCase()}</Text>
           </View>
           <View style={styles.rankPill}>
-            <Trophy size={12} color="#10b981" />
-            <Text style={styles.rankText}>GLOBAL RANK #{userStats.rank}</Text>
+            <Trophy size={12} color={THEME.primary} />
+            <Text style={styles.rankText}>RANK #{userStats.rank}</Text>
           </View>
         </View>
 
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>{userStats.xp}</Text>
+            <Text style={styles.statValue}>{userStats.xp.toLocaleString()}</Text>
             <Text style={styles.statLabel}>TOTAL XP</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>{userStats.reputation}</Text>
+            <Text style={styles.statValue}>+{userStats.reputation}</Text>
             <Text style={styles.statLabel}>REPUTATION</Text>
           </View>
           <View style={styles.statDivider} />
@@ -304,11 +301,11 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
       <View style={styles.referralCard}>
         <View style={styles.referralHeader}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Share2 size={16} color="#FF6B1A" />
+            <Share2 size={16} color={THEME.primary} />
             <Text style={styles.referralTitle}>VIRAL REFERRALS</Text>
           </View>
           <View style={styles.rewardPill}>
-            <Text style={styles.rewardPillText}>+50 XP / INVITE</Text>
+            <Text style={styles.rewardPillText}>+250 XP / INVITE</Text>
           </View>
         </View>
         <Text style={styles.referralDesc}>
@@ -321,35 +318,35 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
             activeOpacity={0.8}
           >
             <Text style={styles.codeText}>{referralCode}</Text>
-            <Copy size={14} color={copiedCode ? '#10b981' : 'rgba(255,255,255,0.6)'} />
+            <Copy size={14} color={copiedCode ? THEME.primary : THEME.textMuted} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.shareButton}
             onPress={handleShareReferral}
             activeOpacity={0.8}
           >
-            <Share2 size={15} color="#050507" />
-            <Text style={styles.shareButtonText}>SHARE</Text>
+            <Share2 size={14} color={THEME.onPrimary} />
+            <Text style={styles.shareText}>SHARE</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Main Tab Toggle */}
-      <View style={styles.tabToggleRow}>
+      {/* Navigation Switcher Tabs */}
+      <View style={styles.mainTabRow}>
         <TouchableOpacity
           style={[styles.mainTabBtn, activeTab === 'quests' && styles.mainTabBtnActive]}
           onPress={() => setActiveTab('quests')}
         >
-          <Zap size={14} color={activeTab === 'quests' ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+          <Zap size={14} color={activeTab === 'quests' ? THEME.primary : THEME.textMuted} />
           <Text style={[styles.mainTabText, activeTab === 'quests' && styles.mainTabTextActive]}>
-            COMMUNITY QUESTS ({quests.length})
+            CAMPAIGN QUESTS ({quests.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.mainTabBtn, activeTab === 'leaderboard' && styles.mainTabBtnActive]}
           onPress={() => setActiveTab('leaderboard')}
         >
-          <Trophy size={14} color={activeTab === 'leaderboard' ? '#FF6B1A' : 'rgba(255,255,255,0.4)'} />
+          <Trophy size={14} color={activeTab === 'leaderboard' ? THEME.primary : THEME.textMuted} />
           <Text style={[styles.mainTabText, activeTab === 'leaderboard' && styles.mainTabTextActive]}>
             LEADERBOARD
           </Text>
@@ -357,25 +354,20 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
       </View>
 
       {activeTab === 'quests' ? (
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 60 }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
-        >
-          {/* Category Pills */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+        <View style={{ flex: 1 }}>
+          {/* Categories Horizontal Scroll */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.categoryScroll}
+          >
             {categories.map((c) => (
               <TouchableOpacity
                 key={c.id}
                 style={[styles.categoryPill, selectedCategory === c.id && styles.categoryPillActive]}
                 onPress={() => setSelectedCategory(c.id)}
               >
-                <Text
-                  style={[
-                    styles.categoryPillText,
-                    selectedCategory === c.id && styles.categoryPillTextActive,
-                  ]}
-                >
+                <Text style={[styles.categoryPillText, selectedCategory === c.id && styles.categoryPillTextActive]}>
                   {c.label}
                 </Text>
               </TouchableOpacity>
@@ -383,88 +375,94 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
           </ScrollView>
 
           {/* Quests List */}
-          {filteredQuests.map((quest) => {
-            const isCompleted = completedQuestIds.has(quest.id);
-            const isWorking = completingId === quest.id;
+          <FlatList
+            data={filteredQuests}
+            keyExtractor={(item) => item.id}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />}
+            contentContainerStyle={{ paddingBottom: 60 }}
+            renderItem={({ item }) => {
+              const isDone = completedQuestIds.has(item.id);
+              const isProcessing = completingId === item.id;
 
-            return (
-              <View key={quest.id} style={[styles.questCard, isCompleted && styles.questCardDone]}>
-                <View style={styles.questTopRow}>
-                  <View style={styles.questCatPill}>
-                    <Text style={styles.questCatText}>{quest.category.toUpperCase()}</Text>
+              return (
+                <View style={[styles.questCard, isDone && styles.questCardDone]}>
+                  <View style={styles.questTopRow}>
+                    <View style={styles.questCatPill}>
+                      <Text style={styles.questCatText}>{item.category.toUpperCase()}</Text>
+                    </View>
+                    <View style={styles.questRewardPill}>
+                      <Zap size={10} color={THEME.primary} />
+                      <Text style={styles.questRewardText}>+{item.xpReward} XP</Text>
+                    </View>
                   </View>
-                  <View style={styles.questRewardPill}>
-                    <Zap size={10} color="#FF6B1A" />
-                    <Text style={styles.questRewardText}>+{quest.xpReward} XP</Text>
+
+                  <Text style={styles.questTitle}>{item.title}</Text>
+                  <Text style={styles.questDescription}>{item.description}</Text>
+
+                  <View style={styles.questBottomRow}>
+                    <Text style={styles.questCompletions}>
+                      👥 {item.currentCompletions} verified
+                    </Text>
+
+                    <TouchableOpacity
+                      style={[styles.questActionBtn, isDone ? styles.questActionDone : styles.questActionActive]}
+                      onPress={() => handleQuestAction(item)}
+                      disabled={isDone || isProcessing}
+                      activeOpacity={0.8}
+                    >
+                      {isProcessing ? (
+                        <ActivityIndicator size="small" color={THEME.onPrimary} />
+                      ) : isDone ? (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                          <CheckCircle size={14} color={THEME.primary} />
+                          <Text style={styles.questDoneText}>COMPLETED</Text>
+                        </View>
+                      ) : (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                          <Text style={styles.questActiveText}>START QUEST</Text>
+                          <ArrowUpRight size={14} color={THEME.onPrimary} />
+                        </View>
+                      )}
+                    </TouchableOpacity>
                   </View>
                 </View>
-
-                <Text style={styles.questTitle}>{quest.title}</Text>
-                <Text style={styles.questDescription}>{quest.description}</Text>
-
-                <View style={styles.questBottomRow}>
-                  <Text style={styles.questCompletions}>
-                    {quest.currentCompletions} verified participants
-                  </Text>
-                  <TouchableOpacity
-                    style={[
-                      styles.questActionBtn,
-                      isCompleted ? styles.questActionDone : styles.questActionActive,
-                    ]}
-                    onPress={() => handleQuestAction(quest)}
-                    disabled={isCompleted || isWorking}
-                  >
-                    {isWorking ? (
-                      <ActivityIndicator size="small" color="#050507" />
-                    ) : isCompleted ? (
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                        <CheckCircle size={14} color="#10b981" />
-                        <Text style={styles.questDoneText}>COMPLETED</Text>
-                      </View>
-                    ) : (
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                        <Text style={styles.questActiveText}>START & VERIFY</Text>
-                        <ArrowUpRight size={14} color="#050507" />
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          })}
-        </ScrollView>
+              );
+            }}
+          />
+        </View>
       ) : (
-        <ScrollView
-          style={{ flex: 1 }}
+        /* Leaderboard View */
+        <FlatList
+          data={leaderboard}
+          keyExtractor={(item) => item.userPubkey}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={THEME.primary} />}
           contentContainerStyle={{ paddingBottom: 60 }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B1A" />}
-        >
-          {leaderboard.map((item, index) => {
-            const isSelf = identity?.publicKey === item.userPubkey;
-            const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+          renderItem={({ item, index }) => {
+            const isSelf = item.userPubkey === userPubkey;
 
             return (
-              <View key={item.userPubkey} style={[styles.leaderRow, isSelf && styles.leaderRowSelf]}>
-                <View style={styles.leaderRankBox}>
-                  <Text style={styles.leaderRankText}>{medal}</Text>
+              <View style={[styles.leaderRow, isSelf && styles.leaderRowSelf]}>
+                <View style={[styles.rankCircle, index === 0 && styles.rankCircleFirst]}>
+                  <Text style={[styles.rankNumber, index === 0 && styles.rankNumberFirst]}>
+                    #{index + 1}
+                  </Text>
                 </View>
+
                 <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={styles.leaderUsername}>{item.username}</Text>
-                    {isSelf && <Text style={styles.youBadge}>YOU</Text>}
-                  </View>
-                  <Text style={styles.leaderPubkey}>
+                  <Text style={styles.leaderUsername}>{item.username} {isSelf && '(You)'}</Text>
+                  <Text style={styles.leaderAddress}>
                     {item.userPubkey.slice(0, 4)}...{item.userPubkey.slice(-4)} • {item.tier}
                   </Text>
                 </View>
-                <View style={styles.leaderXpBox}>
-                  <Text style={styles.leaderXpValue}>{item.totalXp} XP</Text>
-                  <Text style={styles.leaderRepValue}>{item.reputationScore} REP</Text>
+
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={styles.leaderXpText}>{item.totalXp.toLocaleString()} XP</Text>
+                  <Text style={styles.leaderQuests}>{item.completedQuestsCount} quests</Text>
                 </View>
               </View>
             );
-          })}
-        </ScrollView>
+          }}
+        />
       )}
     </View>
   );
@@ -473,15 +471,15 @@ export function CommunityScreen({ identity }: CommunityScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050507',
+    backgroundColor: THEME.bg,
     paddingHorizontal: 16,
     paddingTop: 12,
   },
   headerCard: {
-    backgroundColor: '#0a0a10',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 16,
+    borderColor: THEME.borderAccent,
+    borderRadius: THEME.radiusLg,
     padding: 16,
     marginBottom: 12,
   },
@@ -495,69 +493,63 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(255,107,26,0.1)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.3)',
+    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   userTierText: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
-    fontSize: 11,
+    fontSize: 9.5,
     fontWeight: 'bold',
-    letterSpacing: 1,
   },
   rankPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(16,185,129,0.1)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(16,185,129,0.3)',
+    gap: 5,
+    backgroundColor: 'rgba(0, 255, 136, 0.12)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   rankText: {
-    color: '#10b981',
+    color: THEME.primary,
     fontFamily: 'monospace',
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: 'bold',
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   statBox: {
-    flex: 1,
     alignItems: 'center',
   },
   statValue: {
-    color: '#fff',
-    fontFamily: 'monospace',
-    fontSize: 18,
+    color: THEME.text,
+    fontSize: 20,
     fontWeight: 'bold',
+    fontFamily: 'monospace',
   },
   statLabel: {
-    color: 'rgba(255,255,255,0.4)',
+    color: THEME.textMuted,
+    fontSize: 8.5,
     fontFamily: 'monospace',
-    fontSize: 9,
     marginTop: 2,
     letterSpacing: 0.5,
   },
   statDivider: {
     width: 1,
-    height: 24,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    height: 28,
+    backgroundColor: THEME.border,
   },
   referralCard: {
-    backgroundColor: '#0d0d16',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.25)',
-    borderRadius: 14,
+    borderColor: THEME.border,
+    borderRadius: THEME.radiusLg,
     padding: 14,
     marginBottom: 12,
   },
@@ -568,75 +560,71 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   referralTitle: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
     letterSpacing: 1,
   },
   rewardPill: {
-    backgroundColor: 'rgba(255,107,26,0.15)',
+    backgroundColor: 'rgba(0, 255, 136, 0.1)',
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 2,
     borderRadius: 6,
   },
   rewardPillText: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
-    fontSize: 9,
+    fontSize: 8.5,
     fontWeight: 'bold',
   },
   referralDesc: {
-    color: 'rgba(255,255,255,0.6)',
+    color: THEME.textSecondary,
     fontSize: 11,
     lineHeight: 16,
     marginBottom: 12,
   },
   referralActionRow: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   codeButton: {
     flex: 1,
-    height: 48,
-    backgroundColor: '#050507',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
-    borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 14,
+    backgroundColor: THEME.bgSurface,
+    borderWidth: 1,
+    borderColor: THEME.border,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 48,
   },
   codeText: {
-    color: '#fff',
+    color: THEME.text,
     fontFamily: 'monospace',
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 'bold',
-    letterSpacing: 1,
   },
   shareButton: {
-    width: 90,
-    height: 48,
-    backgroundColor: '#FF6B1A',
-    borderRadius: 10,
+    backgroundColor: THEME.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 16,
+    borderRadius: 8,
     gap: 6,
+    height: 48,
   },
-  shareButtonText: {
-    color: '#050507',
+  shareText: {
+    color: THEME.onPrimary,
     fontFamily: 'monospace',
     fontSize: 11,
     fontWeight: 'bold',
-    letterSpacing: 1,
   },
-  tabToggleRow: {
+  mainTabRow: {
     flexDirection: 'row',
-    backgroundColor: '#0a0a10',
-    borderRadius: 10,
-    padding: 4,
+    gap: 8,
     marginBottom: 10,
   },
   mainTabBtn: {
@@ -645,22 +633,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: 10,
-    borderRadius: 8,
+    backgroundColor: THEME.bgCard,
+    borderWidth: 1,
+    borderColor: THEME.border,
+    borderRadius: 10,
+    height: 40,
   },
   mainTabBtnActive: {
-    backgroundColor: 'rgba(255,107,26,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,107,26,0.3)',
+    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+    borderColor: THEME.borderAccentStrong,
   },
   mainTabText: {
-    color: 'rgba(255,255,255,0.4)',
+    color: THEME.textMuted,
     fontFamily: 'monospace',
     fontSize: 10,
     fontWeight: 'bold',
   },
   mainTabTextActive: {
-    color: '#FF6B1A',
+    color: THEME.primary,
   },
   categoryScroll: {
     marginBottom: 10,
@@ -670,34 +660,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    backgroundColor: '#0d0d16',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: THEME.border,
     marginRight: 8,
   },
   categoryPillActive: {
-    borderColor: '#FF6B1A',
-    backgroundColor: 'rgba(255,107,26,0.15)',
+    borderColor: THEME.primary,
+    backgroundColor: 'rgba(0, 255, 136, 0.15)',
   },
   categoryPillText: {
-    color: 'rgba(255,255,255,0.5)',
+    color: THEME.textMuted,
     fontFamily: 'monospace',
     fontSize: 10,
   },
   categoryPillTextActive: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontWeight: 'bold',
   },
   questCard: {
-    backgroundColor: '#0a0a12',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: THEME.border,
     borderRadius: 14,
     padding: 14,
     marginBottom: 10,
   },
   questCardDone: {
-    borderColor: 'rgba(16,185,129,0.25)',
+    borderColor: 'rgba(0, 255, 136, 0.25)',
     opacity: 0.85,
   },
   questTopRow: {
@@ -707,13 +697,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   questCatPill: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   questCatText: {
-    color: 'rgba(255,255,255,0.5)',
+    color: THEME.textMuted,
     fontFamily: 'monospace',
     fontSize: 9,
   },
@@ -721,25 +711,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(255,107,26,0.1)',
+    backgroundColor: 'rgba(0, 255, 136, 0.1)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
   questRewardText: {
-    color: '#FF6B1A',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 10,
     fontWeight: 'bold',
   },
   questTitle: {
-    color: '#fff',
+    color: THEME.text,
     fontSize: 14,
     fontWeight: 'bold',
     marginBottom: 4,
   },
   questDescription: {
-    color: 'rgba(255,255,255,0.55)',
+    color: THEME.textSecondary,
     fontSize: 12,
     lineHeight: 17,
     marginBottom: 12,
@@ -750,7 +740,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   questCompletions: {
-    color: 'rgba(255,255,255,0.3)',
+    color: THEME.textDim,
     fontFamily: 'monospace',
     fontSize: 9.5,
   },
@@ -762,22 +752,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   questActionActive: {
-    backgroundColor: '#FF6B1A',
+    backgroundColor: THEME.primary,
   },
   questActionDone: {
-    backgroundColor: 'rgba(16,185,129,0.1)',
+    backgroundColor: 'rgba(0, 255, 136, 0.1)',
     borderWidth: 1,
-    borderColor: 'rgba(16,185,129,0.3)',
+    borderColor: 'rgba(0, 255, 136, 0.3)',
   },
   questActiveText: {
-    color: '#050507',
+    color: THEME.onPrimary,
     fontFamily: 'monospace',
     fontSize: 11,
     fontWeight: 'bold',
     letterSpacing: 0.5,
   },
   questDoneText: {
-    color: '#10b981',
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 11,
     fontWeight: 'bold',
@@ -786,62 +776,61 @@ const styles = StyleSheet.create({
   leaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0a0a12',
+    backgroundColor: THEME.bgCard,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: THEME.border,
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
     gap: 12,
   },
   leaderRowSelf: {
-    borderColor: '#FF6B1A',
-    backgroundColor: 'rgba(255,107,26,0.05)',
+    borderColor: THEME.borderAccentStrong,
+    backgroundColor: 'rgba(0, 255, 136, 0.05)',
   },
-  leaderRankBox: {
+  rankCircle: {
     width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: THEME.bgSurface,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: THEME.border,
   },
-  leaderRankText: {
-    fontSize: 16,
-    color: '#fff',
+  rankCircleFirst: {
+    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    borderColor: THEME.primary,
+  },
+  rankNumber: {
+    color: THEME.textMuted,
     fontFamily: 'monospace',
+    fontSize: 11,
     fontWeight: 'bold',
+  },
+  rankNumberFirst: {
+    color: THEME.primary,
   },
   leaderUsername: {
-    color: '#fff',
+    color: THEME.text,
     fontSize: 13,
     fontWeight: 'bold',
-  },
-  youBadge: {
-    backgroundColor: '#FF6B1A',
-    color: '#050507',
     fontFamily: 'monospace',
-    fontSize: 8,
-    fontWeight: 'bold',
-    paddingHorizontal: 4,
-    paddingVertical: 1,
-    borderRadius: 4,
   },
-  leaderPubkey: {
-    color: 'rgba(255,255,255,0.4)',
-    fontFamily: 'monospace',
+  leaderAddress: {
+    color: THEME.textMuted,
     fontSize: 10,
     marginTop: 2,
   },
-  leaderXpBox: {
-    alignItems: 'flex-end',
-  },
-  leaderXpValue: {
-    color: '#FF6B1A',
+  leaderXpText: {
+    color: THEME.primary,
     fontFamily: 'monospace',
     fontSize: 13,
     fontWeight: 'bold',
   },
-  leaderRepValue: {
-    color: 'rgba(255,255,255,0.4)',
+  leaderQuests: {
+    color: THEME.textMuted,
+    fontSize: 9.5,
     fontFamily: 'monospace',
-    fontSize: 9,
   },
 });
