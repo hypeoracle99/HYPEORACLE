@@ -2,7 +2,7 @@
   "expo": {
     "name": "hypeoracle-mobile",
     "slug": "hypeoracle-mobile",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -13,6 +13,7 @@
       }
     },
     "android": {
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#050507",
         "foregroundImage": "./assets/android-icon-foreground.png",
