@@ -8,8 +8,8 @@ export function AuthShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-10">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(251,146,60,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.12),_transparent_28%)]" />
+    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-10 bg-[#050709]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(0,255,136,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(5,242,146,0.12),_transparent_28%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[var(--surface-muted)] to-transparent" />
 
       <div className="relative z-10 w-full max-w-sm space-y-5">
@@ -18,8 +18,8 @@ export function AuthShell({
             href="/"
             className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs font-medium text-[var(--muted-foreground)] shadow-sm hover:bg-[var(--surface-muted)]"
           >
-            <span className="inline-block h-2 w-2 rounded-full bg-orange-500" />
-            <span>Next.js InsForge Starter</span>
+            <span className="inline-block h-2 w-2 rounded-full bg-[#00FF88] shadow-[0_0_8px_#00FF88]" />
+            <span>HypeOracle Node</span>
           </Link>
         </div>
 

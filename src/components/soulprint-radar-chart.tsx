@@ -27,10 +27,10 @@ export function SoulprintRadarChart({ spectrum, size = 300, totalVibes = 0 }: So
 
   const level = Math.floor(totalVibes / 5) + 1
 
-  // Dynamic colors based on level (Color rules strictly followed)
-  let strokeColor = '#FF6B1A'
-  let fillColor = 'rgba(255, 107, 26, 0.2)'
-  let shadowColor = 'rgba(255, 107, 26, 0.4)'
+  // Dynamic colors based on level (Cyber-Emerald theme)
+  let strokeColor = '#00FF88'
+  let fillColor = 'rgba(0, 255, 136, 0.2)'
+  let shadowColor = 'rgba(0, 255, 136, 0.45)'
 
   if (level === 2) {
     strokeColor = '#10b981'

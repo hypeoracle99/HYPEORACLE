@@ -43,7 +43,7 @@ export function XStrategistTab({
     <div className="space-y-8">
       <div className="pb-4 border-b border-white/[0.06]">
         <h2 className="text-base font-display font-black text-white uppercase flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-[#FFAA00]" />
+          <Sparkles className="w-4 h-4 text-[#05F292]" />
           AI Social Strategist & Ideas Engine
         </h2>
         <p className="text-xs font-mono text-white/50">
@@ -54,7 +54,7 @@ export function XStrategistTab({
       {/* Strategic Metrics Analysis */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-2">
-          <div className="flex items-center gap-2 text-[#FF6B1A] text-xs font-mono font-bold uppercase">
+          <div className="flex items-center gap-2 text-[#00FF88] text-xs font-mono font-bold uppercase">
             <Clock className="w-4 h-4" />
             Optimal Posting Window
           </div>
@@ -65,7 +65,7 @@ export function XStrategistTab({
         </div>
 
         <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-2">
-          <div className="flex items-center gap-2 text-[#FFAA00] text-xs font-mono font-bold uppercase">
+          <div className="flex items-center gap-2 text-[#05F292] text-xs font-mono font-bold uppercase">
             <Flame className="w-4 h-4" />
             Top Converting Format
           </div>
@@ -90,7 +90,7 @@ export function XStrategistTab({
       {/* Autonomous Strategist Recommendations */}
       <div className="space-y-4">
         <h3 className="text-sm font-display font-bold text-white uppercase flex items-center gap-2">
-          <Target className="w-4 h-4 text-[#FF6B1A]" />
+          <Target className="w-4 h-4 text-[#00FF88]" />
           Active Intelligence Recommendations
         </h3>
 
@@ -99,7 +99,7 @@ export function XStrategistTab({
             <div key={rec.id} className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-between gap-4">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase bg-[#FF6B1A]/20 text-[#FF6B1A] font-bold">
+                  <span className="px-2 py-0.5 rounded text-[9px] font-mono uppercase bg-[#00FF88]/20 text-[#00FF88] font-bold">
                     {rec.category}
                   </span>
                   <span className="text-[10px] font-mono text-white/40 uppercase">{rec.priority} Priority</span>
@@ -113,7 +113,7 @@ export function XStrategistTab({
                   <span className="text-[11px] font-mono text-white/50 truncate">💡 {rec.suggestedPostDraft}</span>
                   <button
                     onClick={() => onSendToStudio(rec.suggestedPostDraft!)}
-                    className="flex items-center gap-1 text-xs font-mono text-[#FFAA00] hover:text-white shrink-0 font-bold"
+                    className="flex items-center gap-1 text-xs font-mono text-[#05F292] hover:text-white shrink-0 font-bold"
                   >
                     <span>Use in Studio</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -128,7 +128,7 @@ export function XStrategistTab({
       {/* Continuous Content Ideas Generator */}
       <div className="space-y-4 pt-4 border-t border-white/[0.06]">
         <h3 className="text-sm font-display font-bold text-white uppercase flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-[#FFAA00]" />
+          <Sparkles className="w-4 h-4 text-[#05F292]" />
           Pre-Synthesized Content Hooks
         </h3>
 
@@ -143,7 +143,7 @@ export function XStrategistTab({
 
               <button
                 onClick={() => onSendToStudio(`${idea.title}: ${idea.hook}`)}
-                className="self-end flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 hover:bg-[#FFAA00]/20 text-xs font-mono text-white/80 hover:text-[#FFAA00] transition-all"
+                className="self-end flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 hover:bg-[#05F292]/20 text-xs font-mono text-white/80 hover:text-[#05F292] transition-all"
               >
                 <span>Send to Content Studio</span>
                 <ArrowRight className="w-3.5 h-3.5" />

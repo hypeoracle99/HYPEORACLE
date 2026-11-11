@@ -42,15 +42,15 @@ function StatCard({
       className="relative p-5 rounded-2xl overflow-hidden"
       style={{
         background: hot
-          ? 'linear-gradient(135deg, rgba(255,107,26,0.08), rgba(255,61,0,0.04))'
+          ? 'linear-gradient(135deg, rgba(0,255,136,0.1), rgba(5,242,146,0.04))'
           : 'var(--bg-card)',
-        border: `1px solid ${hot ? 'rgba(255,107,26,0.25)' : 'var(--border-subtle)'}`,
+        border: `1px solid ${hot ? 'rgba(0,255,136,0.3)' : 'var(--border-subtle)'}`,
       }}
     >
       {hot && (
         <div
           className="absolute top-0 left-0 right-0 h-[1px]"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,107,26,0.7), transparent)' }}
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(0,255,136,0.8), transparent)' }}
         />
       )}
       <div className="flex items-start justify-between">
@@ -61,9 +61,9 @@ function StatCard({
         </div>
         <div
           className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: hot ? 'rgba(255,107,26,0.15)' : 'rgba(255,255,255,0.05)' }}
+          style={{ background: hot ? 'rgba(0,255,136,0.15)' : 'rgba(255,255,255,0.05)' }}
         >
-          <Icon className={`w-4 h-4 ${hot ? 'text-orange-500' : 'text-[var(--text-muted)]'}`} />
+          <Icon className={`w-4 h-4 ${hot ? 'text-[#00FF88]' : 'text-[var(--text-muted)]'}`} />
         </div>
       </div>
     </motion.div>
@@ -82,16 +82,16 @@ function ClaimRow({ claim, index }: { claim: Claim; index: number }) {
       className="flex items-center justify-between p-3 rounded-xl transition-all"
       style={{
         background: claim.claimed
-          ? 'rgba(34,197,94,0.04)'
-          : 'rgba(255,107,26,0.04)',
-        border: `1px solid ${claim.claimed ? 'rgba(34,197,94,0.12)' : 'rgba(255,107,26,0.12)'}`,
+          ? 'rgba(0,255,136,0.06)'
+          : 'rgba(255,255,255,0.03)',
+        border: `1px solid ${claim.claimed ? 'rgba(0,255,136,0.25)' : 'rgba(255,255,255,0.06)'}`,
       }}
     >
       <div className="flex items-center gap-3">
         <div
           className="w-7 h-7 rounded-lg flex items-center justify-center text-xs"
           style={{
-            background: claim.claimed ? 'rgba(34,197,94,0.1)' : 'rgba(255,107,26,0.1)',
+            background: claim.claimed ? 'rgba(0,255,136,0.15)' : 'rgba(255,255,255,0.08)',
           }}
         >
           {claim.claimed ? '✅' : '⏳'}
@@ -108,7 +108,7 @@ function ClaimRow({ claim, index }: { claim: Claim; index: number }) {
       <div className="text-right">
         <p
           className="font-mono text-xs font-bold"
-          style={{ color: claim.claimed ? '#22c55e' : '#FF8C42' }}
+          style={{ color: claim.claimed ? '#00FF88' : '#05F292' }}
         >
           +{earnedSol} SOL
         </p>
@@ -247,14 +247,14 @@ export function EarningsDashboard() {
         >
           <div className="flex items-center gap-3 mb-3">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #FF6B1A, #FF3D00)' }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,255,136,0.3)]"
+              style={{ background: 'linear-gradient(135deg, #00FF88, #05F292)' }}
             >
-              <Coins className="w-5 h-5 text-white" />
+              <Coins className="w-5 h-5 text-[#050709]" />
             </div>
             <div>
               <h1 className="font-display font-bold text-2xl text-white">My Hype Earnings</h1>
-              <p className="mono-label" style={{ fontSize: '0.6rem' }}>
+              <p className="mono-label text-[#00FF88]" style={{ fontSize: '0.6rem' }}>
                 {publicKey.toBase58().slice(0, 8)}...{publicKey.toBase58().slice(-6)}
               </p>
             </div>
@@ -299,17 +299,18 @@ export function EarningsDashboard() {
               <button
                 onClick={handleClaim}
                 disabled={claiming}
-                className="w-full py-4 rounded-2xl font-display font-bold text-sm text-white transition-all relative overflow-hidden"
+                className="w-full py-4 rounded-2xl font-display font-bold text-sm text-[#050709] transition-all relative overflow-hidden"
                 style={{
                   background: claiming
-                    ? 'rgba(255,107,26,0.3)'
-                    : 'linear-gradient(135deg, #FF6B1A, #FF3D00)',
-                  border: '1px solid rgba(255,107,26,0.4)',
+                    ? 'rgba(0,255,136,0.3)'
+                    : 'linear-gradient(135deg, #00FF88, #05F292)',
+                  boxShadow: claiming ? 'none' : '0 4px 20px rgba(0,255,136,0.4)',
+                  border: '1px solid rgba(0,255,136,0.6)',
                   cursor: claiming ? 'not-allowed' : 'pointer',
                 }}
               >
                 {claiming ? (
-                  <span className="flex items-center justify-center gap-2">
+                  <span className="flex items-center justify-center gap-2 text-white">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Processing Claim...
                   </span>
@@ -330,14 +331,14 @@ export function EarningsDashboard() {
                   className="mt-3 p-3 rounded-xl flex items-center justify-between"
                   style={{
                     background: claimResult.success
-                      ? 'rgba(34,197,94,0.08)'
+                      ? 'rgba(0,255,136,0.08)'
                       : 'rgba(239,68,68,0.08)',
-                    border: `1px solid ${claimResult.success ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                    border: `1px solid ${claimResult.success ? 'rgba(0,255,136,0.25)' : 'rgba(239,68,68,0.2)'}`,
                   }}
                 >
                   <p
                     className="text-xs font-mono"
-                    style={{ color: claimResult.success ? '#22c55e' : '#f87171' }}
+                    style={{ color: claimResult.success ? '#00FF88' : '#f87171' }}
                   >
                     {claimResult.message || claimResult.error}
                   </p>
@@ -346,7 +347,7 @@ export function EarningsDashboard() {
                       href={`https://solscan.io/tx/${claimResult.signature}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-[10px] font-mono text-orange-400 hover:text-orange-300 transition-colors"
+                      className="flex items-center gap-1 text-[10px] font-mono text-[#00FF88] hover:text-[#05F292] transition-colors"
                     >
                       Solscan <ArrowUpRight className="w-3 h-3" />
                     </a>

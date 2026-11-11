@@ -41,7 +41,7 @@ export function XMentionsTab({
       <div className="flex items-center justify-between pb-4 border-b border-white/[0.06]">
         <div>
           <h2 className="text-base font-display font-black text-white uppercase flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-[#FFAA00]" />
+            <MessageSquare className="w-4 h-4 text-[#05F292]" />
             Community Mentions & AI Reply Assistant
           </h2>
           <p className="text-xs font-mono text-white/50">
@@ -89,9 +89,9 @@ export function XMentionsTab({
 
             {/* AI Reply Assistant Suggestion Box */}
             {mention.suggestedReply && !mention.hasReplied && (
-              <div className="ml-10 p-4 rounded-xl bg-gradient-to-r from-[#FF6B1A]/10 to-transparent border border-[#FF6B1A]/20 space-y-3">
+              <div className="ml-10 p-4 rounded-xl bg-gradient-to-r from-[#00FF88]/10 to-transparent border border-[#00FF88]/20 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase text-[#FFAA00] font-bold flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono uppercase text-[#05F292] font-bold flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
                     AI Suggested Reply ({mention.suggestedReply.tone} tone)
                   </span>
@@ -108,7 +108,7 @@ export function XMentionsTab({
                       rows={2}
                       value={editedReplyText}
                       onChange={(e) => setEditedReplyText(e.target.value)}
-                      className="w-full p-2.5 rounded-xl bg-black/60 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                      className="w-full p-2.5 rounded-xl bg-black/60 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                     />
                     <div className="flex justify-end gap-2">
                       <button

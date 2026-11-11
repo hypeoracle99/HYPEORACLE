@@ -133,7 +133,7 @@ export default function CommunityQuestHub() {
     : '';
 
   return (
-    <div className="relative min-h-screen bg-[#050507] text-white selection:bg-[#FF6B1A]/30">
+    <div className="relative min-h-screen bg-[#050507] text-white selection:bg-[#00FF88]/30">
       <AmbientBackground />
 
       <main className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
@@ -141,7 +141,7 @@ export default function CommunityQuestHub() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 pb-6 border-b border-white/[0.06]">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <span className="px-3 py-1 rounded-full bg-[#FF6B1A]/10 border border-[#FF6B1A]/30 text-[#FF6B1A] text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5">
+              <span className="px-3 py-1 rounded-full bg-[#00FF88]/10 border border-[#00FF88]/30 text-[#00FF88] text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5">
                 <Radio className="w-3.5 h-3.5 animate-pulse" />
                 AI Growth & Reputation Network
               </span>
@@ -149,7 +149,7 @@ export default function CommunityQuestHub() {
               <span className="hidden sm:inline text-white/50 text-xs font-mono">Epoch 1: Genesis</span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-white">
-              COMMUNITY <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B1A] via-[#FFAA00] to-[#FF3D00]">QUEST HUB</span>
+              COMMUNITY <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#05F292] to-[#00FF88]">QUEST HUB</span>
             </h1>
             <p className="text-sm text-white/60 max-w-2xl mt-1">
               Complete social tasks, stream verifiable DePIN acoustic telemetry, and unlock protocol reputation powering real-time Solana signals.
@@ -159,7 +159,7 @@ export default function CommunityQuestHub() {
           <div className="flex flex-wrap items-center gap-3">
             <Link 
               href="/admin/x-manager"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF6B1A]/10 hover:bg-[#FF6B1A]/20 border border-[#FF6B1A]/30 text-xs font-mono text-[#FF6B1A] transition-all active:scale-95 font-bold"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/30 text-xs font-mono text-[#00FF88] transition-all active:scale-95 font-bold"
             >
               <Bot className="w-3.5 h-3.5" />
               <span>AI X Manager</span>
@@ -168,10 +168,10 @@ export default function CommunityQuestHub() {
               href="/community/admin"
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-white/80 transition-all active:scale-95"
             >
-              <Shield className="w-3.5 h-3.5 text-[#FFAA00]" />
+              <Shield className="w-3.5 h-3.5 text-[#05F292]" />
               <span>Admin Command Center</span>
             </Link>
-            {mounted && <WalletMultiButton className="!bg-[#FF6B1A] !hover:bg-[#FF3D00] !rounded-xl !h-10 !text-xs !font-display !font-bold" />}
+            {mounted && <WalletMultiButton className="!bg-[#00FF88] !hover:bg-[#00FF88] !rounded-xl !h-10 !text-xs !font-display !font-bold" />}
           </div>
         </div>
 
@@ -186,7 +186,7 @@ export default function CommunityQuestHub() {
               <div className="flex flex-col">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">Tier Status</span>
                 <div className="flex items-center gap-2 mt-1">
-                  <Flame className="w-4 h-4 text-[#FF6B1A]" />
+                  <Flame className="w-4 h-4 text-[#00FF88]" />
                   <span className="text-sm font-display font-black text-white">{userProfile.tier}</span>
                 </div>
               </div>
@@ -194,8 +194,8 @@ export default function CommunityQuestHub() {
               <div className="flex flex-col">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">Total XP</span>
                 <div className="flex items-center gap-2 mt-1">
-                  <Zap className="w-4 h-4 text-[#FFAA00]" />
-                  <span className="text-lg font-mono font-black text-[#FFAA00]">{userProfile.totalXp}</span>
+                  <Zap className="w-4 h-4 text-[#05F292]" />
+                  <span className="text-lg font-mono font-black text-[#05F292]">{userProfile.totalXp}</span>
                 </div>
               </div>
 
@@ -226,7 +226,7 @@ export default function CommunityQuestHub() {
               <div className="flex flex-col">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">DePIN Nodes</span>
                 <div className="flex items-center gap-2 mt-1">
-                  <Radio className="w-4 h-4 text-[#FF6B1A] animate-pulse" />
+                  <Radio className="w-4 h-4 text-[#00FF88] animate-pulse" />
                   <span className="text-sm font-mono font-bold text-white">1 Active PWA</span>
                 </div>
               </div>
@@ -235,7 +235,7 @@ export default function CommunityQuestHub() {
             {/* Referral Bar */}
             <div className="mt-5 pt-4 border-t border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Share2 className="w-4 h-4 text-[#FFAA00]" />
+                <Share2 className="w-4 h-4 text-[#05F292]" />
                 <span className="text-xs font-mono text-white/70">Your Referral Code:</span>
                 <code className="px-2 py-0.5 rounded bg-white/10 font-mono text-xs font-bold text-white">
                   {userProfile.referralCode}
@@ -248,7 +248,7 @@ export default function CommunityQuestHub() {
                   setCopiedRef(true);
                   setTimeout(() => setCopiedRef(false), 2000);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF6B1A]/20 hover:bg-[#FF6B1A]/30 border border-[#FF6B1A]/30 text-xs font-mono text-[#FF6B1A] transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF88]/20 hover:bg-[#00FF88]/30 border border-[#00FF88]/30 text-xs font-mono text-[#00FF88] transition-all active:scale-95"
               >
                 {copiedRef ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedRef ? 'Link Copied!' : 'Copy Invite Link'}</span>
@@ -261,7 +261,7 @@ export default function CommunityQuestHub() {
         <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-display font-black tracking-wide text-white uppercase flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#FFAA00]" />
+              <Sparkles className="w-4 h-4 text-[#05F292]" />
               Active Campaigns
             </h2>
             <span className="text-xs font-mono text-white/40">{campaigns.length} live epochs</span>
@@ -274,12 +274,12 @@ export default function CommunityQuestHub() {
                 onClick={() => setSelectedCampaign(selectedCampaign === camp.id ? 'all' : camp.id)}
                 className={`cursor-pointer p-5 rounded-2xl border transition-all ${
                   selectedCampaign === camp.id 
-                    ? 'bg-[#FF6B1A]/10 border-[#FF6B1A]/40 shadow-[0_0_25px_rgba(255,107,26,0.15)]' 
+                    ? 'bg-[#00FF88]/10 border-[#00FF88]/40 shadow-[0_0_25px_rgba(0, 255, 136,0.15)]' 
                     : 'bg-white/[0.03] hover:bg-white/[0.05] border-white/[0.08]'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#FFAA00]/20 border border-[#FFAA00]/30 text-[10px] font-mono text-[#FFAA00] uppercase font-bold">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#05F292]/20 border border-[#05F292]/30 text-[10px] font-mono text-[#05F292] uppercase font-bold">
                     {camp.badgeTitle || 'Badge Available'}
                   </span>
                   <span className="text-[10px] font-mono text-white/40">
@@ -290,13 +290,13 @@ export default function CommunityQuestHub() {
                 <p className="text-xs text-white/60 line-clamp-2 mb-4">{camp.description}</p>
                 <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-[#FF6B1A] to-[#FFAA00] h-full rounded-full"
+                    className="bg-gradient-to-r from-[#00FF88] to-[#05F292] h-full rounded-full"
                     style={{ width: `${Math.min(100, camp.completionRate || 65)}%` }}
                   />
                 </div>
                 <div className="flex justify-between items-center mt-2 text-[10px] font-mono text-white/40">
                   <span>Target: {camp.targetXp.toLocaleString()} XP</span>
-                  <span className="text-[#FF6B1A] font-bold">{camp.completionRate || 65}% Complete</span>
+                  <span className="text-[#00FF88] font-bold">{camp.completionRate || 65}% Complete</span>
                 </div>
               </div>
             ))}
@@ -311,7 +311,7 @@ export default function CommunityQuestHub() {
               onClick={() => setSelectedCategory(cat)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold capitalize transition-all ${
                 selectedCategory === cat
-                  ? 'bg-[#FF6B1A] text-black font-black shadow-[0_0_15px_rgba(255,107,26,0.4)]'
+                  ? 'bg-[#00FF88] text-black font-black shadow-[0_0_15px_rgba(0, 255, 136,0.4)]'
                   : 'bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] text-white/60'
               }`}
             >
@@ -322,7 +322,7 @@ export default function CommunityQuestHub() {
           {selectedCampaign !== 'all' && (
             <button
               onClick={() => setSelectedCampaign('all')}
-              className="ml-auto text-xs font-mono text-[#FFAA00] underline hover:text-white"
+              className="ml-auto text-xs font-mono text-[#05F292] underline hover:text-white"
             >
               Clear Campaign Filter
             </button>
@@ -349,7 +349,7 @@ export default function CommunityQuestHub() {
                       {quest.category}
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="flex items-center gap-1 text-xs font-mono font-bold text-[#FFAA00]">
+                      <span className="flex items-center gap-1 text-xs font-mono font-bold text-[#05F292]">
                         <Zap className="w-3.5 h-3.5" />
                         +{quest.xpReward} XP
                       </span>
@@ -377,7 +377,7 @@ export default function CommunityQuestHub() {
                   ) : (
                     <button
                       onClick={() => setActiveQuestModal(quest)}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] text-black text-xs font-display font-bold transition-all active:scale-95 shadow-[0_0_15px_rgba(255,107,26,0.3)]"
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] text-black text-xs font-display font-bold transition-all active:scale-95 shadow-[0_0_15px_rgba(0, 255, 136,0.3)]"
                     >
                       <span>Start Quest</span>
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -394,7 +394,7 @@ export default function CommunityQuestHub() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <h2 className="text-lg font-display font-black text-white uppercase flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-[#FFAA00]" />
+                <Trophy className="w-4 h-4 text-[#05F292]" />
                 Top Protocol Contributors
               </h2>
               <p className="text-xs font-mono text-white/50">Ranked by verified XP and collective emotion reputation</p>
@@ -406,7 +406,7 @@ export default function CommunityQuestHub() {
               <div key={item.id} className="py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className={`w-6 text-center text-xs font-mono font-black ${
-                    idx === 0 ? 'text-[#FFAA00]' : idx === 1 ? 'text-gray-300' : idx === 2 ? 'text-amber-600' : 'text-white/40'
+                    idx === 0 ? 'text-[#05F292]' : idx === 1 ? 'text-gray-300' : idx === 2 ? 'text-amber-600' : 'text-white/40'
                   }`}>
                     #{idx + 1}
                   </span>
@@ -422,7 +422,7 @@ export default function CommunityQuestHub() {
 
                 <div className="flex items-center gap-6 text-xs font-mono">
                   <span className="text-white/40 hidden sm:inline">{item.completedQuestsCount} quests</span>
-                  <span className="text-[#FFAA00] font-bold">+{item.totalXp} XP</span>
+                  <span className="text-[#05F292] font-bold">+{item.totalXp} XP</span>
                   <span className="text-[#10B981] font-bold">★ {item.reputationScore}</span>
                 </div>
               </div>
@@ -442,7 +442,7 @@ export default function CommunityQuestHub() {
               className="relative w-full max-w-lg p-6 rounded-3xl bg-[#0e0e12] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
             >
               <div className="flex items-center justify-between mb-4">
-                <span className="px-3 py-1 rounded-full bg-[#FF6B1A]/20 text-[#FF6B1A] text-xs font-mono font-bold uppercase">
+                <span className="px-3 py-1 rounded-full bg-[#00FF88]/20 text-[#00FF88] text-xs font-mono font-bold uppercase">
                   {activeQuestModal.category}
                 </span>
                 <button
@@ -484,7 +484,7 @@ export default function CommunityQuestHub() {
                       placeholder="Your X handle (e.g. @trader_sol)"
                       value={proofInput}
                       onChange={(e) => setProofInput(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                     />
                   </div>
                 )}
@@ -493,7 +493,7 @@ export default function CommunityQuestHub() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs font-mono text-white/80">
                       <span>PWA Sensor Stream:</span>
-                      <span className={sensorStatus === 'verified' ? 'text-[#10B981] font-bold' : 'text-[#FF6B1A]'}>
+                      <span className={sensorStatus === 'verified' ? 'text-[#10B981] font-bold' : 'text-[#00FF88]'}>
                         {sensorStatus === 'idle' && 'Ready to stream'}
                         {sensorStatus === 'streaming' && 'Transmitting acoustic audio bars...'}
                         {sensorStatus === 'verified' && '✓ Sensor verified'}
@@ -501,7 +501,7 @@ export default function CommunityQuestHub() {
                     </div>
                     <div className="w-full h-2 bg-black/50 rounded-full overflow-hidden">
                       <div 
-                        className={`h-full bg-[#FF6B1A] transition-all duration-700 ${
+                        className={`h-full bg-[#00FF88] transition-all duration-700 ${
                           sensorStatus === 'streaming' ? 'w-full animate-pulse' : sensorStatus === 'verified' ? 'w-full bg-[#10B981]' : 'w-0'
                         }`} 
                       />
@@ -528,14 +528,14 @@ export default function CommunityQuestHub() {
 
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-2 text-xs font-mono">
-                  <span className="text-[#FFAA00]">+{activeQuestModal.xpReward} XP</span>
+                  <span className="text-[#05F292]">+{activeQuestModal.xpReward} XP</span>
                   <span className="text-[#10B981]">+{activeQuestModal.reputationReward} Rep</span>
                 </div>
 
                 <button
                   onClick={() => handleCompleteQuest(activeQuestModal)}
                   disabled={verifying}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] disabled:opacity-50 text-black text-xs font-display font-black transition-all active:scale-95"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] disabled:opacity-50 text-black text-xs font-display font-black transition-all active:scale-95"
                 >
                   {verifying ? (
                     <>

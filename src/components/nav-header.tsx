@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { 
-  Zap, Coins, BrainCircuit, Wallet, ChevronRight, Globe, TrendingUp, Users, Bot
+  Zap, Coins, BrainCircuit, Wallet, ChevronRight, Globe, TrendingUp, Users, Bot, Activity
 } from 'lucide-react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
@@ -30,9 +30,9 @@ function NavItem({ href, children, icon: Icon, active, color }: any) {
       disabled={isPending}
       className={`relative group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-display font-bold transition-all active:scale-95 disabled:opacity-70`}
       style={{
-        background: active ? `${color}15` : 'rgba(255,255,255,0.04)',
-        border: `1px solid ${active ? `${color}30` : 'rgba(255,255,255,0.06)'}`,
-        color: active ? color : 'rgba(255,255,255,0.6)',
+        background: active ? `${color}18` : 'rgba(255,255,255,0.04)',
+        border: `1px solid ${active ? `${color}40` : 'rgba(255,255,255,0.06)'}`,
+        color: active ? color : 'rgba(255,255,255,0.65)',
       }}
     >
       {isPending ? (
@@ -45,7 +45,7 @@ function NavItem({ href, children, icon: Icon, active, color }: any) {
         <motion.div
           layoutId="nav-pill"
           className="absolute inset-0 rounded-xl pointer-events-none"
-          style={{ boxShadow: `0 0 15px ${color}10` }}
+          style={{ boxShadow: `0 0 15px ${color}25` }}
         />
       )}
     </button>
@@ -75,35 +75,38 @@ export function NavHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-[100] w-full border-b border-white/[0.06] bg-black/60 backdrop-blur-xl">
+    <header className="sticky top-0 z-[100] w-full border-b border-[#00FF88]/15 bg-[#050709]/80 backdrop-blur-xl">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-3 group shrink-0">
              <div className="relative">
-               <div className="absolute inset-0 bg-[#FF6B1A]/20 blur-xl rounded-full group-hover:bg-[#FF6B1A]/40 transition-all animate-pulse" />
+               <div className="absolute inset-0 bg-[#00FF88]/20 blur-xl rounded-full group-hover:bg-[#00FF88]/40 transition-all animate-pulse" />
                <div className="relative w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center group-hover:scale-110 transition-all">
                  <img 
                    src="/logo.png" 
                    alt="HypeOracle" 
-                   className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(255,107,26,0.3)]"
+                   className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(0,255,136,0.35)]"
                  />
                </div>
              </div>
              <div className="flex flex-col -space-y-1">
-               <span className="font-display font-black tracking-tight text-lg md:text-xl md:tracking-[0.1em]">
-                 HYPE<span className="text-[#FF6B1A] hidden xs:inline">ORACLE</span>
-                 <span className="text-[#FF6B1A] xs:hidden">O</span>
+               <span className="font-display font-black tracking-tight text-lg md:text-xl md:tracking-[0.1em] text-white">
+                 HYPE<span className="text-[#00FF88] hidden xs:inline">ORACLE</span>
+                 <span className="text-[#00FF88] xs:hidden">O</span>
                </span>
-               <span className="hidden sm:block text-[8px] font-mono tracking-[0.2em] text-white/30 uppercase">Vibe-to-Asset Protocol</span>
+               <div className="hidden sm:flex items-center gap-1.5">
+                 <span className="w-1.5 h-1.5 rounded-full bg-[#00FF88] animate-pulse" />
+                 <span className="text-[8px] font-mono tracking-[0.2em] text-[#00FF88]/70 uppercase">Oracle Online • Solana Mainnet</span>
+               </div>
              </div>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-2">
             <NavItem 
               href="/" 
-              icon={Zap} 
+              icon={Activity} 
               active={pathname === '/'} 
-              color="#FF8C42"
+              color="#00FF88"
             >
               Dashboard
             </NavItem>
@@ -111,7 +114,7 @@ export function NavHeader() {
               href="/predict" 
               icon={TrendingUp} 
               active={pathname === '/predict'} 
-              color="#fbbf24"
+              color="#00FF88"
             >
               Predict
             </NavItem>
@@ -119,7 +122,7 @@ export function NavHeader() {
               href="/sandbox" 
               icon={BrainCircuit} 
               active={pathname === '/sandbox'} 
-              color="#06b6d4"
+              color="#00FF88"
             >
               Sandbox
             </NavItem>
@@ -127,7 +130,7 @@ export function NavHeader() {
               href="/market" 
               icon={Globe} 
               active={pathname === '/market'} 
-              color="#FF8C42"
+              color="#00FF88"
             >
               Market
             </NavItem>
@@ -135,7 +138,7 @@ export function NavHeader() {
               href="/community" 
               icon={Users} 
               active={pathname.startsWith('/community')} 
-              color="#FFAA00"
+              color="#00FF88"
             >
               Community
             </NavItem>
@@ -143,7 +146,7 @@ export function NavHeader() {
               href="/admin/x-manager" 
               icon={Bot} 
               active={pathname.startsWith('/admin/x-manager')} 
-              color="#FF6B1A"
+              color="#00FF88"
             >
               AI X Manager
             </NavItem>
@@ -153,7 +156,7 @@ export function NavHeader() {
                   href="/my-agent" 
                   icon={BrainCircuit} 
                   active={pathname === '/my-agent'} 
-                  color="#10b981"
+                  color="#00FF88"
                 >
                   My Agent
                 </NavItem>
@@ -161,7 +164,7 @@ export function NavHeader() {
                   href="/stake" 
                   icon={Zap} 
                   active={pathname === '/stake'} 
-                  color="#FF8C42"
+                  color="#00FF88"
                 >
                   Stake $HYPE
                 </NavItem>
@@ -169,7 +172,7 @@ export function NavHeader() {
                   href="/earnings" 
                   icon={Coins} 
                   active={pathname === '/earnings'} 
-                  color="#ffffff"
+                  color="#00FF88"
                 >
                   Earnings
                 </NavItem>
@@ -185,16 +188,16 @@ export function NavHeader() {
                 navigator.clipboard.writeText(oracleWallet)
                 alert(`Oracle Address Saved: ${oracleWallet}`)
               }}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 text-white/40 text-[9px] font-mono transition-all hover:bg-white/[0.06] active:scale-95"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-[#00FF88]/20 text-[#00FF88]/70 text-[9px] font-mono transition-all hover:bg-[#00FF88]/10 active:scale-95"
             >
-              <div className="w-1 h-1 rounded-full bg-[#FF6B1A] animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#00FF88] animate-pulse" />
               {oracleWallet.slice(0, 4)}...{oracleWallet.slice(-4)}
             </button>
           )}
 
           <div className="flex items-center">
             {mounted ? (
-              <WalletMultiButton className="!bg-[#FF6B1A]/10 !border !border-[#FF6B1A]/20 !rounded-xl !h-10 md:!h-11 !px-3 md:!px-5 !text-[11px] !font-display !font-bold !transition-all hover:!bg-[#FF6B1A]/20 !text-[#FF8C42]" />
+              <WalletMultiButton className="!bg-[#00FF88]/15 !border !border-[#00FF88]/30 !rounded-xl !h-10 md:!h-11 !px-3 md:!px-5 !text-[11px] !font-display !font-bold !transition-all hover:!bg-[#00FF88]/25 !text-[#00FF88]" />
             ) : (
               <div className="w-28 md:w-36 h-10 rounded-xl bg-white/5 animate-pulse" />
             )}

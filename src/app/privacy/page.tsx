@@ -5,14 +5,14 @@ export default function PrivacyPolicy() {
   return (
     <div className="relative min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] font-mono py-20 px-4 sm:px-6">
       {/* Background radial glow */}
-      <div className="absolute top-[-10%] left-[5%] w-[500px] h-[500px] rounded-full bg-orange-500/5 blur-3xl pointer-events-none" />
+      <div className="absolute top-[-10%] left-[5%] w-[500px] h-[500px] rounded-full bg-[#00FF88]/5 blur-3xl pointer-events-none" />
 
       <main className="relative z-10 max-w-3xl mx-auto border border-white/5 bg-black/40 rounded-3xl p-6 sm:p-10 backdrop-blur-md">
         
         {/* Header */}
         <section className="text-center pb-8 border-b border-white/5 mb-8">
           <div className="flex justify-center mb-3">
-            <div className="p-2 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400">
+            <div className="p-2 rounded-xl bg-[#00FF88]/10 border border-[#00FF88]/20 text-[#00FF88]">
               <Shield className="w-6 h-6" />
             </div>
           </div>
@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
           
           <section className="space-y-3">
             <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wide">
-              <Eye className="w-4 h-4 text-orange-400 shrink-0" />
+              <Eye className="w-4 h-4 text-[#00FF88] shrink-0" />
               <h2>1. Information We Collect</h2>
             </div>
             <p>
@@ -37,7 +37,7 @@ export default function PrivacyPolicy() {
             </p>
             <ul className="list-disc list-inside pl-2 space-y-1.5 text-white/60">
               <li>
-                <strong className="text-white">Audio Recording (Voice Vibe)</strong>: If permission is explicitly granted, the client records up to 5 seconds of audio to evaluate volume and excitement. This audio is transmitted securely to our AI model endpoint for immediate sentiment scoring. <span className="text-orange-400 font-bold">We do not store or keep raw audio recordings on our servers</span>; they are discarded immediately after analysis.
+                <strong className="text-white">Audio Recording (Voice Vibe)</strong>: If permission is explicitly granted, the client records up to 5 seconds of audio to evaluate volume and excitement. This audio is transmitted securely to our AI model endpoint for immediate sentiment scoring. <span className="text-[#00FF88] font-bold">We do not store or keep raw audio recordings on our servers</span>; they are discarded immediately after analysis.
               </li>
               <li>
                 <strong className="text-white">Device Motion & Accelerometer Data</strong>: We collect physical vibration/shake magnitude statistics locally during the 5-second sampling window. This serves as a DePIN proof-of-physicality check to prevent botting and Sybil consensus attacks.
@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
 
           <section className="space-y-3">
             <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wide">
-              <Lock className="w-4 h-4 text-orange-400 shrink-0" />
+              <Lock className="w-4 h-4 text-[#00FF88] shrink-0" />
               <h2>2. How We Use Your Data</h2>
             </div>
             <p>
@@ -65,7 +65,7 @@ export default function PrivacyPolicy() {
 
           <section className="space-y-3">
             <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wide">
-              <CheckCircle2 className="w-4 h-4 text-orange-400 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#00FF88] shrink-0" />
               <h2>3. Data Sharing & Security</h2>
             </div>
             <p>
@@ -78,7 +78,7 @@ export default function PrivacyPolicy() {
 
           <section className="space-y-3">
             <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wide">
-              <Shield className="w-4 h-4 text-orange-400 shrink-0" />
+              <Shield className="w-4 h-4 text-[#00FF88] shrink-0" />
               <h2>4. Target Audience & Age Restrictions</h2>
             </div>
             <p>
@@ -88,7 +88,7 @@ export default function PrivacyPolicy() {
 
           <section className="space-y-3">
             <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wide">
-              <Shield className="w-4 h-4 text-orange-400 shrink-0" />
+              <Shield className="w-4 h-4 text-[#00FF88] shrink-0" />
               <h2>5. Contact Information</h2>
             </div>
             <p>

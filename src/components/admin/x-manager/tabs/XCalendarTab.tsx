@@ -43,7 +43,7 @@ export function XCalendarTab({
       {/* Upcoming Scheduled Queue */}
       <div className="space-y-3">
         <h3 className="text-sm font-display font-bold text-white uppercase flex items-center gap-2">
-          <Clock className="w-4 h-4 text-[#FFAA00]" />
+          <Clock className="w-4 h-4 text-[#05F292]" />
           Queued for Dispatch ({scheduled.length})
         </h3>
 
@@ -57,7 +57,7 @@ export function XCalendarTab({
               <div key={item.id} className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-[10px] font-mono text-white/40">
-                    <span className="px-2 py-0.5 rounded bg-[#FFAA00]/20 text-[#FFAA00] font-bold uppercase">
+                    <span className="px-2 py-0.5 rounded bg-[#05F292]/20 text-[#05F292] font-bold uppercase">
                       {item.status}
                     </span>
                     <span>Target: {new Date(item.scheduledFor).toLocaleString()}</span>

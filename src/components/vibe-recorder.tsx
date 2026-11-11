@@ -293,7 +293,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
         // Clear canvas
         audioCtx.clearRect(0, 0, audioCanvas.width, audioCanvas.height)
         
-        // Draw Glowing Audio Bars (Dark Orange Gradient #FF6B1A)
+        // Draw Glowing Audio Bars (Cyber-Emerald Gradient #00FF88)
         const barWidth = (audioCanvas.width / bufferLength) * 1.5
         let barHeight
         let x = 0
@@ -303,9 +303,9 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
           
           // Make it sound-responsive and center-balanced
           const grad = audioCtx.createLinearGradient(0, audioCanvas.height, 0, audioCanvas.height - barHeight)
-          grad.addColorStop(0, 'rgba(255, 107, 26, 0.15)')
-          grad.addColorStop(0.5, '#FF8C42')
-          grad.addColorStop(1, '#FF6B1A')
+          grad.addColorStop(0, 'rgba(0, 255, 136, 0.15)')
+          grad.addColorStop(0.5, '#05F292')
+          grad.addColorStop(1, '#00FF88')
           
           audioCtx.fillStyle = grad
           
@@ -346,20 +346,20 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
         // Clear canvas
         motionCtx.clearRect(0, 0, motionCanvas.width, motionCanvas.height)
         
-        // Paint Glowing Motion Rolling Line (Gold/Amber #fbbf24 to Orange #FF6B1A)
+        // Paint Glowing Motion Rolling Line (Mint #10B981 to Emerald #00FF88)
         motionCtx.beginPath()
         motionCtx.lineWidth = 2.5
         
         const strokeGrad = motionCtx.createLinearGradient(0, 0, motionCanvas.width, 0)
-        strokeGrad.addColorStop(0, '#FF8C42')
-        strokeGrad.addColorStop(0.5, '#fbbf24')
-        strokeGrad.addColorStop(1, '#FF6B1A')
+        strokeGrad.addColorStop(0, '#10B981')
+        strokeGrad.addColorStop(0.5, '#05F292')
+        strokeGrad.addColorStop(1, '#00FF88')
         motionCtx.strokeStyle = strokeGrad
         
         // Subtly fill under the vibration curve
         const fillGrad = motionCtx.createLinearGradient(0, 0, 0, motionCanvas.height)
-        fillGrad.addColorStop(0, 'rgba(251, 191, 36, 0.18)')
-        fillGrad.addColorStop(1, 'rgba(255, 107, 26, 0)')
+        fillGrad.addColorStop(0, 'rgba(0, 255, 136, 0.18)')
+        fillGrad.addColorStop(1, 'rgba(0, 255, 136, 0)')
         
         const sliceWidth = motionCanvas.width / motionHistory.current.length
         let mx = 0
@@ -546,19 +546,19 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
             className="w-full grid grid-cols-1 gap-2 border p-3 rounded-2xl bg-black/40"
-            style={{ borderColor: 'rgba(255, 107, 26, 0.12)' }}
+            style={{ borderColor: 'rgba(0, 255, 136, 0.25)' }}
           >
             {/* Audio Waveform Canvas Box */}
             <div className="flex flex-col gap-1.5">
               <div className="flex justify-between items-center px-1">
-                <span className="text-[9px] font-mono text-orange-400/80 tracking-widest flex items-center gap-1">
+                <span className="text-[9px] font-mono text-[#00FF88] tracking-widest flex items-center gap-1">
                   <Mic className="w-2.5 h-2.5" /> VOICE NODE STREAM
                 </span>
-                <span className="text-[9px] font-mono text-orange-300/80">
+                <span className="text-[9px] font-mono text-[#05F292]">
                   {vocalEnergy}% ENERGIZED
                 </span>
               </div>
-              <div className="relative h-14 bg-black/50 rounded-xl overflow-hidden border border-orange-500/10">
+              <div className="relative h-14 bg-black/50 rounded-xl overflow-hidden border border-[#00FF88]/20">
                 <canvas 
                   ref={audioCanvasRef} 
                   width={340} 
@@ -571,14 +571,14 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
             {/* Accelerometer Chart Box */}
             <div className="flex flex-col gap-1.5 mt-1">
               <div className="flex justify-between items-center px-1">
-                <span className="text-[9px] font-mono text-amber-400/80 tracking-widest flex items-center gap-1">
+                <span className="text-[9px] font-mono text-emerald-400 tracking-widest flex items-center gap-1">
                   <Activity className="w-2.5 h-2.5" /> DEPIN ACCELEROMETER
                 </span>
-                <span className="text-[9px] font-mono text-amber-300/80 uppercase">
+                <span className="text-[9px] font-mono text-emerald-300 uppercase">
                   {sensorStatus === 'live' ? `⚡ ${vibeImpact} M/S² ACTIVE` : '✨ SUBTLE VIBE CHECK'}
                 </span>
               </div>
-              <div className="relative h-14 bg-black/50 rounded-xl overflow-hidden border border-amber-500/10">
+              <div className="relative h-14 bg-black/50 rounded-xl overflow-hidden border border-emerald-500/20">
                 <canvas 
                   ref={motionCanvasRef} 
                   width={340} 
@@ -597,12 +597,12 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
         {isRecording && (
           <>
             <div
-              className="absolute inset-0 rounded-full animate-pulse opacity-15 blur-xl"
-              style={{ background: '#FF6B1A', transform: 'scale(1.3)', width: 140, height: 140, margin: 'auto' }}
+              className="absolute inset-0 rounded-full animate-pulse opacity-25 blur-xl"
+              style={{ background: '#00FF88', transform: 'scale(1.3)', width: 140, height: 140, margin: 'auto' }}
             />
             <div
-              className="absolute inset-0 rounded-full animate-ping opacity-10"
-              style={{ background: '#fbbf24', transform: 'scale(1.6)', width: 80, height: 80, margin: 'auto', animationDuration: '2s' }}
+              className="absolute inset-0 rounded-full animate-ping opacity-15"
+              style={{ background: '#05F292', transform: 'scale(1.6)', width: 80, height: 80, margin: 'auto', animationDuration: '2s' }}
             />
           </>
         )}
@@ -617,28 +617,28 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
               height: 80,
               borderRadius: '50%',
               background: isRecording
-                ? 'linear-gradient(135deg, #FF3D00, #FF6B1A)'
-                : 'rgba(255, 107, 26, 0.05)',
-              border: `1.5px dashed ${isRecording ? '#FF6B1A' : 'rgba(255, 107, 26, 0.3)'}`,
+                ? 'linear-gradient(135deg, #00FF88, #05F292)'
+                : 'rgba(0, 255, 136, 0.08)',
+              border: `1.5px solid ${isRecording ? '#00FF88' : 'rgba(0, 255, 136, 0.4)'}`,
               boxShadow: isRecording 
-                ? '0 0 25px rgba(255, 107, 26, 0.45), inset 0 0 15px rgba(255, 61, 0, 0.3)' 
-                : 'none',
+                ? '0 0 30px rgba(0, 255, 136, 0.6), inset 0 0 15px rgba(0, 255, 136, 0.4)' 
+                : '0 0 15px rgba(0, 255, 136, 0.1)',
               transform: isRecording ? 'scale(1.05)' : 'scale(1)',
             }}
           >
             {submitting ? (
-              <Loader2 className="w-7 h-7 text-orange-400 animate-spin" />
+              <Loader2 className="w-7 h-7 text-[#00FF88] animate-spin" />
             ) : isRecording ? (
               countdown !== null ? (
                 <div className="flex flex-col items-center">
-                  <span className="text-white font-display font-extrabold text-xl leading-none">{countdown}</span>
-                  <span className="text-[8px] font-mono text-white/60 tracking-wider mt-0.5">REC</span>
+                  <span className="text-[#050709] font-display font-extrabold text-xl leading-none">{countdown}</span>
+                  <span className="text-[8px] font-mono text-[#050709]/70 tracking-wider mt-0.5">REC</span>
                 </div>
               ) : (
-                <MicOff className="w-6 h-6 text-white" />
+                <MicOff className="w-6 h-6 text-[#050709]" />
               )
             ) : (
-              <div className="flex flex-col items-center justify-center text-orange-500/80 hover:text-orange-400">
+              <div className="flex flex-col items-center justify-center text-[#00FF88] hover:text-[#05F292]">
                 <Mic className="w-6 h-6 animate-pulse" />
               </div>
             )}
@@ -647,7 +647,7 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
 
         {/* Live HUD feedback details */}
         <div className="flex flex-col items-center gap-0.5">
-          <p className="text-[9px] font-mono text-center tracking-widest text-orange-400/70 uppercase">
+          <p className="text-[9px] font-mono text-center tracking-widest text-[#00FF88] uppercase">
             {isRecording
               ? `● CAPTURING SENSORY DATA NODE ...`
               : submitting
@@ -671,19 +671,19 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
             exit={{ opacity: 0, scale: 0.97 }}
             className="flex flex-col items-center gap-2 w-full p-4 rounded-xl border bg-black/30"
             style={{
-              borderColor: isHot ? 'rgba(255, 107, 26, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+              borderColor: isHot ? 'rgba(0, 255, 136, 0.4)' : 'rgba(255, 255, 255, 0.05)',
             }}
           >
             <div className="flex items-center gap-4 w-full justify-center">
               <ScoreGauge score={lastVibeScore} size={64} />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#00FF88]" />
                   <p className="font-display font-extrabold text-sm text-white tracking-wide uppercase">
                     HARDSYNC DECISION CALIBRATED
                   </p>
                 </div>
-                <p className="text-[10px] font-mono text-orange-400/80 uppercase tracking-widest mt-0.5">
+                <p className="text-[10px] font-mono text-[#00FF88] uppercase tracking-widest mt-0.5">
                   SIGNAL EMITTED {emotion} Score: {lastVibeScore}
                 </p>
                 <p className="text-[9px] font-mono text-white/50 leading-relaxed mt-1">
@@ -705,15 +705,15 @@ export function VibeRecorder({ tokenMint, onVibeSubmitted }: VibeRecorderProps) 
         style={{
           background: publicKey
             ? trading
-              ? 'rgba(255, 107, 26, 0.08)'
-              : 'linear-gradient(135deg, rgba(255, 107, 26, 0.15), rgba(255, 61, 0, 0.05))'
+              ? 'rgba(0, 255, 136, 0.08)'
+              : 'linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(5, 242, 146, 0.08))'
             : 'rgba(255, 255, 255, 0.01)',
-          border: `1.5px solid ${publicKey ? 'rgba(255, 107, 26, 0.3)' : 'rgba(255, 255, 255, 0.04)'}`,
-          color: publicKey ? '#FF8C42' : 'rgba(255, 255, 255, 0.15)',
+          border: `1.5px solid ${publicKey ? 'rgba(0, 255, 136, 0.4)' : 'rgba(255, 255, 255, 0.04)'}`,
+          color: publicKey ? '#00FF88' : 'rgba(255, 255, 255, 0.15)',
           cursor: publicKey ? 'pointer' : 'not-allowed',
         }}
       >
-        {trading ? <Loader2 className="w-3.5 h-3.5 animate-spin text-orange-400" /> : <Zap className="w-3.5 h-3.5 text-orange-400 animate-pulse" />}
+        {trading ? <Loader2 className="w-3.5 h-3.5 animate-spin text-[#00FF88]" /> : <Zap className="w-3.5 h-3.5 text-[#00FF88] animate-pulse" />}
         {trading ? 'SWAPPING DEPIN LIQUIDITY...' : 'INITIATE MANUAL HARDSYNC SWAP (0.1 SOL)'}
       </button>
 

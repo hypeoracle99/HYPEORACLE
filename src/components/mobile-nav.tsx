@@ -13,11 +13,11 @@ export function MobileNav() {
   const { connected } = useWallet()
 
   const navItems = [
-    { href: '/', icon: Zap, label: 'Dashboard', color: '#FF6B1A' },
-    { href: '/community', icon: Users, label: 'Quests', color: '#FFAA00' },
-    { href: '/predict', icon: TrendingUp, label: 'Predict', color: '#fbbf24' },
+    { href: '/', icon: Zap, label: 'Dashboard', color: '#00FF88' },
+    { href: '/community', icon: Users, label: 'Quests', color: '#05F292' },
+    { href: '/predict', icon: TrendingUp, label: 'Predict', color: '#00FF88' },
     { href: '/sandbox', icon: BrainCircuit, label: 'Sandbox', color: '#06b6d4' },
-    { href: '/my-agent', icon: BrainCircuit, label: 'Agent', color: '#10b981' },
+    { href: '/my-agent', icon: BrainCircuit, label: 'Agent', color: '#00FF88' },
   ]
 
   if (!connected) return null

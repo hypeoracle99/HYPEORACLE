@@ -78,7 +78,7 @@ export function XSettingsAuditTab({
         {/* Left: Autopilot & Safety Controls */}
         <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-6">
           <h3 className="text-sm font-display font-bold text-white uppercase flex items-center gap-2">
-            <Bot className="w-4 h-4 text-[#FF6B1A]" />
+            <Bot className="w-4 h-4 text-[#00FF88]" />
             Autonomous Social Autopilot
           </h3>
 
@@ -110,7 +110,7 @@ export function XSettingsAuditTab({
               <select
                 value={intervalHours}
                 onChange={(e) => setIntervalHours(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                className="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
               >
                 <option value={4}>Every 4 Hours</option>
                 <option value={6}>Every 6 Hours</option>
@@ -128,7 +128,7 @@ export function XSettingsAuditTab({
                 type="number"
                 value={dailyPostLimit}
                 onChange={(e) => setDailyPostLimit(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                className="w-full px-3 py-2 rounded-xl bg-black/50 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
               />
             </div>
           </div>
@@ -143,7 +143,7 @@ export function XSettingsAuditTab({
               type="button"
               onClick={() => setRequireApproval(!requireApproval)}
               className={`w-12 h-6 rounded-full transition-all relative ${
-                requireApproval ? 'bg-[#FFAA00]' : 'bg-white/20'
+                requireApproval ? 'bg-[#05F292]' : 'bg-white/20'
               }`}
             >
               <div className={`w-5 h-5 rounded-full bg-white transition-all absolute top-0.5 ${
@@ -155,7 +155,7 @@ export function XSettingsAuditTab({
           <button
             onClick={handleSaveSettings}
             disabled={isSaving}
-            className="w-full py-2.5 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] text-black text-xs font-display font-black transition-all active:scale-95 disabled:opacity-50"
+            className="w-full py-2.5 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] text-black text-xs font-display font-black transition-all active:scale-95 disabled:opacity-50"
           >
             {isSaving ? 'Saving Configuration...' : 'Save Autopilot Settings'}
           </button>
@@ -164,14 +164,14 @@ export function XSettingsAuditTab({
         {/* Right: X API Connection Diagnostics & Brand Safety */}
         <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-6">
           <h3 className="text-sm font-display font-bold text-white uppercase flex items-center gap-2">
-            <Key className="w-4 h-4 text-[#FFAA00]" />
+            <Key className="w-4 h-4 text-[#05F292]" />
             Official X API v2 Connection
           </h3>
 
           <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-3">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="text-white/40">Credential Status:</span>
-              <span className="text-[#FFAA00] font-bold">Configured via .env.local</span>
+              <span className="text-[#05F292] font-bold">Configured via .env.local</span>
             </div>
             <p className="text-xs font-mono text-white/60">
               Keys: X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET. Secrets remain strictly on the backend.

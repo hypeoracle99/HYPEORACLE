@@ -98,7 +98,7 @@ export function OracleStatus() {
           exit={{ opacity: 0 }}
           className="flex items-center gap-3 px-4 py-3 rounded-2xl glass-card"
         >
-          <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-[#00FF88] animate-pulse" />
           <span className="mono-label">Syncing Consensus Engine...</span>
         </motion.div>
       ) : (
@@ -113,7 +113,7 @@ export function OracleStatus() {
             className="absolute top-0 left-0 right-0 h-[1px]"
             style={{
               background: isActive
-                ? 'linear-gradient(90deg, transparent, rgba(255,107,26,0.6), transparent)'
+                ? 'linear-gradient(90deg, transparent, rgba(0,255,136,0.8), transparent)'
                 : 'linear-gradient(90deg, transparent, rgba(239,68,68,0.4), transparent)',
             }}
           />
@@ -123,12 +123,12 @@ export function OracleStatus() {
             <div className="flex items-center gap-4">
               <div
                 className="relative flex items-center justify-center w-10 h-10 rounded-xl"
-                style={{ background: isActive ? 'rgba(255,107,26,0.12)' : 'rgba(239,68,68,0.1)' }}
+                style={{ background: isActive ? 'rgba(0,255,136,0.12)' : 'rgba(239,68,68,0.1)' }}
               >
                 {isActive ? (
                   <>
-                    <Zap className="w-5 h-5 text-orange-500" />
-                    <div className="absolute inset-0 rounded-xl animate-ping opacity-20 bg-orange-500" />
+                    <Zap className="w-5 h-5 text-[#00FF88]" />
+                    <div className="absolute inset-0 rounded-xl animate-ping opacity-25 bg-[#00FF88]" />
                   </>
                 ) : (
                   <AlertTriangle className="w-5 h-5 text-red-400" />
@@ -142,9 +142,9 @@ export function OracleStatus() {
                   <span
                     className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold"
                     style={{
-                      background: isActive ? 'rgba(255,107,26,0.15)' : 'rgba(239,68,68,0.12)',
-                      color: isActive ? '#FF8C42' : '#F87171',
-                      border: `1px solid ${isActive ? 'rgba(255,107,26,0.3)' : 'rgba(239,68,68,0.25)'}`,
+                      background: isActive ? 'rgba(0,255,136,0.15)' : 'rgba(239,68,68,0.12)',
+                      color: isActive ? '#00FF88' : '#F87171',
+                      border: `1px solid ${isActive ? 'rgba(0,255,136,0.35)' : 'rgba(239,68,68,0.25)'}`,
                     }}
                   >
                     {isActive ? '● LIVE' : '● LOW FUEL'}
@@ -168,7 +168,7 @@ export function OracleStatus() {
                   <span className="font-display font-bold text-xl text-white">
                     {(status?.balance || 0).toFixed(3)}
                   </span>
-                  <span className="text-xs font-mono text-orange-500">SOL</span>
+                  <span className="text-xs font-mono text-[#00FF88]">SOL</span>
                 </div>
                 {/* Balance bar */}
                 <div className="mt-1 h-1 w-24 rounded-full bg-white/5 overflow-hidden">
@@ -177,7 +177,7 @@ export function OracleStatus() {
                     style={{
                       width: `${balancePct}%`,
                       background: isActive
-                        ? 'linear-gradient(90deg, #FF6B1A, #FFD700)'
+                        ? 'linear-gradient(90deg, #00FF88, #05F292)'
                         : 'linear-gradient(90deg, #EF4444, #F97316)',
                     }}
                   />
@@ -190,20 +190,20 @@ export function OracleStatus() {
               <div className="text-right">
                 <p className="mono-label mb-1">Safety Caps</p>
                 <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3 h-3 text-orange-500" />
+                  <ShieldCheck className="w-3 h-3 text-[#00FF88]" />
                   <span className="text-[10px] font-mono text-[var(--text-secondary)]">
                     0.005 MAX · 5m COOL
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   {connected ? (
-                    <Wifi className="w-3 h-3 text-green-500/70" />
+                    <Wifi className="w-3 h-3 text-[#00FF88]" />
                   ) : (
-                    <WifiOff className="w-3 h-3 text-orange-500/50" />
+                    <WifiOff className="w-3 h-3 text-[#00FF88]/50" />
                   )}
                   <span
                     className="text-[10px] font-mono"
-                    style={{ color: connected ? 'rgba(34,197,94,0.7)' : 'rgba(255,107,26,0.6)' }}
+                    style={{ color: connected ? '#00FF88' : 'rgba(0,255,136,0.6)' }}
                   >
                     {connected ? 'Live ⚡' : 'Polling'}
                   </span>

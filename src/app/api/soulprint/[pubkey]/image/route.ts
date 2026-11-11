@@ -58,9 +58,9 @@ export async function GET(
   const level = Math.floor(totalVibes / 5) + 1
 
   // Determine theme colors based on level (No Purple/Violet hex rules strictly followed)
-  let strokeColor = '#FF6B1A' // Genesis (Orange)
-  let fillColor = 'rgba(255, 107, 26, 0.25)'
-  let glowColor = 'rgba(255, 107, 26, 0.6)'
+  let strokeColor = '#00FF88' // Genesis (Orange)
+  let fillColor = 'rgba(0, 255, 136, 0.25)'
+  let glowColor = 'rgba(0, 255, 136, 0.6)'
   let gridOpacity = '0.1'
   let tierName = 'GENESIS'
 
@@ -192,7 +192,7 @@ export async function GET(
       ${legendaryRings}
 
       ${privacyLevel === 'private' ? `
-        <circle cx="${center}" cy="${center}" r="30" fill="rgba(255, 107, 26, 0.05)" stroke="${strokeColor}" stroke-width="1.5" />
+        <circle cx="${center}" cy="${center}" r="30" fill="rgba(0, 255, 136, 0.05)" stroke="${strokeColor}" stroke-width="1.5" />
         <path d="M ${center - 8} ${center + 4} L ${center + 8} ${center + 4} L ${center + 8} ${center - 4} L ${center - 8} ${center - 4} Z" fill="none" stroke="${strokeColor}" stroke-width="1.5" />
         <path d="M ${center - 5} ${center - 4} A 5 5 0 0 1 ${center + 5} ${center - 4}" fill="none" stroke="${strokeColor}" stroke-width="1.5" />
       ` : `
@@ -215,7 +215,7 @@ export async function GET(
         y="22" 
         text-anchor="middle" 
         dominant-baseline="middle" 
-        fill="${isCalibrated && privacyLevel !== 'private' ? strokeColor : '#FF6B1A'}" 
+        fill="${isCalibrated && privacyLevel !== 'private' ? strokeColor : '#00FF88'}" 
         font-family="monospace" 
         font-size="8" 
         font-weight="bold" 

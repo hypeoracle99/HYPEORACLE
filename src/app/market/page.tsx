@@ -216,7 +216,7 @@ export default function MarketPage() {
   const currentScore = latestSentiment?.global_score || 50
   
   const getScoreTheme = () => {
-    if (currentScore > 75) return { color: '#FF6B1A', label: 'Ecosystem Euphoria', bgGlow: 'rgba(255, 107, 26, 0.15)' }
+    if (currentScore > 75) return { color: '#00FF88', label: 'Ecosystem Euphoria', bgGlow: 'rgba(0, 255, 136, 0.15)' }
     if (currentScore > 55) return { color: '#10b981', label: 'Healthy Optimism', bgGlow: 'rgba(16, 185, 129, 0.15)' }
     if (currentScore > 40) return { color: '#3b82f6', label: 'Neutral Balance', bgGlow: 'rgba(59, 130, 246, 0.15)' }
     return { color: '#ef4444', label: 'Fear & Hesitation', bgGlow: 'rgba(239, 68, 68, 0.15)' }
@@ -225,7 +225,7 @@ export default function MarketPage() {
   const theme = getScoreTheme()
 
   return (
-    <div className="relative min-h-screen bg-[#050507] text-white selection:bg-[#FF6B1A]/30 pb-20">
+    <div className="relative min-h-screen bg-[#050507] text-white selection:bg-[#00FF88]/30 pb-20">
       <AmbientBackground />
 
       <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-12 pt-28">
@@ -233,12 +233,12 @@ export default function MarketPage() {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
           <div>
-            <div className="flex items-center gap-2 mb-2 text-[#FF6B1A] font-mono text-xs tracking-widest uppercase">
+            <div className="flex items-center gap-2 mb-2 text-[#00FF88] font-mono text-xs tracking-widest uppercase">
               <Sparkles className="w-4 h-4 animate-pulse" />
               SOLANA SENTIMENT ORACLE
             </div>
             <h1 className="font-display font-black text-4xl md:text-5xl tracking-tight leading-none">
-              COLLECTIVE <span className="text-[#FF6B1A]">CONSCIOUSNESS</span>
+              COLLECTIVE <span className="text-[#00FF88]">CONSCIOUSNESS</span>
             </h1>
             <p className="text-[var(--text-muted)] font-mono text-xs max-w-xl mt-3 leading-relaxed">
               Global Hype indices aggregated from hundreds of verified phone voice notes and accelerometer vibrations. 
@@ -248,7 +248,7 @@ export default function MarketPage() {
 
           <button 
             onClick={() => setShowApiModal(true)}
-            className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-[#FF6B1A]/30 transition-all font-mono font-bold text-xs uppercase flex items-center gap-2 group active:scale-95 shrink-0"
+            className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-[#00FF88]/30 transition-all font-mono font-bold text-xs uppercase flex items-center gap-2 group active:scale-95 shrink-0"
           >
             <span>Access Premium Indices</span>
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -330,7 +330,7 @@ export default function MarketPage() {
                     <p className="text-[10px] text-[var(--text-muted)] font-mono mt-1">Weighted aggregated emotional frequency</p>
                   </div>
                   <div className="flex items-center gap-1 text-[10px] font-mono text-white/40 bg-white/5 border border-white/5 py-1 px-3 rounded-full">
-                    <Users className="w-3 h-3 text-[#FF6B1A]" />
+                    <Users className="w-3 h-3 text-[#00FF88]" />
                     <span>{latestSentiment?.total_contributors || 0} Vibers</span>
                   </div>
                 </div>
@@ -344,7 +344,7 @@ export default function MarketPage() {
               <div className="p-8 rounded-[2.5rem] relative overflow-hidden backdrop-blur-3xl flex flex-col justify-between" style={{ background: 'rgba(5, 5, 7, 0.7)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                 <div 
                   className="absolute bottom-0 right-0 w-44 h-44 blur-[80px] opacity-[0.03] pointer-events-none"
-                  style={{ background: '#FF6B1A' }}
+                  style={{ background: '#00FF88' }}
                 />
                 
                 <div>
@@ -354,8 +354,8 @@ export default function MarketPage() {
                   
                   <p className="text-xs font-mono text-white/80 leading-relaxed">
                     HypeOracle AI has processed the vocal signatures of the ecosystem. The dominant wave is 
-                    <span className="text-[#FF6B1A] font-bold"> Hope </span> at 
-                    <span className="text-[#FF6B1A]"> {latestSentiment?.emotional_breakdown?.Hope || 35}%</span>, 
+                    <span className="text-[#00FF88] font-bold"> Hope </span> at 
+                    <span className="text-[#00FF88]"> {latestSentiment?.emotional_breakdown?.Hope || 35}%</span>, 
                     indicating a high consensus that a momentum expansion is building. 
                     Fear indexes remain safely bound below 15%.
                   </p>
@@ -368,7 +368,7 @@ export default function MarketPage() {
                   </div>
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="text-white/40">Auto-Buy Status:</span>
-                    <span className="text-orange-400 font-bold">READY</span>
+                    <span className="text-[#00FF88] font-bold">READY</span>
                   </div>
                 </div>
               </div>
@@ -389,8 +389,8 @@ export default function MarketPage() {
                     <AreaChart data={historyData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                       <defs>
                         <linearGradient id="scoreGlow" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#FF6B1A" stopOpacity={0.2}/>
-                          <stop offset="95%" stopColor="#FF6B1A" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#00FF88" stopOpacity={0.2}/>
+                          <stop offset="95%" stopColor="#00FF88" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
@@ -413,7 +413,7 @@ export default function MarketPage() {
                       <Tooltip 
                         contentStyle={{ 
                           background: '#0a0a0d', 
-                          border: '1px solid rgba(255, 107, 26, 0.2)', 
+                          border: '1px solid rgba(0, 255, 136, 0.2)', 
                           borderRadius: '16px',
                           color: '#fff',
                           fontFamily: 'monospace',
@@ -423,7 +423,7 @@ export default function MarketPage() {
                       <Area 
                         type="monotone" 
                         dataKey="score" 
-                        stroke="#FF6B1A" 
+                        stroke="#00FF88" 
                         strokeWidth={2.5}
                         fillOpacity={1} 
                         fill="url(#scoreGlow)" 
@@ -441,7 +441,7 @@ export default function MarketPage() {
 
                 <div className="space-y-3 flex-1 flex flex-col justify-center">
                   {tokenLeaders.map((token, idx) => (
-                    <div key={idx} className="p-3.5 rounded-2xl bg-white/[0.01] border border-white/[0.03] flex items-center justify-between group hover:border-[#FF6B1A]/20 transition-all">
+                    <div key={idx} className="p-3.5 rounded-2xl bg-white/[0.01] border border-white/[0.03] flex items-center justify-between group hover:border-[#00FF88]/20 transition-all">
                       <div className="flex items-center gap-3">
                         <div className="w-7 h-7 rounded-lg flex items-center justify-center font-display font-black text-[10px] bg-white/5 text-[var(--text-muted)]">
                           {idx + 1}
@@ -453,7 +453,7 @@ export default function MarketPage() {
                       </div>
                       
                       <div className="text-right">
-                        <span className="font-display font-black text-sm text-[#FF6B1A]">{token.score}</span>
+                        <span className="font-display font-black text-sm text-[#00FF88]">{token.score}</span>
                         <span className="text-[8px] font-mono text-[var(--text-muted)] block">Vibe Rating</span>
                       </div>
                     </div>
@@ -470,7 +470,7 @@ export default function MarketPage() {
               <div className="p-8 rounded-[2.5rem] backdrop-blur-3xl" style={{ background: 'rgba(5, 5, 7, 0.7)', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="mono-label text-[10px] text-white/40 tracking-[0.2em] uppercase flex items-center gap-1.5">
-                    <Activity className="w-3.5 h-3.5 text-[#FF6B1A]" /> Raw Decentralized Sentiment Stream
+                    <Activity className="w-3.5 h-3.5 text-[#00FF88]" /> Raw Decentralized Sentiment Stream
                   </h3>
                   <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-mono text-emerald-400 uppercase tracking-tighter">
                     Realtime Submissions
@@ -482,7 +482,7 @@ export default function MarketPage() {
                     <div key={idx} className="p-4 rounded-2xl bg-white/[0.01] border border-white/[0.04] flex gap-4 hover:bg-white/[0.02] transition-colors relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-16 h-16 bg-white/[0.01] rounded-bl-full pointer-events-none" />
                       
-                      <div className="text-xl shrink-0 filter drop-shadow-[0_0_8px_rgba(255,107,26,0.3)]">{vibe.emoji}</div>
+                      <div className="text-xl shrink-0 filter drop-shadow-[0_0_8px_rgba(0, 255, 136,0.3)]">{vibe.emoji}</div>
                       
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
@@ -509,7 +509,7 @@ export default function MarketPage() {
                     <h3 className="mono-label text-[10px] text-white/40 tracking-[0.2em] uppercase flex items-center gap-1.5">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> On-Chain Verifiable Ledger
                     </h3>
-                    <span className="px-2 py-0.5 rounded-md bg-[#FF6B1A]/10 border border-[#FF6B1A]/20 text-[8px] font-mono text-[#FF6B1A] uppercase tracking-tighter">
+                    <span className="px-2 py-0.5 rounded-md bg-[#00FF88]/10 border border-[#00FF88]/20 text-[8px] font-mono text-[#00FF88] uppercase tracking-tighter">
                       Solana Memo Feeds
                     </span>
                   </div>
@@ -557,7 +557,7 @@ export default function MarketPage() {
                                 href={`https://solscan.io/tx/${log.tx_signature}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1 hover:bg-white/5 rounded text-white/40 hover:text-[#FF6B1A] transition-colors"
+                                className="p-1 hover:bg-white/5 rounded text-white/40 hover:text-[#00FF88] transition-colors"
                                 title="View on Solscan"
                               >
                                 <ArrowUpRight className="w-3 h-3" />
@@ -604,9 +604,9 @@ export default function MarketPage() {
                   ? 'max-w-2xl' 
                   : 'max-w-md'
               }`}
-              style={{ background: '#0a0a0d', border: '1px solid rgba(255, 107, 26, 0.2)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8)' }}
+              style={{ background: '#0a0a0d', border: '1px solid rgba(0, 255, 136, 0.2)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.8)' }}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF6B1A]/5 blur-2xl rounded-full" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#00FF88]/5 blur-2xl rounded-full" />
               
               {!mounted ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center text-white/40">
@@ -631,7 +631,7 @@ export default function MarketPage() {
                   </p>
 
                   <div className="w-full flex justify-center py-2">
-                    <WalletMultiButton className="!bg-[#FF6B1A] !hover:bg-[#FF8C42] !rounded-2xl !h-12 !font-display !font-bold transition-all active:scale-[0.98]" />
+                    <WalletMultiButton className="!bg-[#00FF88] !hover:bg-[#05F292] !rounded-2xl !h-12 !font-display !font-bold transition-all active:scale-[0.98]" />
                   </div>
 
                   <button 
@@ -663,13 +663,13 @@ export default function MarketPage() {
                   <div className="w-full space-y-2">
                     <div className="flex justify-between text-xs font-mono">
                       <span className="text-white/40">Staker Quota:</span>
-                      <span className="text-[#FF8C42] font-bold">
+                      <span className="text-[#05F292] font-bold">
                         {stakedHype ? stakedHype.toLocaleString() : '0'} / 100,000 $HYPE
                       </span>
                     </div>
                     <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden relative">
                       <div 
-                        className="h-full bg-gradient-to-r from-[#FF6B1A] to-[#FF8C42] rounded-full transition-all duration-500" 
+                        className="h-full bg-gradient-to-r from-[#00FF88] to-[#05F292] rounded-full transition-all duration-500" 
                         style={{ width: `${Math.min(100, ((stakedHype || 0) / 100000) * 100)}%` }}
                       />
                     </div>
@@ -678,7 +678,7 @@ export default function MarketPage() {
                     </div>
                   </div>
 
-                  <div className="bg-[#FF6B1A]/5 border border-[#FF6B1A]/20 rounded-2xl p-4 flex gap-3 text-[#FF8C42] text-left text-xs font-mono leading-relaxed w-full">
+                  <div className="bg-[#00FF88]/5 border border-[#00FF88]/20 rounded-2xl p-4 flex gap-3 text-[#05F292] text-left text-xs font-mono leading-relaxed w-full">
                     <AlertTriangle className="w-5 h-5 shrink-0" />
                     <p>
                       You need an additional <strong>{(100000 - (stakedHype || 0)).toLocaleString()} $HYPE</strong> staked to decrypt premium indices. Secure your quota at the Stake Portal.
@@ -695,7 +695,7 @@ export default function MarketPage() {
                     <a 
                       href="/stake"
                       className="flex-1 py-4 rounded-xl font-display font-bold text-xs uppercase tracking-wider text-center flex items-center justify-center transition-all active:scale-[0.98] hover:brightness-110"
-                      style={{ background: 'linear-gradient(135deg, #FF6B1A 0%, #FF8C42 100%)', color: '#fff' }}
+                      style={{ background: 'linear-gradient(135deg, #00FF88 0%, #05F292 100%)', color: '#fff' }}
                     >
                       Stake Now
                     </a>
@@ -745,7 +745,7 @@ export default function MarketPage() {
                   {/* Description of dynamic verifiable signature challenge */}
                   <div className="p-4 bg-white/[0.02] border border-white/[0.04] rounded-2xl space-y-2 font-mono text-[11px] leading-relaxed text-white/60 text-left">
                     <p className="font-bold text-white flex items-center gap-1.5">
-                      <Cpu className="w-3.5 h-3.5 text-[#FF6B1A]" /> Decentered Keyless Authorization
+                      <Cpu className="w-3.5 h-3.5 text-[#00FF88]" /> Decentered Keyless Authorization
                     </p>
                     <p>
                       To prevent man-in-the-middle key compromises, HypeOracle implements <strong>Decentralized Cryptographic Signature Gates</strong>.
@@ -763,7 +763,7 @@ export default function MarketPage() {
                             onClick={() => setActiveTab(tab)}
                             className={`px-3 py-1.5 rounded-lg font-mono text-[10px] font-bold uppercase transition-all ${
                               activeTab === tab 
-                                ? 'bg-white/10 text-[#FF6B1A] border border-[#FF6B1A]/20' 
+                                ? 'bg-white/10 text-[#00FF88] border border-[#00FF88]/20' 
                                 : 'text-white/40 hover:text-white/70'
                             }`}
                           >

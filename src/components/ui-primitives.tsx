@@ -8,30 +8,30 @@ export function AmbientBackground() {
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
       {/* Grid overlay */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.035]"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(255,107,26,0.6) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,107,26,0.6) 1px, transparent 1px)
+            linear-gradient(rgba(0,255,136,0.5) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0,255,136,0.5) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px',
           animation: 'grid-move 8s linear infinite',
         }}
       />
 
-      {/* Floating orbs */}
+      {/* Floating Cyber-Emerald orbs */}
       <div
         className="absolute top-[-20%] left-[10%] w-[600px] h-[600px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(255,107,26,0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(0,255,136,0.14) 0%, transparent 70%)',
           animation: 'orb-float 15s ease-in-out infinite',
-          filter: 'blur(40px)',
+          filter: 'blur(50px)',
         }}
       />
       <div
         className="absolute bottom-[-10%] right-[5%] w-[500px] h-[500px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(255,180,0,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(5,242,146,0.10) 0%, transparent 70%)',
           animation: 'orb-float 20s ease-in-out infinite reverse',
           filter: 'blur(60px)',
         }}
@@ -39,7 +39,7 @@ export function AmbientBackground() {
       <div
         className="absolute top-[40%] left-[-10%] w-[400px] h-[400px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(255,61,0,0.07) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(0,204,106,0.08) 0%, transparent 70%)',
           animation: 'orb-float 18s ease-in-out 5s infinite',
           filter: 'blur(80px)',
         }}
@@ -47,9 +47,9 @@ export function AmbientBackground() {
 
       {/* Scan line */}
       <div
-        className="absolute w-full h-[1px] opacity-[0.04] pointer-events-none"
+        className="absolute w-full h-[1px] opacity-[0.05] pointer-events-none"
         style={{
-          background: 'linear-gradient(90deg, transparent, rgba(255,107,26,0.8), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(0,255,136,0.9), transparent)',
           animation: 'scan-line 12s linear infinite',
         }}
       />
@@ -58,7 +58,7 @@ export function AmbientBackground() {
       <div
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(5,5,7,0.85) 100%)',
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(5,7,9,0.9) 100%)',
         }}
       />
     </div>
@@ -72,7 +72,7 @@ export function EqualizerBars({ active, bars = 5 }: { active: boolean; bars?: nu
       {Array.from({ length: bars }).map((_, i) => (
         <div
           key={i}
-          className="w-[3px] rounded-full bg-current"
+          className="w-[3px] rounded-full bg-current text-[#00FF88]"
           style={{
             height: active ? `${Math.random() * 100}%` : '20%',
             minHeight: '3px',
@@ -85,7 +85,7 @@ export function EqualizerBars({ active, bars = 5 }: { active: boolean; bars?: nu
   )
 }
 
-// Circular score gauge
+// Circular score gauge in Cyber-Emerald
 export function ScoreGauge({ score, size = 80 }: { score: number; size?: number }) {
   const radius = (size - 10) / 2
   const circumference = 2 * Math.PI * radius
@@ -93,8 +93,8 @@ export function ScoreGauge({ score, size = 80 }: { score: number; size?: number 
   const isHot = score > 80
   const isWarm = score > 60
 
-  const color = isHot ? '#FF6B1A' : isWarm ? '#FFAA00' : '#374151'
-  const glowColor = isHot ? 'rgba(255,107,26,0.5)' : isWarm ? 'rgba(255,170,0,0.3)' : 'transparent'
+  const color = isHot ? '#00FF88' : isWarm ? '#05F292' : '#374151'
+  const glowColor = isHot ? 'rgba(0,255,136,0.6)' : isWarm ? 'rgba(0,255,136,0.3)' : 'transparent'
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
@@ -105,7 +105,7 @@ export function ScoreGauge({ score, size = 80 }: { score: number; size?: number 
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.05)"
+          stroke="rgba(255,255,255,0.06)"
           strokeWidth={6}
         />
         {/* Progress */}
@@ -119,7 +119,7 @@ export function ScoreGauge({ score, size = 80 }: { score: number; size?: number 
           strokeLinecap="round"
           strokeDasharray={`${strokeDash} ${circumference}`}
           style={{
-            filter: isHot ? `drop-shadow(0 0 6px ${color})` : 'none',
+            filter: isHot ? `drop-shadow(0 0 8px ${color})` : 'none',
             transition: 'stroke-dasharray 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         />
@@ -133,21 +133,21 @@ export function ScoreGauge({ score, size = 80 }: { score: number; size?: number 
           className="font-black leading-none"
           style={{
             fontSize: size * 0.28,
-            color: isHot ? '#FF6B1A' : isWarm ? '#FFAA00' : '#6B7280',
-            textShadow: isHot ? `0 0 12px ${glowColor}` : 'none',
+            color: isHot ? '#00FF88' : isWarm ? '#05F292' : '#6B7280',
+            textShadow: isHot ? `0 0 14px ${glowColor}` : 'none',
           }}
         >
           {Math.round(score)}
         </span>
         {isHot && (
-          <span style={{ fontSize: size * 0.18, lineHeight: 1 }}>🔥</span>
+          <span style={{ fontSize: size * 0.16, lineHeight: 1 }} className="text-[#00FF88]">⚡</span>
         )}
       </div>
     </div>
   )
 }
 
-// Waveform visualizer bar
+// Waveform visualizer bar in Cyber-Emerald
 export function WaveformBar({ level, bars = 20 }: { level: number; bars?: number }) {
   return (
     <div className="flex items-center justify-center gap-[3px] h-10 px-2">
@@ -165,8 +165,8 @@ export function WaveformBar({ level, bars = 20 }: { level: number; bars?: number
               width: '3px',
               height: `${h}px`,
               background: level > 0.7
-                ? `linear-gradient(to top, #FF3D00, #FF6B1A)`
-                : `linear-gradient(to top, rgba(255,107,26,0.4), rgba(255,170,0,0.6))`,
+                ? `linear-gradient(to top, #00CC6A, #00FF88)`
+                : `linear-gradient(to top, rgba(0,255,136,0.3), rgba(5,242,146,0.6))`,
               opacity: 0.4 + level * 0.6,
             }}
           />

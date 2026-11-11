@@ -93,7 +93,7 @@ export function OracleTradeFeed() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-3.5 h-3.5 text-orange-500" />
+          <TrendingUp className="w-3.5 h-3.5 text-[#00FF88]" />
           <h3 className="mono-label text-white/90 !font-sans font-bold tracking-tight" style={{ fontSize: '0.65rem' }}>
             ORACLE TRANSPARENCY LOG
           </h3>
@@ -107,8 +107,8 @@ export function OracleTradeFeed() {
           <div
             className="w-1.5 h-1.5 rounded-full transition-all duration-300"
             style={{
-              background: connected ? '#22c55e' : 'rgba(255,107,26,0.6)',
-              boxShadow: pulse ? '0 0 10px rgba(255,107,26,0.9)' : 'none',
+              background: connected ? '#22c55e' : 'rgba(0, 255, 136,0.6)',
+              boxShadow: pulse ? '0 0 10px rgba(0, 255, 136,0.9)' : 'none',
             }}
           />
           <span className="mono-label" style={{ fontSize: '0.55rem' }}>
@@ -141,15 +141,15 @@ export function OracleTradeFeed() {
                 className="flex items-center justify-between p-2.5 rounded-xl transition-all"
                 style={{
                   background: i === 0 && pulse
-                    ? 'rgba(255,107,26,0.06)'
+                    ? 'rgba(0, 255, 136,0.06)'
                     : 'rgba(255,255,255,0.025)',
-                  border: `1px solid ${i === 0 && pulse ? 'rgba(255,107,26,0.2)' : 'rgba(255,255,255,0.05)'}`,
+                  border: `1px solid ${i === 0 && pulse ? 'rgba(0, 255, 136,0.2)' : 'rgba(255,255,255,0.05)'}`,
                 }}
               >
                 <div className="flex items-center gap-2.5">
                   <div
                     className="flex items-center justify-center w-7 h-7 rounded-lg text-xs"
-                    style={{ background: 'rgba(255,107,26,0.1)' }}
+                    style={{ background: 'rgba(0, 255, 136,0.1)' }}
                   >
                     🤖
                   </div>
@@ -162,9 +162,9 @@ export function OracleTradeFeed() {
                       <span
                         className="px-1.5 py-0.5 rounded-full text-[9px] font-mono"
                         style={{
-                          background: 'rgba(255,107,26,0.12)',
-                          color: '#FF8C42',
-                          border: '1px solid rgba(255,107,26,0.2)',
+                          background: 'rgba(0, 255, 136,0.12)',
+                          color: '#05F292',
+                          border: '1px solid rgba(0, 255, 136,0.2)',
                         }}
                       >
                         {trade.vibe_score?.toFixed(0) ?? '??'}
@@ -183,7 +183,7 @@ export function OracleTradeFeed() {
                     href={`https://solscan.io/tx/${trade.signature}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center w-7 h-7 rounded-lg transition-colors hover:text-orange-400"
+                    className="flex items-center justify-center w-7 h-7 rounded-lg transition-colors hover:text-[#00FF88]"
                     style={{
                       background: 'rgba(255,255,255,0.03)',
                       border: '1px solid rgba(255,255,255,0.06)',

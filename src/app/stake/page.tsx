@@ -202,13 +202,13 @@ export default function StakePage() {
   const refillNeeded = fuel ? currentFuelVal < 0.5 : false
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#FF6B1A]/30">
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#00FF88]/30">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
           <div>
             <h1 className="font-display font-black text-4xl md:text-5xl tracking-tight mb-2">
-              ${OFFICIAL_TOKEN.symbol} <span className="text-[#FF6B1A]">STAKING</span>
+              ${OFFICIAL_TOKEN.symbol} <span className="text-[#00FF88]">STAKING</span>
             </h1>
             <p className="text-[var(--text-muted)] font-mono text-sm max-w-xl">
               Stake ${OFFICIAL_TOKEN.symbol} to boost your Oracle influence, increase your personal vibe multiplier, 
@@ -216,7 +216,7 @@ export default function StakePage() {
             </p>
           </div>
           {mounted ? (
-            <WalletMultiButton className="!bg-[#FF6B1A] !hover:bg-[#FF8C42] !rounded-2xl !h-12 !font-display !font-bold transition-all active:scale-[0.98]" />
+            <WalletMultiButton className="!bg-[#00FF88] !hover:bg-[#05F292] !rounded-2xl !h-12 !font-display !font-bold transition-all active:scale-[0.98]" />
           ) : (
             <div className="h-12 w-[150px] bg-white/5 rounded-2xl animate-pulse" />
           )}
@@ -227,7 +227,7 @@ export default function StakePage() {
           <StatCard 
             label={`Total $${OFFICIAL_TOKEN.symbol} Staked`} 
             value={stats ? `${(Number(stats.total_staked) / 1000).toFixed(1)}k` : null} 
-            icon={<Coins className="w-4 h-4 text-[#FF6B1A]" />}
+            icon={<Coins className="w-4 h-4 text-[#00FF88]" />}
             status="Secured"
             loading={loading && !stats}
           />
@@ -263,7 +263,7 @@ export default function StakePage() {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-[#FF6B1A]/10 flex items-center justify-center text-[#FF6B1A]">
+                <div className="w-10 h-10 rounded-xl bg-[#00FF88]/10 flex items-center justify-center text-[#00FF88]">
                   <Coins className="w-6 h-6" />
                 </div>
                 <h2 className="font-display font-bold text-2xl">Manage Stake</h2>
@@ -286,11 +286,11 @@ export default function StakePage() {
                     </div>
                     <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
                       <p className="mono-label !text-[0.65rem] mb-1">Vibe Multiplier</p>
-                      <p className="text-2xl font-display font-bold text-[#FF6B1A]">
+                      <p className="text-2xl font-display font-bold text-[#00FF88]">
                         {userStake ? (1 + Math.min(0.5, userStake.staked_amount / 1_000_000)).toFixed(2) : '1.00'}x
                       </p>
                     </div>
-                    <div className="p-4 rounded-2xl bg-[#FF6B1A]/5 border border-[#FF6B1A]/20 sm:col-span-2 flex items-center justify-between">
+                    <div className="p-4 rounded-2xl bg-[#00FF88]/5 border border-[#00FF88]/20 sm:col-span-2 flex items-center justify-between">
                       <div>
                         <p className="mono-label !text-[0.65rem] mb-1">Unclaimed Rewards</p>
                         <p className="text-2xl font-display font-bold text-white">
@@ -300,7 +300,7 @@ export default function StakePage() {
                       <button 
                         onClick={handleClaim}
                         disabled={claiming || !userStake || Number(userStake.unclaimed_rewards) <= 0}
-                        className="px-6 py-2 rounded-xl bg-[#FF6B1A] text-white font-display font-bold text-xs hover:bg-[#FF8C42] transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
+                        className="px-6 py-2 rounded-xl bg-[#00FF88] text-white font-display font-bold text-xs hover:bg-[#05F292] transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
                       >
                         {claiming ? 'CLAIMING...' : 'CLAIM NOW'}
                       </button>
@@ -318,16 +318,16 @@ export default function StakePage() {
                         placeholder="Amount to stake..."
                         value={stakeAmount}
                         onChange={(e) => setStakeAmount(e.target.value)}
-                        className="w-full bg-[#080808] border border-white/[0.08] rounded-2xl h-16 pl-14 pr-5 focus:outline-none focus:border-[#FF6B1A]/50 focus:ring-1 focus:ring-[#FF6B1A]/50 transition-all font-mono text-lg"
+                        className="w-full bg-[#080808] border border-white/[0.08] rounded-2xl h-16 pl-14 pr-5 focus:outline-none focus:border-[#00FF88]/50 focus:ring-1 focus:ring-[#00FF88]/50 transition-all font-mono text-lg"
                       />
                     </div>
 
                     <button 
                       onClick={handleStake}
                       disabled={stakingStatus === 'loading' || !stakeAmount}
-                      className="w-full h-16 rounded-2xl font-display font-black text-lg tracking-wide uppercase transition-all flex items-center justify-center gap-2 group relative overflow-hidden active:scale-[0.98] active:brightness-90 shadow-[0_8px_30px_rgba(255,107,26,0.3)]"
+                      className="w-full h-16 rounded-2xl font-display font-black text-lg tracking-wide uppercase transition-all flex items-center justify-center gap-2 group relative overflow-hidden active:scale-[0.98] active:brightness-90 shadow-[0_8px_30px_rgba(0, 255, 136,0.3)]"
                       style={{
-                        background: 'linear-gradient(135deg, #FF6B1A 0%, #FF8C42 100%)',
+                        background: 'linear-gradient(135deg, #00FF88 0%, #05F292 100%)',
                       }}
                     >
                       {stakingStatus === 'loading' ? (
@@ -390,7 +390,7 @@ export default function StakePage() {
             >
               <div className="flex items-center justify-between mb-8">
                  <h2 className="font-display font-bold text-xl flex items-center gap-3 !font-sans tracking-tight">
-                   <TrendingUp className="w-6 h-6 text-[#FF6B1A]" />
+                   <TrendingUp className="w-6 h-6 text-[#00FF88]" />
                    Top Oracle Guardians
                  </h2>
                  <span className="text-[10px] font-mono text-[var(--text-muted)] px-3 py-1 rounded-full border border-white/5 bg-white/5">
@@ -402,7 +402,7 @@ export default function StakePage() {
                 {leaderboard.length > 0 ? leaderboard.map((staker, idx) => (
                   <div key={staker.user_pubkey} className="p-4 rounded-2xl bg-white/[0.01] border border-white/[0.03] flex items-center justify-between group hover:bg-white/[0.03] transition-all">
                     <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-display font-black text-xs ${idx === 0 ? 'bg-[#FF6B1A] text-white' : 'bg-white/5 text-[var(--text-muted)]'}`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-display font-black text-xs ${idx === 0 ? 'bg-[#00FF88] text-white' : 'bg-white/5 text-[var(--text-muted)]'}`}>
                         {idx + 1}
                       </div>
                       <div>
@@ -414,7 +414,7 @@ export default function StakePage() {
                     </div>
                     <div className="text-right">
                       <p className="font-display font-bold text-sm">{(Number(staker.staked_amount) / 1000).toFixed(1)}k <span className="text-[10px] text-[var(--text-muted)] font-normal uppercase">{OFFICIAL_TOKEN.symbol}</span></p>
-                      <p className={`text-[10px] font-mono ${(staker.staked_amount / 1_000_000) >= 0.5 ? 'text-green-500' : 'text-[#FF6B1A]'}`}>
+                      <p className={`text-[10px] font-mono ${(staker.staked_amount / 1_000_000) >= 0.5 ? 'text-green-500' : 'text-[#00FF88]'}`}>
                         +{((Math.min(0.5, staker.staked_amount / 1_000_000)) * 100).toFixed(0)}% Boost
                       </p>
                     </div>
@@ -441,7 +441,7 @@ export default function StakePage() {
               {/* Fuel Gauge Visual */}
               <div className="relative h-4 w-full bg-white/5 rounded-full overflow-hidden mb-6">
                 <motion.div 
-                  className={`h-full rounded-full ${isLowFuel ? 'bg-red-500' : 'bg-[#FF6B1A]'}`}
+                  className={`h-full rounded-full ${isLowFuel ? 'bg-red-500' : 'bg-[#00FF88]'}`}
                   initial={{ width: 0 }}
                   animate={{ width: fuel ? `${Math.min(100, (currentFuelVal / 0.8) * 100)}%` : '0%' }}
                 />
@@ -475,14 +475,14 @@ export default function StakePage() {
                   alert(`Oracle Wallet Address copied: ${addr}`)
                 }}
               >
-                <Wallet className="w-4 h-4 group-hover:text-[#FF6B1A] transition-colors" />
+                <Wallet className="w-4 h-4 group-hover:text-[#00FF88] transition-colors" />
                 FUEL THE ORACLE
               </button>
             </div>
 
-            <div className="bg-gradient-to-br from-[#FF6B1A]/5 to-[#FF8C42]/5 border border-[#FF6B1A]/20 rounded-[32px] p-6">
+            <div className="bg-gradient-to-br from-[#00FF88]/5 to-[#05F292]/5 border border-[#00FF88]/20 rounded-[32px] p-6">
                <h4 className="font-display font-bold text-sm mb-2 flex items-center gap-2">
-                 <Info className="w-4 h-4 text-[#FF6B1A]" />
+                 <Info className="w-4 h-4 text-[#00FF88]" />
                  Fee Distribution
                </h4>
                <ul className="space-y-2 text-xs font-mono text-[var(--text-muted)]">
@@ -529,8 +529,8 @@ function StatCard({ label, value, icon, subValue, status, loading }: any) {
 
 function UtilityCard({ title, desc, icon }: any) {
   return (
-    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-[#FF6B1A]/20 transition-all group">
-      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 mb-4 group-hover:text-[#FF6B1A] group-hover:bg-[#FF6B1A]/10 transition-all">
+    <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-[#00FF88]/20 transition-all group">
+      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 mb-4 group-hover:text-[#00FF88] group-hover:bg-[#00FF88]/10 transition-all">
         {icon}
       </div>
       <h3 className="font-display font-bold mb-2">{title}</h3>

@@ -247,7 +247,7 @@ export function PersonalAgentDashboard() {
             <p className="mono-label text-xs max-w-sm">Connect your wallet to analyze your on-chain emotional identity.</p>
           </div>
           <div className="flex justify-center">
-            {mounted ? <WalletMultiButton className="!bg-[#FF6B1A] !hover:bg-[#FF8C42] !rounded-2xl !h-12 !font-display !font-bold transition-all" /> : <div className="h-[48px] w-[150px] rounded-lg animate-pulse bg-white/5" />}
+            {mounted ? <WalletMultiButton className="!bg-[#00FF88] !hover:bg-[#05F292] !rounded-2xl !h-12 !font-display !font-bold transition-all" /> : <div className="h-[48px] w-[150px] rounded-lg animate-pulse bg-white/5" />}
           </div>
         </motion.div>
       </div>
@@ -260,7 +260,7 @@ export function PersonalAgentDashboard() {
   const borderStyle = level === 2 ? 'rgba(16, 185, 129, 0.2)' : 
                       level === 3 ? 'rgba(6, 182, 212, 0.2)' : 
                       level >= 4 ? 'rgba(251, 191, 36, 0.25)' : 
-                      'rgba(255, 107, 26, 0.15)'
+                      'rgba(0, 255, 136, 0.15)'
   const shadowStyle = level >= 4 
                       ? '0 25px 50px -12px rgba(251, 191, 36, 0.08)' 
                       : '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
@@ -297,9 +297,9 @@ export function PersonalAgentDashboard() {
         {loading ? (
           <div className="h-64 rounded-3xl animate-pulse bg-white/5 border border-white/5" />
         ) : !profile ? (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-12 rounded-[2rem] text-center backdrop-blur-xl relative overflow-hidden" style={{ background: 'rgba(255, 107, 26, 0.03)', border: '1px solid rgba(255, 107, 26, 0.1)' }}>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#FF6B1A]/5 pointer-events-none" />
-            <div className="text-7xl mb-6 drop-shadow-[0_0_15px_rgba(255,107,26,0.3)]">🧠</div>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-12 rounded-[2rem] text-center backdrop-blur-xl relative overflow-hidden" style={{ background: 'rgba(0, 255, 136, 0.03)', border: '1px solid rgba(0, 255, 136, 0.1)' }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#00FF88]/5 pointer-events-none" />
+            <div className="text-7xl mb-6 drop-shadow-[0_0_15px_rgba(0, 255, 136,0.3)]">🧠</div>
             <h2 className="font-display font-bold text-2xl text-white mb-3">Initialize Soulprint</h2>
             <p className="text-sm text-[var(--text-muted)] mb-8 max-w-xs mx-auto leading-relaxed">
               Your on-chain emotional frequency hasn&apos;t been synthesized yet. Train your AI to unlock your Soulprint.
@@ -309,7 +309,7 @@ export function PersonalAgentDashboard() {
                onClick={handleTrainAgent}
                disabled={training}
                className="relative px-10 py-4 rounded-2xl font-bold font-mono text-white transition-all w-full sm:w-auto group overflow-hidden"
-               style={{ background: training ? 'rgba(255, 107, 26, 0.2)' : '#FF6B1A' }}
+               style={{ background: training ? 'rgba(0, 255, 136, 0.2)' : '#00FF88' }}
             >
               <span className="relative z-10">{training ? 'Synthesizing...' : 'Calibrate Soulprint'}</span>
               {!training && <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />}
@@ -331,14 +331,14 @@ export function PersonalAgentDashboard() {
                >
                   <div 
                      className="absolute top-0 right-0 w-80 h-80 blur-[120px] opacity-10 pointer-events-none transition-colors duration-1000" 
-                     style={{ background: profile.risk_tolerance > 70 ? '#FF3D00' : profile.risk_tolerance > 40 ? '#FF6B1A' : '#3b82f6' }}
+                     style={{ background: profile.risk_tolerance > 70 ? '#00FF88' : profile.risk_tolerance > 40 ? '#00FF88' : '#3b82f6' }}
                   />
 
                   <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-12 text-center sm:text-left">
                      <div className="relative group">
-                        <div className="absolute inset-0 bg-[#FF6B1A]/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                        <div className="absolute inset-0 bg-[#00FF88]/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                         <ScoreGauge score={profile.risk_tolerance} size={100} />
-                        <div className="absolute -top-1 -right-1 bg-[#FF6B1A] text-[10px] font-bold px-1.5 py-0.5 rounded-full text-black">RISK</div>
+                        <div className="absolute -top-1 -right-1 bg-[#00FF88] text-[10px] font-bold px-1.5 py-0.5 rounded-full text-black">RISK</div>
                      </div>
                      <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-3 mb-2 justify-center sm:justify-start">
@@ -356,7 +356,7 @@ export function PersonalAgentDashboard() {
                      </div>
 
                      <div className="space-y-6">
-                        <h3 className="mono-label text-[0.65rem] text-[#FF6B1A] tracking-[0.2em] uppercase">Behavioral Indices</h3>
+                        <h3 className="mono-label text-[0.65rem] text-[#00FF88] tracking-[0.2em] uppercase">Behavioral Indices</h3>
                         
                         {/* Trait Meters */}
                         {[
@@ -445,8 +445,8 @@ export function PersonalAgentDashboard() {
                      <h3 className="mono-label mb-5 text-[0.65rem] text-white/40 tracking-widest uppercase">Deep Consciousness Insights</h3>
                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {Array.isArray(profile.favorite_tokens) && profile.favorite_tokens.map((insight: string, idx: number) => (
-                           <div key={idx} className="flex flex-col gap-2 p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-[#FF6B1A]/30 transition-colors">
-                              <span className="text-[#FF6B1A]"><Zap className="w-4 h-4" /></span>
+                           <div key={idx} className="flex flex-col gap-2 p-4 rounded-2xl bg-white/5 border border-white/5 group hover:border-[#00FF88]/30 transition-colors">
+                              <span className="text-[#00FF88]"><Zap className="w-4 h-4" /></span>
                               <span className="text-xs text-white/70 leading-relaxed font-medium">{insight}</span>
                            </div>
                         ))}
@@ -466,7 +466,7 @@ export function PersonalAgentDashboard() {
                      <button 
                         onClick={handleTrainAgent}
                         disabled={training}
-                        className="text-xs font-bold text-[#FF6B1A] hover:text-[#FF3D00] transition-colors bg-transparent disabled:opacity-50 flex items-center gap-2 group"
+                        className="text-xs font-bold text-[#00FF88] hover:text-[#00FF88] transition-colors bg-transparent disabled:opacity-50 flex items-center gap-2 group"
                      >
                         {training ? 'RECALIBRATING...' : 'RECALIBRATE SOULPRINT'}
                         <ChevronLeft className="w-3 h-3 rotate-180 group-hover:translate-x-1 transition-transform" />
@@ -476,11 +476,11 @@ export function PersonalAgentDashboard() {
 
                {/* Dynamic Soulprint NFT Minting Hub (Phase 9) */}
                <div className="p-8 sm:p-10 rounded-[2.5rem] bg-[var(--bg-card)] border border-[var(--border-subtle)] relative overflow-hidden">
-                 <div className="absolute top-0 right-0 w-32 h-32 blur-2xl rounded-full" style={{ background: `${level === 2 ? '#10b981' : level === 3 ? '#06b6d4' : level >= 4 ? '#fbbf24' : '#FF6B1A'}0d` }} />
+                 <div className="absolute top-0 right-0 w-32 h-32 blur-2xl rounded-full" style={{ background: `${level === 2 ? '#10b981' : level === 3 ? '#06b6d4' : level >= 4 ? '#fbbf24' : '#00FF88'}0d` }} />
                  
                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                    <div className="flex items-center gap-3">
-                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white" style={{ background: `linear-gradient(135deg, ${level === 2 ? '#10b981, #059669' : level === 3 ? '#06b6d4, #0891b2' : level >= 4 ? '#fbbf24, #d97706' : '#FF6B1A, #E05300'})` }}>
+                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white" style={{ background: `linear-gradient(135deg, ${level === 2 ? '#10b981, #059669' : level === 3 ? '#06b6d4, #0891b2' : level >= 4 ? '#fbbf24, #d97706' : '#00FF88, #E05300'})` }}>
                        <Zap className="w-5 h-5" />
                      </div>
                      <div>
@@ -493,9 +493,9 @@ export function PersonalAgentDashboard() {
                    <span 
                      className="px-3 py-1 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase" 
                      style={{ 
-                       background: level === 2 ? 'rgba(16, 185, 129, 0.1)' : level === 3 ? 'rgba(6, 182, 212, 0.1)' : level >= 4 ? 'rgba(251, 191, 36, 0.1)' : 'rgba(255, 107, 26, 0.1)',
-                       color: level === 2 ? '#10b981' : level === 3 ? '#06b6d4' : level >= 4 ? '#fbbf24' : '#FF6B1A',
-                       border: `1px solid ${level === 2 ? 'rgba(16, 185, 129, 0.2)' : level === 3 ? 'rgba(6, 182, 212, 0.2)' : level >= 4 ? 'rgba(251, 191, 36, 0.2)' : 'rgba(255, 107, 26, 0.2)'}`
+                       background: level === 2 ? 'rgba(16, 185, 129, 0.1)' : level === 3 ? 'rgba(6, 182, 212, 0.1)' : level >= 4 ? 'rgba(251, 191, 36, 0.1)' : 'rgba(0, 255, 136, 0.1)',
+                       color: level === 2 ? '#10b981' : level === 3 ? '#06b6d4' : level >= 4 ? '#fbbf24' : '#00FF88',
+                       border: `1px solid ${level === 2 ? 'rgba(16, 185, 129, 0.2)' : level === 3 ? 'rgba(6, 182, 212, 0.2)' : level >= 4 ? 'rgba(251, 191, 36, 0.2)' : 'rgba(0, 255, 136, 0.2)'}`
                      }}
                    >
                      {tierName} Tier (Lvl {level})
@@ -516,7 +516,7 @@ export function PersonalAgentDashboard() {
                          <div className="space-y-3 pt-2">
                            <div className="flex justify-between items-center text-[10px] font-mono text-white/40">
                              <span>MINT STATUS</span>
-                             <span className="text-[#FF6B1A] font-bold">
+                             <span className="text-[#00FF88] font-bold">
                                {mintStep === 1 ? 'PREPARING SOULPRINT...' : 
                                 mintStep === 2 ? 'COMPILING ATTRIBUTES...' : 
                                 mintStep === 3 ? 'COMMITTING TO SOLANA...' : 
@@ -525,7 +525,7 @@ export function PersonalAgentDashboard() {
                            </div>
                            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                              <motion.div 
-                               className="h-full bg-[#FF6B1A] rounded-full"
+                               className="h-full bg-[#00FF88] rounded-full"
                                animate={{ width: `${(mintStep / 4) * 100}%` }}
                                transition={{ duration: 0.5 }}
                              />
@@ -545,8 +545,8 @@ export function PersonalAgentDashboard() {
                        disabled={mintingNft}
                        className="w-full py-4 rounded-2xl font-display font-black text-sm tracking-wider text-black transition-all flex items-center justify-center gap-2"
                        style={{ 
-                         background: `linear-gradient(135deg, ${level === 2 ? '#10b981, #059669' : level === 3 ? '#06b6d4, #0891b2' : level >= 4 ? '#fbbf24, #d97706' : '#FF6B1A, #E05300'})`,
-                         boxShadow: `0 8px 30px -6px ${level === 2 ? 'rgba(16, 185, 129, 0.3)' : level === 3 ? 'rgba(6, 182, 212, 0.3)' : level >= 4 ? 'rgba(251, 191, 36, 0.3)' : 'rgba(255, 107, 26, 0.3)'}`
+                         background: `linear-gradient(135deg, ${level === 2 ? '#10b981, #059669' : level === 3 ? '#06b6d4, #0891b2' : level >= 4 ? '#fbbf24, #d97706' : '#00FF88, #E05300'})`,
+                         boxShadow: `0 8px 30px -6px ${level === 2 ? 'rgba(16, 185, 129, 0.3)' : level === 3 ? 'rgba(6, 182, 212, 0.3)' : level >= 4 ? 'rgba(251, 191, 36, 0.3)' : 'rgba(0, 255, 136, 0.3)'}`
                        }}
                      >
                        <Zap className="w-4 h-4" />
@@ -602,7 +602,7 @@ export function PersonalAgentDashboard() {
                          disabled={syncingNft}
                          className="py-3 px-4 rounded-xl font-mono font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
                          style={{ 
-                           background: syncingNft ? 'rgba(255, 255, 255, 0.05)' : `linear-gradient(135deg, ${level === 2 ? '#10b981, #059669' : level === 3 ? '#06b6d4, #0891b2' : level >= 4 ? '#fbbf24, #d97706' : '#FF6B1A, #E05300'})`,
+                           background: syncingNft ? 'rgba(255, 255, 255, 0.05)' : `linear-gradient(135deg, ${level === 2 ? '#10b981, #059669' : level === 3 ? '#06b6d4, #0891b2' : level >= 4 ? '#fbbf24, #d97706' : '#00FF88, #E05300'})`,
                            color: syncingNft ? 'rgba(255,255,255,0.3)' : 'black'
                          }}
                        >
@@ -616,10 +616,10 @@ export function PersonalAgentDashboard() {
 
              {/* Interactive Symbiotic & Privacy Controls Card (Phase 8 Feature 3) */}
              <div className="p-8 sm:p-10 rounded-[2.5rem] bg-[var(--bg-card)] border border-[var(--border-subtle)] relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF6B1A]/5 blur-2xl rounded-full" />
+               <div className="absolute top-0 right-0 w-32 h-32 bg-[#00FF88]/5 blur-2xl rounded-full" />
                
                <div className="flex items-center gap-3 mb-8">
-                 <div className="w-10 h-10 rounded-xl bg-[#FF6B1A]/10 flex items-center justify-center text-[#FF6B1A]">
+                 <div className="w-10 h-10 rounded-xl bg-[#00FF88]/10 flex items-center justify-center text-[#00FF88]">
                    <BrainCircuit className="w-5 h-5" />
                  </div>
                  <div>
@@ -629,8 +629,8 @@ export function PersonalAgentDashboard() {
                </div>
 
                {savingSettings && (
-                 <div className="absolute top-6 right-6 flex items-center gap-1.5 text-[9px] font-mono text-[#FF6B1A]">
-                   <div className="w-2.5 h-2.5 border-2 border-[#FF6B1A]/30 border-t-[#FF6B1A] rounded-full animate-spin" />
+                 <div className="absolute top-6 right-6 flex items-center gap-1.5 text-[9px] font-mono text-[#00FF88]">
+                   <div className="w-2.5 h-2.5 border-2 border-[#00FF88]/30 border-t-[#00FF88] rounded-full animate-spin" />
                    <span>SYNCING SETTINGS...</span>
                  </div>
                )}
@@ -640,7 +640,7 @@ export function PersonalAgentDashboard() {
                  <div className="space-y-3">
                    <div className="flex justify-between items-center">
                      <label className="text-xs font-mono font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
-                       <Eye className="w-3.5 h-3.5 text-[#FF6B1A]" /> Profile Privacy Level
+                       <Eye className="w-3.5 h-3.5 text-[#00FF88]" /> Profile Privacy Level
                      </label>
                      <span className="text-[9px] font-mono text-white/40 uppercase">PORTABILITY CONTROL</span>
                    </div>
@@ -655,7 +655,7 @@ export function PersonalAgentDashboard() {
                          onClick={() => handleUpdateSetting('privacy_level', opt.value)}
                          className={`py-3 px-2 rounded-xl transition-all flex flex-col items-center text-center gap-0.5 active:scale-95 ${
                            (profile.privacy_level || 'public') === opt.value 
-                             ? 'bg-[#FF6B1A]/10 border border-[#FF6B1A]/30 text-white font-bold' 
+                             ? 'bg-[#00FF88]/10 border border-[#00FF88]/30 text-white font-bold' 
                              : 'border border-transparent text-white/40 hover:text-white'
                          }`}
                        >
@@ -670,9 +670,9 @@ export function PersonalAgentDashboard() {
                  <div className="space-y-3">
                    <div className="flex justify-between items-center text-xs font-mono">
                      <span className="font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
-                       <Activity className="w-3.5 h-3.5 text-[#FF6B1A]" /> Max Trade Sizing Guardrail
+                       <Activity className="w-3.5 h-3.5 text-[#00FF88]" /> Max Trade Sizing Guardrail
                      </span>
-                     <span className="text-[#FF6B1A] font-bold font-mono">
+                     <span className="text-[#00FF88] font-bold font-mono">
                        {(Number(profile.max_position_size) || 0.01).toFixed(3)} SOL
                      </span>
                    </div>
@@ -684,7 +684,7 @@ export function PersonalAgentDashboard() {
                        step="0.001"
                        value={profile.max_position_size || 0.01}
                        onChange={(e) => handleUpdateSetting('max_position_size', parseFloat(e.target.value))}
-                       className="flex-1 accent-[#FF6B1A] h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer"
+                       className="flex-1 accent-[#00FF88] h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer"
                      />
                      <span className="text-[9px] font-mono text-white/40 whitespace-nowrap">MAX LIMIT: 0.05 SOL</span>
                    </div>
@@ -694,7 +694,7 @@ export function PersonalAgentDashboard() {
                  <div className="space-y-3">
                    <div className="flex justify-between items-center">
                      <label className="text-xs font-mono font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
-                       <Target className="w-3.5 h-3.5 text-[#FF6B1A]" /> Symbiotic Trading Style
+                       <Target className="w-3.5 h-3.5 text-[#00FF88]" /> Symbiotic Trading Style
                      </label>
                      <span className="text-[9px] font-mono text-white/40 uppercase">EMOTION DAMPENER</span>
                    </div>
@@ -709,7 +709,7 @@ export function PersonalAgentDashboard() {
                          onClick={() => handleUpdateSetting('trading_guardrails', opt.value)}
                          className={`py-3 px-2 rounded-xl transition-all flex flex-col items-center text-center gap-0.5 active:scale-95 ${
                            (profile.trading_guardrails || 'hybrid') === opt.value 
-                             ? 'bg-[#FF6B1A]/10 border border-[#FF6B1A]/30 text-white font-bold' 
+                             ? 'bg-[#00FF88]/10 border border-[#00FF88]/30 text-white font-bold' 
                              : 'border border-transparent text-white/40 hover:text-white'
                          }`}
                        >
@@ -726,10 +726,10 @@ export function PersonalAgentDashboard() {
                      <div className="space-y-1">
                        <div className="flex items-center gap-2">
                          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
-                           {autonomyUnlocked ? <Unlock className="w-3.5 h-3.5 text-emerald-400" /> : <Lock className="w-3.5 h-3.5 text-orange-400" />}
+                           {autonomyUnlocked ? <Unlock className="w-3.5 h-3.5 text-emerald-400" /> : <Lock className="w-3.5 h-3.5 text-[#00FF88]" />}
                            Autonomous Trading Execution
                          </span>
-                         <span className={`px-2 py-0.5 rounded-full text-[8px] font-mono ${autonomyUnlocked ? 'bg-emerald-500/10 text-emerald-400' : 'bg-orange-500/10 text-orange-400'}`}>
+                         <span className={`px-2 py-0.5 rounded-full text-[8px] font-mono ${autonomyUnlocked ? 'bg-emerald-500/10 text-emerald-400' : 'bg-[#00FF88]/10 text-[#00FF88]'}`}>
                            {autonomyUnlocked ? 'GATE UNLOCKED' : 'LOCKED'}
                          </span>
                        </div>
@@ -764,7 +764,7 @@ export function PersonalAgentDashboard() {
 
                    {/* Locked State Warning overlay */}
                    {!autonomyUnlocked && (
-                     <div className="mt-4 pt-4 border-t border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-[10px] font-mono text-orange-400">
+                     <div className="mt-4 pt-4 border-t border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-[10px] font-mono text-[#00FF88]">
                        <div className="flex items-center gap-1.5">
                          <ShieldAlert className="w-4 h-4 shrink-0" />
                          <span>Stake at least 50,000 $HYPE to unlock. Staked position: {stakedHype.toLocaleString()} / 50,000</span>
@@ -772,7 +772,7 @@ export function PersonalAgentDashboard() {
                        
                        <Link 
                          href="/stake" 
-                         className="px-4 py-1.5 rounded-lg bg-[#FF6B1A]/20 border border-[#FF6B1A]/30 hover:bg-[#FF6B1A] hover:text-white transition-all uppercase font-bold tracking-wider"
+                         className="px-4 py-1.5 rounded-lg bg-[#00FF88]/20 border border-[#00FF88]/30 hover:bg-[#00FF88] hover:text-white transition-all uppercase font-bold tracking-wider"
                        >
                          Stake Now
                        </Link>

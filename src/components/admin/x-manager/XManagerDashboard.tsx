@@ -311,7 +311,7 @@ export function XManagerDashboard() {
   ];
 
   return (
-    <div className="relative min-h-screen bg-[#050507] text-white selection:bg-[#FF6B1A]/30">
+    <div className="relative min-h-screen bg-[#050507] text-white selection:bg-[#00FF88]/30">
       <AmbientBackground />
 
       <main className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
@@ -330,7 +330,7 @@ export function XManagerDashboard() {
               <ShieldCheck className="w-3 h-3" />
               <span>Admin Access Active</span>
             </span>
-            <span className="text-[10px] font-mono text-[#FFAA00]">
+            <span className="text-[10px] font-mono text-[#05F292]">
               Autopilot: {settings.autopilotEnabled ? 'ACTIVE (Every 6h)' : 'HUMAN-IN-LOOP ONLY'}
             </span>
           </div>
@@ -349,7 +349,7 @@ export function XManagerDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-display font-black text-white">{account.name}</h1>
-                <span className="text-xs font-mono text-[#FF6B1A] font-bold">@{account.username}</span>
+                <span className="text-xs font-mono text-[#00FF88] font-bold">@{account.username}</span>
                 <span className="px-2 py-0.5 rounded text-[9px] font-mono bg-[#10B981]/20 text-[#10B981] font-bold uppercase">
                   Official Verified
                 </span>
@@ -391,7 +391,7 @@ export function XManagerDashboard() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition-all ${
                   active
-                    ? 'bg-[#FF6B1A] text-black shadow-[0_0_20px_rgba(255,107,26,0.35)]'
+                    ? 'bg-[#00FF88] text-black shadow-[0_0_20px_rgba(0, 255, 136,0.35)]'
                     : 'bg-white/[0.03] hover:bg-white/[0.06] text-white/60 hover:text-white'
                 }`}
               >

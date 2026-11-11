@@ -80,16 +80,16 @@ export function PwaInstallBanner() {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 40, scale: 0.95 }}
         transition={{ type: 'spring', damping: 25, stiffness: 280 }}
-        className="fixed bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-[360px] z-50 overflow-hidden rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-orange-500/20 backdrop-blur-xl"
+        className="fixed bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-[360px] z-50 overflow-hidden rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-[#00FF88]/25 backdrop-blur-xl"
         style={{
-          background: 'linear-gradient(135deg, rgba(15, 15, 20, 0.9) 0%, rgba(5, 5, 8, 0.95) 100%)',
+          background: 'linear-gradient(135deg, rgba(11, 15, 20, 0.95) 0%, rgba(5, 7, 9, 0.98) 100%)',
         }}
       >
         {/* Glow ambient accent */}
-        <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl -z-10 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-24 h-24 bg-[#00FF88]/10 rounded-full blur-2xl -z-10 pointer-events-none" />
 
         <div className="flex items-start gap-4">
-          <div className="p-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 shrink-0">
+          <div className="p-2.5 rounded-xl bg-[#00FF88]/10 border border-[#00FF88]/30 text-[#00FF88] shrink-0">
             <MonitorSmartphone className="w-5 h-5" />
           </div>
 
@@ -116,18 +116,18 @@ export function PwaInstallBanner() {
         <div className="mt-4">
           {isIOS ? (
             /* Custom Safari Install Guide */
-            <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-black/40 border border-orange-500/10">
-              <span className="text-[8px] font-mono text-orange-400/80 tracking-widest uppercase">
+            <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-black/40 border border-[#00FF88]/15">
+              <span className="text-[8px] font-mono text-[#00FF88] tracking-widest uppercase">
                 SAFARI INSTALL GUIDE
               </span>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-white/80 text-[10px] font-mono flex items-center gap-1.5">
-                  1. Tap share icon <Share2 className="w-3.5 h-3.5 text-orange-400 inline" />
+                  1. Tap share icon <Share2 className="w-3.5 h-3.5 text-[#00FF88] inline" />
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-white/80 text-[10px] font-mono flex items-center gap-1.5">
-                  2. Scroll & select &quot;Add to Home Screen&quot; <Plus className="w-3.5 h-3.5 text-orange-400 border border-orange-500/20 rounded bg-orange-500/5 inline" />
+                  2. Scroll & select &quot;Add to Home Screen&quot; <Plus className="w-3.5 h-3.5 text-[#00FF88] border border-[#00FF88]/30 rounded bg-[#00FF88]/10 inline" />
                 </span>
               </div>
             </div>
@@ -138,9 +138,9 @@ export function PwaInstallBanner() {
               disabled={!deferredPrompt}
               className="w-full py-2.5 px-4 rounded-xl font-display font-extrabold text-xs tracking-wider transition-all duration-300 flex items-center justify-center gap-2"
               style={{
-                background: 'linear-gradient(135deg, #FF6B1A 0%, #FF8C42 100%)',
-                boxShadow: '0 4px 15px rgba(255, 107, 26, 0.3)',
-                color: '#ffffff',
+                background: 'linear-gradient(135deg, #00FF88 0%, #05F292 100%)',
+                boxShadow: '0 4px 15px rgba(0, 255, 136, 0.35)',
+                color: '#050709',
               }}
             >
               <Download className="w-3.5 h-3.5" />

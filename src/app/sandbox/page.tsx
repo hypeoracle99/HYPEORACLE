@@ -410,7 +410,7 @@ export default function VibeSandbox() {
         {/* Header Section */}
         <section className="text-center mb-10">
           <div className="flex justify-center mb-4">
-            <div className="px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/5 text-orange-400 font-mono text-[10px] uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
+            <div className="px-3 py-1 rounded-full border border-[#00FF88]/20 bg-[#00FF88]/5 text-[#00FF88] font-mono text-[10px] uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
               <Activity className="w-3.5 h-3.5" /> DEPIN AUTONOMOUS WORKSPACE
             </div>
           </div>
@@ -460,9 +460,9 @@ export default function VibeSandbox() {
           <div className="space-y-6">
             
             {/* Calibrated Vibe Agent Profile Card */}
-            <div className="p-5 rounded-2xl border bg-black/40" style={{ borderColor: 'rgba(255,107,26,0.15)' }}>
+            <div className="p-5 rounded-2xl border bg-black/40" style={{ borderColor: 'rgba(0, 255, 136,0.15)' }}>
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-4 h-4 text-orange-500" />
+                <Shield className="w-4 h-4 text-[#00FF88]" />
                 <h2 className="font-display font-extrabold text-sm text-white uppercase tracking-wider">
                   Calibrated Vibe Node
                 </h2>
@@ -471,13 +471,13 @@ export default function VibeSandbox() {
               {!publicKey ? (
                 <div className="text-center py-6">
                   <p className="text-[10px] font-mono text-white/40 mb-3 uppercase">Node offline. Connect wallet to load staker stats.</p>
-                  <WalletMultiButton className="!h-8 !py-0 !px-4 !text-xs !bg-orange-500/10 hover:!bg-orange-500/20 !border !border-orange-500/30 !rounded-xl !text-orange-400 !font-display !font-bold transition-all" />
+                  <WalletMultiButton className="!h-8 !py-0 !px-4 !text-xs !bg-[#00FF88]/10 hover:!bg-[#00FF88]/20 !border !border-[#00FF88]/30 !rounded-xl !text-[#00FF88] !font-display !font-bold transition-all" />
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div>
                     <span className="text-[8px] font-mono text-white/40 uppercase tracking-widest">Active Agent Name</span>
-                    <p className="font-display font-extrabold text-sm text-orange-400 mt-0.5">{profile.agent_name}</p>
+                    <p className="font-display font-extrabold text-sm text-[#00FF88] mt-0.5">{profile.agent_name}</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/5">
@@ -495,7 +495,7 @@ export default function VibeSandbox() {
                     </div>
                     <div>
                       <span className="text-[8px] font-mono text-white/40 uppercase">Trading Style</span>
-                      <p className="font-mono text-xs text-orange-400 font-bold uppercase">{profile.trading_style}</p>
+                      <p className="font-mono text-xs text-[#00FF88] font-bold uppercase">{profile.trading_style}</p>
                     </div>
                   </div>
 
@@ -509,7 +509,7 @@ export default function VibeSandbox() {
             {/* PWA Web Push Notification Settings */}
             <div className="p-5 rounded-2xl border bg-black/40 border-white/5">
               <div className="flex items-center gap-2 mb-4">
-                <Bell className="w-4 h-4 text-orange-400" />
+                <Bell className="w-4 h-4 text-[#00FF88]" />
                 <h2 className="font-display font-extrabold text-sm text-white uppercase tracking-wider">
                   PWA Push Notifications
                 </h2>
@@ -530,7 +530,7 @@ export default function VibeSandbox() {
                 {permission !== 'granted' ? (
                   <button
                     onClick={handleRequestPermission}
-                    className="w-full py-2.5 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/25 hover:border-orange-500/40 text-orange-400 font-display font-extrabold text-xs tracking-wider transition-all"
+                    className="w-full py-2.5 rounded-xl bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/25 hover:border-[#00FF88]/40 text-[#00FF88] font-display font-extrabold text-xs tracking-wider transition-all"
                   >
                     AUTHORIZE NOTIFICATIONS
                   </button>
@@ -557,7 +557,7 @@ export default function VibeSandbox() {
           <div className="lg:col-span-2 space-y-6">
             
             {/* Live Chart & Control Board */}
-            <div className="p-5 rounded-2xl border bg-black/40 flex flex-col justify-between" style={{ borderColor: 'rgba(255,107,26,0.08)' }}>
+            <div className="p-5 rounded-2xl border bg-black/40 flex flex-col justify-between" style={{ borderColor: 'rgba(0, 255, 136,0.08)' }}>
               
               <div className="flex justify-between items-center mb-6">
                 <div>
@@ -571,7 +571,7 @@ export default function VibeSandbox() {
                   {!simActive ? (
                     <button
                       onClick={handleStartSimulation}
-                      className="py-1.5 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-display font-extrabold text-xs tracking-wide transition-colors flex items-center gap-1 shadow-[0_0_15px_rgba(255,107,26,0.15)]"
+                      className="py-1.5 px-3 rounded-lg bg-[#00FF88] hover:bg-[#05F292] text-white font-display font-extrabold text-xs tracking-wide transition-colors flex items-center gap-1 shadow-[0_0_15px_rgba(0, 255, 136,0.15)]"
                     >
                       <Play className="w-3.5 h-3.5 fill-white text-white" /> START RUN
                     </button>
@@ -594,7 +594,7 @@ export default function VibeSandbox() {
                 </div>
                 <div>
                   <span className="text-[8px] font-mono text-white/40 uppercase tracking-widest">Sim-Holdings</span>
-                  <p className="font-mono text-base font-extrabold text-orange-400 mt-0.5">{simHoldings.toFixed(0)}</p>
+                  <p className="font-mono text-base font-extrabold text-[#00FF88] mt-0.5">{simHoldings.toFixed(0)}</p>
                 </div>
                 <div>
                   <span className="text-[8px] font-mono text-white/40 uppercase tracking-widest">Net Value (SOL)</span>
@@ -608,8 +608,8 @@ export default function VibeSandbox() {
                   {/* Glowing background gradient */}
                   <defs>
                     <linearGradient id="sim-equity-grad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#FF6B1A" stopOpacity="0.25" />
-                      <stop offset="100%" stopColor="#FF6B1A" stopOpacity="0" />
+                      <stop offset="0%" stopColor="#00FF88" stopOpacity="0.25" />
+                      <stop offset="100%" stopColor="#00FF88" stopOpacity="0" />
                     </linearGradient>
                   </defs>
                   
@@ -626,7 +626,7 @@ export default function VibeSandbox() {
                       />
                       <polyline
                         fill="none"
-                        stroke="#FF6B1A"
+                        stroke="#00FF88"
                         strokeWidth="2"
                         points={svgLinePoints}
                         strokeLinecap="round"
@@ -662,7 +662,7 @@ export default function VibeSandbox() {
                     <div 
                       key={i} 
                       className={`p-1.5 rounded flex items-start gap-2 text-left leading-normal ${
-                        log.type === 'trade' ? 'bg-orange-500/5 text-orange-400/90 border-l border-orange-500' :
+                        log.type === 'trade' ? 'bg-[#00FF88]/5 text-[#00FF88]/90 border-l border-[#00FF88]' :
                         log.type === 'sensor' ? 'bg-cyan-500/5 text-cyan-400 border-l border-cyan-500' :
                         log.type === 'alert' ? 'bg-green-500/5 text-green-400 border-l border-green-500' :
                         'text-white/40'

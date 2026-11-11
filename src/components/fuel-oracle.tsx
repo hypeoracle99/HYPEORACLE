@@ -66,7 +66,7 @@ export function FuelOracle() {
 
   const balancePct = Math.min(100, (balance / 1) * 100)
   const fuelLevel = balancePct < 20 ? 'critical' : balancePct < 50 ? 'low' : 'good'
-  const fuelColor = fuelLevel === 'critical' ? '#EF4444' : fuelLevel === 'low' ? '#FFAA00' : '#22C55E'
+  const fuelColor = fuelLevel === 'critical' ? '#EF4444' : fuelLevel === 'low' ? '#05F292' : '#22C55E'
 
   return (
     <div
@@ -134,8 +134,8 @@ export function FuelOracle() {
               </span>
               <button
                 onClick={copyAddress}
-                className="flex items-center gap-1 text-[9px] font-mono transition-colors hover:text-orange-400"
-                style={{ color: copied ? '#22C55E' : 'rgba(255,255,255,0.3)' }}
+                className="flex items-center gap-1 text-[9px] font-mono transition-colors hover:text-[#00FF88]"
+                style={{ color: copied ? '#00FF88' : 'rgba(255,255,255,0.3)' }}
               >
                 <Copy className="w-2.5 h-2.5" />
                 {copied ? 'Copied!' : 'Copy'}
@@ -154,17 +154,17 @@ export function FuelOracle() {
                 onClick={() => handleFuel(amount)}
                 className="py-2 rounded-xl text-[10px] font-display font-bold transition-all active:scale-95 disabled:opacity-40"
                 style={{
-                  background: 'rgba(255,107,26,0.08)',
-                  border: '1px solid rgba(255,107,26,0.2)',
-                  color: '#FF8C42',
+                  background: 'rgba(0,255,136,0.08)',
+                  border: '1px solid rgba(0,255,136,0.25)',
+                  color: '#00FF88',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,107,26,0.2)'
-                  e.currentTarget.style.borderColor = 'rgba(255,107,26,0.5)'
+                  e.currentTarget.style.background = 'rgba(0,255,136,0.2)'
+                  e.currentTarget.style.borderColor = 'rgba(0,255,136,0.5)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,107,26,0.08)'
-                  e.currentTarget.style.borderColor = 'rgba(255,107,26,0.2)'
+                  e.currentTarget.style.background = 'rgba(0,255,136,0.08)'
+                  e.currentTarget.style.borderColor = 'rgba(0,255,136,0.25)'
                 }}
               >
                 {amount}
@@ -188,8 +188,8 @@ export function FuelOracle() {
               exit={{ opacity: 0 }}
               className="flex items-center justify-center gap-2 py-2"
             >
-              <div className="w-3 h-3 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
-              <span className="mono-label" style={{ fontSize: '0.6rem', color: '#FF8C42' }}>
+              <div className="w-3 h-3 rounded-full border-2 border-[#00FF88] border-t-transparent animate-spin" />
+              <span className="mono-label" style={{ fontSize: '0.6rem', color: '#00FF88' }}>
                 Fueling Oracle...
               </span>
             </motion.div>

@@ -59,14 +59,14 @@ function VibeMiniChart({ tokenMint, targetScore, status, outcome }: { tokenMint:
 
   const strokeColor = status === 'resolved' 
     ? (outcome === 'yes' ? '#22c55e' : '#ef4444') 
-    : '#FF6B1A';
+    : '#00FF88';
 
   return (
     <div className="mt-3 p-2 rounded-xl bg-black/50 border border-white/5 flex items-center justify-between gap-3">
       <div className="flex flex-col text-left shrink-0">
         <span className="text-[7.5px] font-mono text-white/40 uppercase tracking-widest">SENTIMENT TREND</span>
         <span className="text-[10px] font-mono text-white/70 mt-0.5">
-          Target: <strong className="text-orange-400 font-bold">{targetScore.toFixed(0)}</strong>
+          Target: <strong className="text-[#00FF88] font-bold">{targetScore.toFixed(0)}</strong>
         </span>
       </div>
       <div className="relative flex-1 h-[32px] overflow-hidden">
@@ -76,7 +76,7 @@ function VibeMiniChart({ tokenMint, targetScore, status, outcome }: { tokenMint:
             y1={targetY} 
             x2="220" 
             y2={targetY} 
-            stroke="rgba(255,107,26,0.2)" 
+            stroke="rgba(0, 255, 136,0.2)" 
             strokeWidth="1" 
             strokeDasharray="3,3" 
           />
@@ -407,7 +407,7 @@ export default function PredictCenter() {
         {/* Header Section */}
         <section className="text-center mb-10">
           <div className="flex justify-center mb-4">
-            <div className="px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/5 text-orange-400 font-mono text-[10px] uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
+            <div className="px-3 py-1 rounded-full border border-[#00FF88]/20 bg-[#00FF88]/5 text-[#00FF88] font-mono text-[10px] uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
               <TrendingUp className="w-3.5 h-3.5" /> SENTIMENT PREDICTION MARKET
             </div>
           </div>
@@ -469,10 +469,10 @@ export default function PredictCenter() {
             <div 
               key={card.label} 
               className="p-4 rounded-xl border bg-black/30 text-left flex flex-col justify-between"
-              style={{ borderColor: 'rgba(255, 107, 26, 0.1)' }}
+              style={{ borderColor: 'rgba(0, 255, 136, 0.1)' }}
             >
               <div>
-                <p className="mono-label uppercase tracking-widest text-[8.5px] text-orange-400/80">{card.label}</p>
+                <p className="mono-label uppercase tracking-widest text-[8.5px] text-[#00FF88]/80">{card.label}</p>
                 <p className="font-display font-extrabold text-sm text-white mt-1 uppercase tracking-tight">{card.value}</p>
               </div>
               <p className="text-[9px] font-mono text-white/40 mt-2 leading-tight">{card.desc}</p>
@@ -492,14 +492,14 @@ export default function PredictCenter() {
             >
               <div 
                 className="p-5 rounded-2xl border bg-black/40 text-left flex flex-col gap-4 relative overflow-hidden"
-                style={{ borderColor: 'rgba(255, 107, 26, 0.15)' }}
+                style={{ borderColor: 'rgba(0, 255, 136, 0.15)' }}
               >
                 {/* Glowing subtle background dot */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#00FF88]/5 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="flex justify-between items-center pb-2 border-b border-white/5">
                   <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded bg-orange-500/10 border border-orange-500/20 text-orange-400">
+                    <span className="p-1.5 rounded bg-[#00FF88]/10 border border-[#00FF88]/20 text-[#00FF88]">
                       <Zap className="w-3.5 h-3.5 animate-pulse" />
                     </span>
                     <div>
@@ -553,7 +553,7 @@ export default function PredictCenter() {
                         <select
                           value={newMarketTokenMint}
                           onChange={(e) => setNewMarketTokenMint(e.target.value)}
-                          className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-orange-500/40 cursor-pointer"
+                          className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-[#00FF88]/40 cursor-pointer"
                         >
                           <option value="5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS">$HYPE (Current Protocol Token)</option>
                           <option value="Bags222222222222222222222222222222222222222">$SOL (Solana Native)</option>
@@ -568,7 +568,7 @@ export default function PredictCenter() {
                             value={customTokenMint}
                             onChange={(e) => setCustomTokenMint(e.target.value)}
                             placeholder="Enter Solana Mint Address..."
-                            className="mt-2 p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs placeholder:text-white/25 outline-none focus:border-orange-500/40"
+                            className="mt-2 p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs placeholder:text-white/25 outline-none focus:border-[#00FF88]/40"
                           />
                         )}
                       </div>
@@ -587,7 +587,7 @@ export default function PredictCenter() {
                             onChange={(e) => setNewMarketTargetScore(e.target.value)}
                             className="flex-1 accent-orange-500 cursor-pointer bg-white/10 rounded-lg h-2"
                           />
-                          <span className="w-12 text-center p-2 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 font-mono text-xs font-bold">
+                          <span className="w-12 text-center p-2 rounded-lg bg-[#00FF88]/10 border border-[#00FF88]/20 text-[#00FF88] font-mono text-xs font-bold">
                             {newMarketTargetScore}
                           </span>
                         </div>
@@ -604,7 +604,7 @@ export default function PredictCenter() {
                         value={newMarketQuestion}
                         onChange={(e) => setNewMarketQuestion(e.target.value)}
                         placeholder="e.g. Will $SOL cross 80 during next party vibe cycle?"
-                        className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs placeholder:text-white/25 outline-none focus:border-orange-500/40"
+                        className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs placeholder:text-white/25 outline-none focus:border-[#00FF88]/40"
                       />
                     </div>
 
@@ -617,7 +617,7 @@ export default function PredictCenter() {
                         <select
                           value={newMarketTimeframe}
                           onChange={(e) => setNewMarketTimeframe(e.target.value)}
-                          className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-orange-500/40 cursor-pointer"
+                          className="p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-[#00FF88]/40 cursor-pointer"
                         >
                           <option value="1">1 Day (Quick resolution)</option>
                           <option value="3">3 Days (Medium timeframe)</option>
@@ -630,7 +630,7 @@ export default function PredictCenter() {
                             type="datetime-local"
                             value={customResolutionDate}
                             onChange={(e) => setCustomResolutionDate(e.target.value)}
-                            className="mt-2 p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-orange-500/40 cursor-pointer"
+                            className="mt-2 p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-xs outline-none focus:border-[#00FF88]/40 cursor-pointer"
                           />
                         )}
                       </div>
@@ -640,10 +640,10 @@ export default function PredictCenter() {
                         <button
                           type="submit"
                           disabled={creatorSubmitting}
-                          className="w-full p-3 rounded-xl font-display font-extrabold text-xs tracking-wider transition-all duration-300 flex items-center justify-center gap-2 border hover:shadow-[0_0_15px_rgba(255,107,26,0.15)] cursor-pointer"
+                          className="w-full p-3 rounded-xl font-display font-extrabold text-xs tracking-wider transition-all duration-300 flex items-center justify-center gap-2 border hover:shadow-[0_0_15px_rgba(0, 255, 136,0.15)] cursor-pointer"
                           style={{
-                            background: 'linear-gradient(135deg, #FF6B1A 0%, #FF8C42 100%)',
-                            borderColor: '#FF6B1A',
+                            background: 'linear-gradient(135deg, #00FF88 0%, #05F292 100%)',
+                            borderColor: '#00FF88',
                             color: '#ffffff',
                           }}
                         >
@@ -682,9 +682,9 @@ export default function PredictCenter() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-display font-extrabold transition-all"
                 style={{
-                  background: isActive ? 'rgba(255,107,26,0.12)' : 'rgba(255,255,255,0.02)',
-                  border: `1.5px solid ${isActive ? 'rgba(255,107,26,0.25)' : 'rgba(255,255,255,0.04)'}`,
-                  color: isActive ? '#FF8C42' : 'rgba(255,255,255,0.4)',
+                  background: isActive ? 'rgba(0, 255, 136,0.12)' : 'rgba(255,255,255,0.02)',
+                  border: `1.5px solid ${isActive ? 'rgba(0, 255, 136,0.25)' : 'rgba(255,255,255,0.04)'}`,
+                  color: isActive ? '#05F292' : 'rgba(255,255,255,0.4)',
                 }}
               >
                 {tab.label}
@@ -700,13 +700,13 @@ export default function PredictCenter() {
           <div className="flex-1" />
 
           {/* Quick Wallet multi-button inside layout */}
-          <WalletMultiButton className="!h-9 !py-0 !px-4 !text-xs !bg-orange-500/10 hover:!bg-orange-500/20 !border !border-orange-500/30 !rounded-xl !text-orange-400 !font-display !font-bold transition-all" />
+          <WalletMultiButton className="!h-9 !py-0 !px-4 !text-xs !bg-[#00FF88]/10 hover:!bg-[#00FF88]/20 !border !border-[#00FF88]/30 !rounded-xl !text-[#00FF88] !font-display !font-bold transition-all" />
         </div>
 
         {/* MAIN DISPLAY LOOP */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#00FF88] animate-spin" />
             <p className="text-[10px] font-mono text-white/50 tracking-wider">SYNCING DEPIN CONSENSUS POOLS...</p>
           </div>
         ) : (
@@ -732,11 +732,11 @@ export default function PredictCenter() {
                         <div>
                           {/* Top Info Bar */}
                           <div className="flex justify-between items-center mb-3">
-                            <span className="px-2 py-0.5 rounded bg-orange-500/15 border border-orange-500/20 text-orange-400 text-[8px] font-mono uppercase tracking-widest">
+                            <span className="px-2 py-0.5 rounded bg-[#00FF88]/15 border border-[#00FF88]/20 text-[#00FF88] text-[8px] font-mono uppercase tracking-widest">
                               {market.token_mint.slice(0, 4)}...{market.token_mint.slice(-4)}
                             </span>
                             <span className="text-[9px] font-mono text-white/40 flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-orange-500/70" /> 
+                              <Clock className="w-3 h-3 text-[#00FF88]/70" /> 
                               {new Date(market.resolution_date).toLocaleDateString()}
                             </span>
                           </div>
@@ -769,7 +769,7 @@ export default function PredictCenter() {
                         <div className="mt-4 flex gap-2 items-center">
                           <button
                             onClick={() => setSelectedMarket(market)}
-                            className="flex-1 py-2 px-3 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 hover:border-orange-500/40 text-orange-400 font-display font-extrabold text-xs tracking-wider transition-all"
+                            className="flex-1 py-2 px-3 rounded-xl bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/20 hover:border-[#00FF88]/40 text-[#00FF88] font-display font-extrabold text-xs tracking-wider transition-all"
                           >
                             PLACE PREDICTION
                           </button>
@@ -782,7 +782,7 @@ export default function PredictCenter() {
                               className="py-2 px-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white text-[10px] font-mono transition-all flex items-center gap-1 cursor-pointer"
                               title="Simulate Oracle Resolution"
                             >
-                              <Zap className="w-3 h-3 text-orange-400" /> RESOLVE
+                              <Zap className="w-3 h-3 text-[#00FF88]" /> RESOLVE
                             </button>
                           )}
                         </div>
@@ -808,7 +808,7 @@ export default function PredictCenter() {
                     <p className="font-display font-bold text-xs text-white uppercase tracking-wider">WALLET NODE OFFLINE</p>
                     <p className="text-[10px] font-mono text-white/40 mt-0.5">Please connect your Solana wallet to load your position board.</p>
                   </div>
-                  <WalletMultiButton className="!h-9 !py-0 !px-4 !text-xs !bg-orange-500/10 hover:!bg-orange-500/20 !border !border-orange-500/30 !rounded-xl !text-orange-400 !font-display !font-bold transition-all" />
+                  <WalletMultiButton className="!h-9 !py-0 !px-4 !text-xs !bg-[#00FF88]/10 hover:!bg-[#00FF88]/20 !border !border-[#00FF88]/30 !rounded-xl !text-[#00FF88] !font-display !font-bold transition-all" />
                 </div>
               ) : bets.length > 0 ? (
                 <div className="space-y-3">
@@ -823,7 +823,7 @@ export default function PredictCenter() {
                         style={{ borderColor: 'rgba(255,255,255,0.04)' }}
                       >
                         <div className="flex-1">
-                          <p className="text-[10px] font-mono text-orange-400/80 tracking-widest uppercase">
+                          <p className="text-[10px] font-mono text-[#00FF88]/80 tracking-widest uppercase">
                             {bet.market?.question}
                           </p>
                           <div className="flex gap-4 mt-1.5 flex-wrap">
@@ -864,7 +864,7 @@ export default function PredictCenter() {
                               </span>
                             )
                           ) : (
-                            <span className="px-3 py-1 rounded bg-orange-500/10 border border-orange-500/25 text-orange-400 text-[10px] font-mono tracking-widest uppercase animate-pulse">
+                            <span className="px-3 py-1 rounded bg-[#00FF88]/10 border border-[#00FF88]/25 text-[#00FF88] text-[10px] font-mono tracking-widest uppercase animate-pulse">
                               LIVE MONITORING
                             </span>
                           )}
@@ -903,7 +903,7 @@ export default function PredictCenter() {
                               Oracle Resolved
                             </span>
                             <span className="text-[9px] font-mono text-white/40 flex items-center gap-1">
-                              Final: <strong className="text-orange-400">{market.final_score}</strong>
+                              Final: <strong className="text-[#00FF88]">{market.final_score}</strong>
                             </span>
                           </div>
 
@@ -961,16 +961,16 @@ export default function PredictCenter() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-md p-6 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-orange-500/20 backdrop-blur-xl"
+              className="relative w-full max-w-md p-6 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-[#00FF88]/20 backdrop-blur-xl"
               style={{
                 background: 'linear-gradient(135deg, rgba(15, 15, 20, 0.95) 0%, rgba(5, 5, 8, 0.98) 100%)',
               }}
             >
               {/* Glowing gradient backings */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl -z-10 pointer-events-none" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#00FF88]/10 rounded-full blur-2xl -z-10 pointer-events-none" />
 
               <div className="flex justify-between items-center mb-4 pb-2 border-b border-white/5">
-                <span className="text-[9px] font-mono text-orange-400 tracking-widest uppercase">
+                <span className="text-[9px] font-mono text-[#00FF88] tracking-widest uppercase">
                   CALIBRATE PREDICTION
                 </span>
                 <button
@@ -988,7 +988,7 @@ export default function PredictCenter() {
               {/* YES vs NO Conviction Selection Toggle */}
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {[
-                  { id: 'yes', label: 'STAKE YES', color: 'rgba(255, 107, 26, 0.2)', border: '#FF6B1A', activeColor: '#FF6B1A' },
+                  { id: 'yes', label: 'STAKE YES', color: 'rgba(0, 255, 136, 0.2)', border: '#00FF88', activeColor: '#00FF88' },
                   { id: 'no', label: 'STAKE NO', color: 'rgba(6, 182, 212, 0.1)', border: '#06b6d4', activeColor: '#06b6d4' }
                 ].map((option) => {
                   const isChoice = betPrediction === option.id;
@@ -1022,7 +1022,7 @@ export default function PredictCenter() {
                     value={betAmount}
                     onChange={(e) => setBetAmount(e.target.value)}
                     placeholder="SOL Stake amount"
-                    className="flex-1 p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-sm placeholder:text-white/20 outline-none focus:border-orange-500/40"
+                    className="flex-1 p-3 rounded-xl bg-black/60 border border-white/10 text-white font-mono text-sm placeholder:text-white/20 outline-none focus:border-[#00FF88]/40"
                   />
                   <div className="flex gap-1">
                     {['0.05', '0.1', '0.5'].map((amt) => (
@@ -1039,10 +1039,10 @@ export default function PredictCenter() {
               </div>
 
               {/* Active Staking Multiplier Benefits Panel */}
-              <div className="p-3 rounded-xl border border-orange-500/10 mb-4 bg-orange-500/5 text-left">
+              <div className="p-3 rounded-xl border border-[#00FF88]/10 mb-4 bg-[#00FF88]/5 text-left">
                 <div className="flex justify-between items-center text-[9px] font-mono text-white/50">
                   <span>STAKING TIER:</span>
-                  <span className="text-orange-400 font-extrabold tracking-wide uppercase">{simulatedPayout.tierName}</span>
+                  <span className="text-[#00FF88] font-extrabold tracking-wide uppercase">{simulatedPayout.tierName}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-white/5 text-[9px] font-mono text-white/40">
                   <div>Payout Boost: <strong className="text-white">{simulatedPayout.multiplier}x</strong></div>
@@ -1054,7 +1054,7 @@ export default function PredictCenter() {
               <div className="p-4 rounded-xl bg-black/50 border border-white/5 space-y-2 mb-6 text-left">
                 <div className="flex justify-between items-center text-[10px] font-mono text-white/60">
                   <span>Simulated Conviction Payout:</span>
-                  <span className="text-orange-400 font-bold">{simulatedPayout.gross} SOL</span>
+                  <span className="text-[#00FF88] font-bold">{simulatedPayout.gross} SOL</span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-mono text-white/60">
                   <span>Net Payout (Staker Boosted):</span>
@@ -1072,8 +1072,8 @@ export default function PredictCenter() {
                 disabled={submitting}
                 className="w-full py-3.5 px-4 rounded-xl font-display font-extrabold text-xs tracking-wider transition-all duration-300 flex items-center justify-center gap-2"
                 style={{
-                  background: 'linear-gradient(135deg, #FF6B1A 0%, #FF8C42 100%)',
-                  boxShadow: '0 4px 20px rgba(255, 107, 26, 0.35)',
+                  background: 'linear-gradient(135deg, #00FF88 0%, #05F292 100%)',
+                  boxShadow: '0 4px 20px rgba(0, 255, 136, 0.35)',
                   color: '#ffffff',
                 }}
               >

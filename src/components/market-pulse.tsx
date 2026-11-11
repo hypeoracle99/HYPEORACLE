@@ -52,9 +52,9 @@ export function MarketPulse() {
   }
 
   const getStatusColor = () => {
-    if (score > 80) return '#FFD700' // Gold
-    if (score > 60) return '#22c55e' // Green
-    if (score > 40) return '#FF8C42' // Orange
+    if (score > 80) return '#00FF88' // Emerald
+    if (score > 60) return '#05F292' // Mint
+    if (score > 40) return '#10B981' // Green
     return '#ef4444' // Red
   }
 
@@ -111,7 +111,7 @@ export function MarketPulse() {
           
           <div className="mt-4 text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-              <Activity className="w-3 h-3 text-orange-400" />
+              <Activity className="w-3 h-3 text-[#00FF88]" />
               <span className="text-[10px] font-mono font-bold tracking-tighter" style={{ color: getStatusColor() }}>
                 {getStatusText()}
               </span>
@@ -137,7 +137,7 @@ export function MarketPulse() {
         <div className="flex-1 space-y-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Globe className="w-4 h-4 text-orange-400" />
+              <Globe className="w-4 h-4 text-[#00FF88]" />
               <h3 className="text-sm font-display font-bold text-white uppercase tracking-tight">Collective Consciousness</h3>
             </div>
             <p className="text-xs text-white/60 leading-relaxed font-mono">
@@ -153,18 +153,18 @@ export function MarketPulse() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center text-center">
-              <TrendingUp className="w-4 h-4 text-green-400 mb-1" />
+              <TrendingUp className="w-4 h-4 text-[#00FF88] mb-1" />
               <span className="text-[9px] font-mono text-white/40 uppercase">Top Catalyst</span>
               <span className="text-[10px] font-bold text-white">Sentiment Pivot</span>
             </div>
             <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center text-center">
-              <Activity className="w-4 h-4 text-blue-400 mb-1" />
+              <Activity className="w-4 h-4 text-emerald-400 mb-1" />
               <span className="text-[9px] font-mono text-white/40 uppercase">Volatility Index</span>
               <span className="text-[10px] font-bold text-white">Stable</span>
             </div>
           </div>
 
-          <button className="w-full py-3 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-all text-[10px] font-mono font-bold text-orange-400 uppercase tracking-widest">
+          <button className="w-full py-3 rounded-xl bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/25 transition-all text-[10px] font-mono font-bold text-[#00FF88] uppercase tracking-widest">
             Access Full API Indices
           </button>
         </div>

@@ -83,7 +83,7 @@ export function XContentStudioTab({
         <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
             <h2 className="text-base font-display font-black text-white uppercase flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#FF6B1A]" />
+              <Sparkles className="w-4 h-4 text-[#00FF88]" />
               AI Prompt Studio
             </h2>
             <span className="px-2 py-0.5 rounded-full bg-[#10B981]/20 text-[#10B981] text-[9px] font-mono font-bold">
@@ -112,11 +112,11 @@ export function XContentStudioTab({
                     onClick={() => setContentType(item.id as XContentType)}
                     className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-mono font-bold text-left transition-all ${
                       selected
-                        ? 'bg-[#FF6B1A]/20 border-[#FF6B1A] text-white shadow-[0_0_15px_rgba(255,107,26,0.2)]'
+                        ? 'bg-[#00FF88]/20 border-[#00FF88] text-white shadow-[0_0_15px_rgba(0, 255, 136,0.2)]'
                         : 'bg-black/40 hover:bg-white/[0.03] border-white/[0.06] text-white/60'
                     }`}
                   >
-                    <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: selected ? '#FF6B1A' : 'inherit' }} />
+                    <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: selected ? '#00FF88' : 'inherit' }} />
                     <span className="truncate">{item.label}</span>
                   </button>
                 );
@@ -141,7 +141,7 @@ export function XContentStudioTab({
                   onClick={() => setTone(t.id as XTone)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
                     tone === t.id
-                      ? 'bg-[#FFAA00] text-black shadow-[0_0_10px_rgba(255,170,0,0.3)]'
+                      ? 'bg-[#05F292] text-black shadow-[0_0_10px_rgba(255,170,0,0.3)]'
                       : 'bg-black/40 hover:bg-white/[0.04] border border-white/[0.06] text-white/60'
                   }`}
                 >
@@ -161,7 +161,7 @@ export function XContentStudioTab({
               placeholder="e.g. Highlight that acoustic energy reached 88/100, dynamic buy orders on Meteora bonding curve, and link to Genesis quest hub."
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-black/50 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A] placeholder:text-white/20"
+              className="w-full px-3 py-2.5 rounded-xl bg-black/50 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88] placeholder:text-white/20"
             />
           </div>
 
@@ -169,7 +169,7 @@ export function XContentStudioTab({
           <button
             onClick={handleGenerateClick}
             disabled={isGenerating}
-            className="w-full py-3 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] disabled:opacity-50 text-black text-xs font-display font-black transition-all active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,107,26,0.3)]"
+            className="w-full py-3 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] disabled:opacity-50 text-black text-xs font-display font-black transition-all active:scale-95 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0, 255, 136,0.3)]"
           >
             {isGenerating ? (
               <>
@@ -191,7 +191,7 @@ export function XContentStudioTab({
         <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
             <h2 className="text-base font-display font-black text-white uppercase flex items-center gap-2">
-              <Edit3 className="w-4 h-4 text-[#FFAA00]" />
+              <Edit3 className="w-4 h-4 text-[#05F292]" />
               Post Composer & Polish
             </h2>
             <div className="flex items-center gap-2">
@@ -209,7 +209,7 @@ export function XContentStudioTab({
               placeholder="Generated draft will appear here, or type custom copy..."
               value={composerText}
               onChange={(e) => setComposerText(e.target.value)}
-              className="w-full p-4 rounded-xl bg-black/60 border border-white/10 text-xs font-mono text-white/90 focus:outline-none focus:border-[#FF6B1A] leading-relaxed"
+              className="w-full p-4 rounded-xl bg-black/60 border border-white/10 text-xs font-mono text-white/90 focus:outline-none focus:border-[#00FF88] leading-relaxed"
             />
           </div>
 

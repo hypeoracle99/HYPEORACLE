@@ -352,7 +352,7 @@ export default function AdminCommandCenter() {
   ];
 
   return (
-    <div className="relative min-h-screen bg-[#050507] text-white selection:bg-[#FF6B1A]/30">
+    <div className="relative min-h-screen bg-[#050507] text-white selection:bg-[#00FF88]/30">
       <AmbientBackground />
 
       <main className="relative z-10 container mx-auto px-4 py-6 max-w-7xl">
@@ -360,7 +360,7 @@ export default function AdminCommandCenter() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/[0.06]">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#FF6B1A]/20 border border-[#FF6B1A]/40 text-[#FF6B1A] text-[10px] font-mono font-bold uppercase flex items-center gap-1.5">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#00FF88]/20 border border-[#00FF88]/40 text-[#00FF88] text-[10px] font-mono font-bold uppercase flex items-center gap-1.5">
                 <Shield className="w-3 h-3" />
                 Command Center v2.0
               </span>
@@ -368,14 +368,14 @@ export default function AdminCommandCenter() {
               <span className="text-white/60 text-xs font-mono">12 Operational Surfaces</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-white">
-              AI GROWTH & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B1A] via-[#FFAA00] to-[#FF3D00]">COMMUNITY MANAGER</span>
+              AI GROWTH & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#05F292] to-[#00FF88]">COMMUNITY MANAGER</span>
             </h1>
           </div>
 
           <div className="flex items-center gap-3">
             <Link
               href="/admin/x-manager"
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#FF6B1A] to-[#FFAA00] text-black text-xs font-display font-black shadow-[0_0_20px_rgba(255,107,26,0.4)] hover:brightness-110 active:scale-95 transition-all"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#05F292] text-black text-xs font-display font-black shadow-[0_0_20px_rgba(0, 255, 136,0.4)] hover:brightness-110 active:scale-95 transition-all"
             >
               <span className="font-mono font-bold text-sm">𝕏</span>
               <span>AI X MANAGER</span>
@@ -385,17 +385,17 @@ export default function AdminCommandCenter() {
               href="/community"
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-white/80 transition-all"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-[#FFAA00]" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#05F292]" />
               <span>Contributor View</span>
             </Link>
-            {mounted && <WalletMultiButton className="!bg-[#FF6B1A] !hover:bg-[#FF3D00] !rounded-xl !h-9 !text-xs !font-display !font-bold" />}
+            {mounted && <WalletMultiButton className="!bg-[#00FF88] !hover:bg-[#00FF88] !rounded-xl !h-9 !text-xs !font-display !font-bold" />}
           </div>
         </div>
 
         {/* Dual-Auth Verification Banner */}
         <div className="mb-6 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-xl ${adminToken ? 'bg-[#10B981]/10 text-[#10B981]' : 'bg-[#FFAA00]/10 text-[#FFAA00]'}`}>
+            <div className={`p-2.5 rounded-xl ${adminToken ? 'bg-[#10B981]/10 text-[#10B981]' : 'bg-[#05F292]/10 text-[#05F292]'}`}>
               {adminToken ? <Key className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
             </div>
             <div>
@@ -430,7 +430,7 @@ export default function AdminCommandCenter() {
               <button
                 onClick={handleSolanaAdminLogin}
                 disabled={isAuthorizing || !connected}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] disabled:opacity-50 text-black text-xs font-display font-bold transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] disabled:opacity-50 text-black text-xs font-display font-bold transition-all active:scale-95"
               >
                 {isAuthorizing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Key className="w-3.5 h-3.5" />}
                 <span>Sign Admin Challenge</span>
@@ -456,7 +456,7 @@ export default function AdminCommandCenter() {
                 onClick={() => setActiveTab(tab.id as AdminTab)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition-all ${
                   active
-                    ? 'bg-[#FF6B1A] text-black shadow-[0_0_20px_rgba(255,107,26,0.35)]'
+                    ? 'bg-[#00FF88] text-black shadow-[0_0_20px_rgba(0, 255, 136,0.35)]'
                     : 'bg-white/[0.03] hover:bg-white/[0.07] text-white/60 hover:text-white'
                 }`}
               >
@@ -468,7 +468,7 @@ export default function AdminCommandCenter() {
           <div className="h-5 w-[1px] bg-white/10 mx-1 shrink-0" />
           <Link
             href="/admin/x-manager"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono font-bold text-[#FFAA00] bg-[#FFAA00]/10 hover:bg-[#FFAA00]/20 border border-[#FFAA00]/30 transition-all whitespace-nowrap shrink-0"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-mono font-bold text-[#05F292] bg-[#05F292]/10 hover:bg-[#05F292]/20 border border-[#05F292]/30 transition-all whitespace-nowrap shrink-0"
           >
             <span className="font-mono font-bold">𝕏</span>
             <span>Open Dedicated Social Suite</span>
@@ -481,10 +481,10 @@ export default function AdminCommandCenter() {
           <div className="space-y-8">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               {[
-                { label: 'Total Members', value: '1,428', icon: Users, color: '#FF6B1A' },
-                { label: 'Active Quests', value: quests.length.toString(), icon: Target, color: '#FFAA00' },
-                { label: 'Distributed XP', value: '48.2k', icon: Zap, color: '#FFAA00' },
-                { label: 'DePIN Sensor Nodes', value: '124 Active', icon: Radio, color: '#FF6B1A' },
+                { label: 'Total Members', value: '1,428', icon: Users, color: '#00FF88' },
+                { label: 'Active Quests', value: quests.length.toString(), icon: Target, color: '#05F292' },
+                { label: 'Distributed XP', value: '48.2k', icon: Zap, color: '#05F292' },
+                { label: 'DePIN Sensor Nodes', value: '124 Active', icon: Radio, color: '#00FF88' },
                 { label: 'Sentiment Lift', value: '+14.2%', icon: HeartPulse, color: '#10B981' },
                 { label: 'Conversion Rate', value: '71.8%', icon: TrendingUp, color: '#06B6D4' },
               ].map((stat, i) => {
@@ -502,9 +502,9 @@ export default function AdminCommandCenter() {
             </div>
 
             {/* AI Growth Radar Alert Card */}
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-[#FF6B1A]/10 to-[#FFAA00]/5 border border-[#FF6B1A]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl bg-gradient-to-r from-[#00FF88]/10 to-[#05F292]/5 border border-[#00FF88]/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-[#FF6B1A]/20 text-[#FF6B1A]">
+                <div className="p-2.5 rounded-xl bg-[#00FF88]/20 text-[#00FF88]">
                   <Bot className="w-5 h-5" />
                 </div>
                 <div>
@@ -522,16 +522,16 @@ export default function AdminCommandCenter() {
 
               <button
                 onClick={() => setActiveTab('ai_agent')}
-                className="px-4 py-2 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] text-black text-xs font-display font-bold transition-all active:scale-95 whitespace-nowrap"
+                className="px-4 py-2 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] text-black text-xs font-display font-bold transition-all active:scale-95 whitespace-nowrap"
               >
                 Open AI Cockpit
               </button>
             </div>
 
             {/* AI X Manager Social Operations Banner Card */}
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-white/[0.04] via-[#FF6B1A]/15 to-[#FFAA00]/10 border border-[#FF6B1A]/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_0_25px_rgba(255,107,26,0.15)]">
+            <div className="p-5 rounded-2xl bg-gradient-to-r from-white/[0.04] via-[#00FF88]/15 to-[#05F292]/10 border border-[#00FF88]/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_0_25px_rgba(0, 255, 136,0.15)]">
               <div className="flex items-start gap-3">
-                <div className="p-3 rounded-xl bg-black border border-[#FF6B1A]/50 text-[#FFAA00] shrink-0">
+                <div className="p-3 rounded-xl bg-black border border-[#00FF88]/50 text-[#05F292] shrink-0">
                   <span className="text-2xl font-bold font-mono leading-none">𝕏</span>
                 </div>
                 <div>
@@ -558,7 +558,7 @@ export default function AdminCommandCenter() {
                 </button>
                 <Link
                   href="/admin/x-manager"
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#FF6B1A] to-[#FFAA00] text-black text-xs font-display font-black shadow-[0_0_15px_rgba(255,107,26,0.35)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#05F292] text-black text-xs font-display font-black shadow-[0_0_15px_rgba(0, 255, 136,0.35)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
                 >
                   <span>Launch Dedicated Suite</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -580,7 +580,7 @@ export default function AdminCommandCenter() {
                         <div className="text-xs font-display font-bold text-white">{q.title}</div>
                         <div className="text-[10px] font-mono text-white/40">{q.category} • +{q.xpReward} XP</div>
                       </div>
-                      <span className="text-xs font-mono font-bold text-[#FFAA00]">{q.currentCompletions} completions</span>
+                      <span className="text-xs font-mono font-bold text-[#05F292]">{q.currentCompletions} completions</span>
                     </div>
                   ))}
                 </div>
@@ -591,7 +591,7 @@ export default function AdminCommandCenter() {
                 <div className="p-4 rounded-xl bg-black/40 border border-white/[0.04] text-xs font-mono text-white/70 space-y-2">
                   <div className="flex justify-between">
                     <span>Active Solana Hype Score:</span>
-                    <span className="text-[#FF6B1A] font-bold">82 / 100 (Surging)</span>
+                    <span className="text-[#00FF88] font-bold">82 / 100 (Surging)</span>
                   </div>
                   <div className="flex justify-between">
                     <span>DePIN Sensor Data Density:</span>
@@ -616,7 +616,7 @@ export default function AdminCommandCenter() {
             {/* Create Form */}
             <div className="lg:col-span-1 p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
               <h2 className="text-base font-display font-black text-white uppercase mb-4 flex items-center gap-2">
-                <PlusCircle className="w-4 h-4 text-[#FF6B1A]" />
+                <PlusCircle className="w-4 h-4 text-[#00FF88]" />
                 Create New Quest
               </h2>
 
@@ -629,7 +629,7 @@ export default function AdminCommandCenter() {
                     placeholder="e.g. Follow @HypeOracle on X"
                     value={questTitle}
                     onChange={(e) => setQuestTitle(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                   />
                 </div>
 
@@ -641,7 +641,7 @@ export default function AdminCommandCenter() {
                     placeholder="Describe requirements and community impact..."
                     value={questDesc}
                     onChange={(e) => setQuestDesc(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                   />
                 </div>
 
@@ -651,7 +651,7 @@ export default function AdminCommandCenter() {
                     <select
                       value={questCategory}
                       onChange={(e) => setQuestCategory(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                     >
                       <option value="social">Social</option>
                       <option value="community">Community</option>
@@ -667,7 +667,7 @@ export default function AdminCommandCenter() {
                     <select
                       value={questVerifType}
                       onChange={(e) => setQuestVerifType(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                     >
                       <option value="instant_click">Instant Click</option>
                       <option value="x_follow">X Follow</option>
@@ -688,7 +688,7 @@ export default function AdminCommandCenter() {
                       type="number"
                       value={questXp}
                       onChange={(e) => setQuestXp(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                     />
                   </div>
 
@@ -698,7 +698,7 @@ export default function AdminCommandCenter() {
                       type="number"
                       value={questRep}
                       onChange={(e) => setQuestRep(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                      className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                     />
                   </div>
                 </div>
@@ -708,7 +708,7 @@ export default function AdminCommandCenter() {
                   <select
                     value={questCampaignId}
                     onChange={(e) => setQuestCampaignId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                   >
                     {campaigns.map((c) => (
                       <option key={c.id} value={c.id}>{c.title}</option>
@@ -719,7 +719,7 @@ export default function AdminCommandCenter() {
                 <button
                   type="submit"
                   disabled={isSavingQuest}
-                  className="w-full py-2.5 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] text-black text-xs font-display font-black transition-all active:scale-95 disabled:opacity-50"
+                  className="w-full py-2.5 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] text-black text-xs font-display font-black transition-all active:scale-95 disabled:opacity-50"
                 >
                   {isSavingQuest ? 'Publishing Quest...' : 'Create & Publish Quest'}
                 </button>
@@ -744,7 +744,7 @@ export default function AdminCommandCenter() {
                     </div>
                     <p className="text-xs text-white/50 line-clamp-1">{q.description}</p>
                     <div className="flex items-center gap-3 mt-2 text-[10px] font-mono text-white/40">
-                      <span className="text-[#FFAA00]">+{q.xpReward} XP</span>
+                      <span className="text-[#05F292]">+{q.xpReward} XP</span>
                       <span className="text-[#10B981]">+{q.reputationReward} Rep</span>
                       <span>Method: {q.verificationType}</span>
                       <span>{q.currentCompletions} Completions</span>
@@ -780,7 +780,7 @@ export default function AdminCommandCenter() {
                     <span className="px-2.5 py-0.5 rounded-full bg-[#10B981]/20 text-[#10B981] text-[10px] font-mono uppercase font-bold">
                       {camp.status}
                     </span>
-                    <span className="text-xs font-mono text-[#FFAA00]">{camp.badgeTitle}</span>
+                    <span className="text-xs font-mono text-[#05F292]">{camp.badgeTitle}</span>
                   </div>
 
                   <h3 className="text-base font-display font-bold text-white mb-1">{camp.title}</h3>
@@ -797,7 +797,7 @@ export default function AdminCommandCenter() {
                     </div>
                     <div className="flex justify-between text-white/60">
                       <span>XP Distributed:</span>
-                      <span className="text-[#FFAA00] font-bold">{(camp.totalXpDistributed || 0).toLocaleString()} XP</span>
+                      <span className="text-[#05F292] font-bold">{(camp.totalXpDistributed || 0).toLocaleString()} XP</span>
                     </div>
                   </div>
                 </div>
@@ -834,7 +834,7 @@ export default function AdminCommandCenter() {
                           {p.tier}
                         </span>
                       </td>
-                      <td className="text-[#FFAA00] font-bold">+{p.totalXp}</td>
+                      <td className="text-[#05F292] font-bold">+{p.totalXp}</td>
                       <td className="text-[#10B981] font-bold">★ {p.reputationScore}</td>
                       <td>{p.completedQuestsCount}</td>
                       <td>{p.qualifiedReferralsCount}</td>
@@ -853,18 +853,18 @@ export default function AdminCommandCenter() {
         {activeTab === 'leaderboard' && (
           <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
             <h2 className="text-base font-display font-black text-white uppercase mb-4 flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-[#FFAA00]" />
+              <Trophy className="w-4 h-4 text-[#05F292]" />
               Global Reputation Leaderboard
             </h2>
             <div className="space-y-3">
               {participants.map((p, idx) => (
                 <div key={p.id} className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="w-6 text-center font-mono font-bold text-[#FFAA00]">#{idx + 1}</span>
+                    <span className="w-6 text-center font-mono font-bold text-[#05F292]">#{idx + 1}</span>
                     <span className="text-xs font-mono font-bold text-white">{p.username || p.userPubkey}</span>
                   </div>
                   <div className="flex items-center gap-6 text-xs font-mono">
-                    <span className="text-[#FFAA00] font-bold">{p.totalXp} XP</span>
+                    <span className="text-[#05F292] font-bold">{p.totalXp} XP</span>
                     <span className="text-[#10B981] font-bold">★ {p.reputationScore} Rep</span>
                   </div>
                 </div>
@@ -879,7 +879,7 @@ export default function AdminCommandCenter() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                 <span className="text-[10px] font-mono text-white/40 uppercase">Total Qualified Invites</span>
-                <div className="text-xl font-mono font-bold text-[#FFAA00] mt-1">284 Members</div>
+                <div className="text-xl font-mono font-bold text-[#05F292] mt-1">284 Members</div>
               </div>
               <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                 <span className="text-[10px] font-mono text-white/40 uppercase">Sybil Flags Blocked</span>
@@ -907,7 +907,7 @@ export default function AdminCommandCenter() {
           <div className="space-y-6">
             <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
               <h2 className="text-base font-display font-black text-white uppercase mb-4 flex items-center gap-2">
-                <Award className="w-4 h-4 text-[#FFAA00]" />
+                <Award className="w-4 h-4 text-[#05F292]" />
                 Modular Reward Architecture
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -933,7 +933,7 @@ export default function AdminCommandCenter() {
           <div className="space-y-6">
             <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
               <h2 className="text-base font-display font-black text-white uppercase mb-2 flex items-center gap-2">
-                <HeartPulse className="w-4 h-4 text-[#FF6B1A]" />
+                <HeartPulse className="w-4 h-4 text-[#00FF88]" />
                 Community-to-Oracle Sentiment Correlation
               </h2>
               <p className="text-xs font-mono text-white/60 mb-6">
@@ -967,7 +967,7 @@ export default function AdminCommandCenter() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-base font-display font-black text-white uppercase flex items-center gap-2">
-                  <Bot className="w-4 h-4 text-[#FF6B1A]" />
+                  <Bot className="w-4 h-4 text-[#00FF88]" />
                   AI Growth Agent Staged Queue
                 </h2>
                 <p className="text-xs font-mono text-white/50">
@@ -990,12 +990,12 @@ export default function AdminCommandCenter() {
                 <div key={ins.id} className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="px-2 py-0.5 rounded text-[9px] font-mono bg-[#FF6B1A]/20 text-[#FF6B1A] uppercase font-bold">
+                      <span className="px-2 py-0.5 rounded text-[9px] font-mono bg-[#00FF88]/20 text-[#00FF88] uppercase font-bold">
                         {ins.category}
                       </span>
                       <span className="text-xs font-mono text-white/40">Confidence: {Math.round(ins.confidence * 100)}%</span>
                       <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
-                        ins.status === 'applied' ? 'bg-[#10B981]/20 text-[#10B981]' : 'bg-[#FFAA00]/20 text-[#FFAA00]'
+                        ins.status === 'applied' ? 'bg-[#10B981]/20 text-[#10B981]' : 'bg-[#05F292]/20 text-[#05F292]'
                       }`}>
                         {ins.status}
                       </span>
@@ -1009,7 +1009,7 @@ export default function AdminCommandCenter() {
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleApplyAiInsight(ins.id)}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] text-black text-xs font-display font-bold transition-all active:scale-95"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] text-black text-xs font-display font-bold transition-all active:scale-95"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Approve & Execute</span>
@@ -1025,9 +1025,9 @@ export default function AdminCommandCenter() {
         {/* TAB 10: SOCIAL CONTENT (AI SOCIAL MANAGER) */}
         {activeTab === 'social_content' && (
           <div className="space-y-6">
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-[#FF6B1A]/20 via-[#FFAA00]/10 to-transparent border border-[#FF6B1A]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-[#00FF88]/20 via-[#05F292]/10 to-transparent border border-[#00FF88]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-[#FF6B1A]/20 text-[#FF6B1A]">
+                <div className="p-2.5 rounded-xl bg-[#00FF88]/20 text-[#00FF88]">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
@@ -1045,7 +1045,7 @@ export default function AdminCommandCenter() {
 
               <Link
                 href="/admin/x-manager"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] text-black text-xs font-display font-black transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_rgba(255,107,26,0.3)]"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] text-black text-xs font-display font-black transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_rgba(0, 255, 136,0.3)]"
               >
                 <span>Launch Full AI X Manager</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -1056,7 +1056,7 @@ export default function AdminCommandCenter() {
             {/* Draft Generator */}
             <div className="lg:col-span-1 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
               <h2 className="text-base font-display font-black text-white uppercase mb-4 flex items-center gap-2">
-                <Send className="w-4 h-4 text-[#FF6B1A]" />
+                <Send className="w-4 h-4 text-[#00FF88]" />
                 Draft Social Content
               </h2>
 
@@ -1066,7 +1066,7 @@ export default function AdminCommandCenter() {
                   <select
                     value={socialContentType}
                     onChange={(e) => setSocialContentType(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                   >
                     <option value="x_post">Single X Post</option>
                     <option value="x_thread">Educational X Thread</option>
@@ -1080,7 +1080,7 @@ export default function AdminCommandCenter() {
                     type="text"
                     value={socialTopic}
                     onChange={(e) => setSocialTopic(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                   />
                 </div>
 
@@ -1089,7 +1089,7 @@ export default function AdminCommandCenter() {
                   <select
                     value={socialTone}
                     onChange={(e) => setSocialTone(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#FF6B1A]"
+                    className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-[#00FF88]"
                   >
                     <option value="energetic">High Conviction & Energetic</option>
                     <option value="analytical">Scientific & Analytical (DePIN)</option>
@@ -1100,7 +1100,7 @@ export default function AdminCommandCenter() {
                 <button
                   onClick={handleGenerateSocial}
                   disabled={isGeneratingSocial}
-                  className="w-full py-2.5 rounded-xl bg-[#FF6B1A] hover:bg-[#FF3D00] text-black text-xs font-display font-black transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded-xl bg-[#00FF88] hover:bg-[#00FF88] text-black text-xs font-display font-black transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {isGeneratingSocial ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   <span>Generate Staged Draft</span>
@@ -1113,7 +1113,7 @@ export default function AdminCommandCenter() {
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-display font-bold text-white uppercase flex items-center gap-2">
                   <span>Staged Approval Queue</span>
-                  <span className="px-2 py-0.5 rounded-full bg-[#FFAA00]/20 text-[#FFAA00] text-[10px] font-mono">
+                  <span className="px-2 py-0.5 rounded-full bg-[#05F292]/20 text-[#05F292] text-[10px] font-mono">
                     HITL Protected
                   </span>
                 </h3>
@@ -1127,7 +1127,7 @@ export default function AdminCommandCenter() {
                       {draft.contentType}
                     </span>
                     <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
-                      draft.status === 'approved' ? 'bg-[#10B981]/20 text-[#10B981]' : draft.status === 'rejected' ? 'bg-rose-500/20 text-rose-400' : 'bg-[#FFAA00]/20 text-[#FFAA00]'
+                      draft.status === 'approved' ? 'bg-[#10B981]/20 text-[#10B981]' : draft.status === 'rejected' ? 'bg-rose-500/20 text-rose-400' : 'bg-[#05F292]/20 text-[#05F292]'
                     }`}>
                       {draft.status}
                     </span>
@@ -1174,13 +1174,13 @@ export default function AdminCommandCenter() {
           <div className="space-y-6">
             <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
               <h2 className="text-base font-display font-black text-white uppercase mb-4 flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-[#FFAA00]" />
+                <BarChart3 className="w-4 h-4 text-[#05F292]" />
                 Growth & Retention Funnel
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-mono">
                 <div className="p-4 rounded-xl bg-black/40 border border-white/[0.06]">
                   <span className="text-white/40 block mb-1">Quest Conversion Velocity</span>
-                  <div className="text-xl font-bold text-[#FF6B1A]">74.2% Completion</div>
+                  <div className="text-xl font-bold text-[#00FF88]">74.2% Completion</div>
                   <p className="text-white/50 text-[11px] mt-2">Average time to first quest: 4.2 minutes</p>
                 </div>
                 <div className="p-4 rounded-xl bg-black/40 border border-white/[0.06]">
@@ -1217,7 +1217,7 @@ export default function AdminCommandCenter() {
 
                 <div className="space-y-3">
                   <label className="text-white/40 block">Referral XP Reward</label>
-                  <div className="p-3 rounded-xl bg-black/40 border border-white/10 text-[#FFAA00] font-bold">
+                  <div className="p-3 rounded-xl bg-black/40 border border-white/10 text-[#05F292] font-bold">
                     50 XP / Qualified Invitee
                   </div>
                 </div>
@@ -1225,7 +1225,7 @@ export default function AdminCommandCenter() {
 
               <div className="mt-8 pt-6 border-t border-white/[0.06]">
                 <h3 className="text-sm font-display font-bold text-white uppercase mb-3 flex items-center gap-2">
-                  <ShieldAlert className="w-4 h-4 text-[#FFAA00]" />
+                  <ShieldAlert className="w-4 h-4 text-[#05F292]" />
                   Administrative Audit Trail
                 </h3>
                 <p className="text-xs font-mono text-white/50 mb-4">
