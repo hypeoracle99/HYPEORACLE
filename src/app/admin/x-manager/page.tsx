@@ -69,39 +69,65 @@ export default function XManagerPage() {
           </p>
 
           <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-              <p className="text-[11px] font-mono text-white/50 mb-3">
-                Option 1: Connect Authorized Admin Wallet
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] text-left">
+              <p className="text-[11px] font-mono text-white/50 mb-3 text-center">
+                Connected Solana Wallet
               </p>
-              <div className="flex justify-center">
+              <div className="flex justify-center mb-3">
                 <WalletMultiButton className="!bg-[#00FF88]/15 !border !border-[#00FF88]/30 !rounded-xl !h-10 !text-xs !font-bold !text-[#00FF88]" />
               </div>
-              {connected && !isWalletAdmin && (
-                <p className="text-[10px] font-mono text-red-400 mt-2">
-                  Connected wallet is not in the authorized administrator registry.
-                </p>
+
+              {connected && publicKey && (
+                <div className="mt-3 p-3 rounded-xl bg-black/40 border border-white/10">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-[10px] font-mono text-white/40 uppercase">Your Wallet Address:</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(publicKey.toBase58());
+                        alert('Wallet address copied to clipboard!');
+                      }}
+                      className="text-[10px] font-mono text-[#00FF88] hover:underline"
+                    >
+                      Copy Full Key
+                    </button>
+                  </div>
+                  <p className="text-[11px] font-mono text-[#00FF88] break-all select-all bg-white/[0.02] p-2 rounded-lg border border-white/5">
+                    {publicKey.toBase58()}
+                  </p>
+
+                  {!isWalletAdmin && (
+                    <div className="mt-3 pt-3 border-t border-white/10">
+                      <p className="text-[10px] font-mono text-amber-400 mb-2">
+                        Status: Not registered yet. Enter the protocol admin key below to authorize this wallet forever.
+                      </p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
-            <form onSubmit={handleAdminKeySubmit} className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+            <form onSubmit={handleAdminKeySubmit} className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] text-left">
               <p className="text-[11px] font-mono text-white/50 mb-2">
-                Option 2: Enter Administrator Access Pass
+                Authorize Wallet via Protocol Passkey:
               </p>
               <div className="flex gap-2">
                 <input
                   type="password"
                   value={adminKey}
                   onChange={(e) => setAdminKey(e.target.value)}
-                  placeholder="Admin passkey..."
+                  placeholder="Enter admin passkey..."
                   className="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-white/30 focus:outline-none focus:border-[#00FF88]/50"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#00FF88] text-black text-xs font-bold rounded-xl hover:bg-[#00FF88]/90 transition-all font-mono"
+                  className="px-4 py-2 bg-[#00FF88] text-black text-xs font-bold rounded-xl hover:bg-[#00FF88]/90 transition-all font-mono shrink-0"
                 >
-                  Verify
+                  Authorize & Unlock
                 </button>
               </div>
+              <p className="text-[9.5px] font-mono text-white/40 mt-2">
+                Default Master Key: <code className="text-[#00FF88]">hypeoracle_admin_2026</code>
+              </p>
               {errorMsg && (
                 <p className="text-[10px] font-mono text-red-400 mt-2 text-left">
                   {errorMsg}
