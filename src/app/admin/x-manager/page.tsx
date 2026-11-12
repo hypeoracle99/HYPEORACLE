@@ -4,14 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import Link from 'next/link';
-import { ShieldAlert, Lock, ShieldCheck, ArrowLeft, Key } from 'lucide-react';
+import { ShieldAlert, Lock, ShieldCheck, ArrowLeft, Key, CheckCircle } from 'lucide-react';
 import { XManagerDashboard } from "@/components/admin/x-manager/XManagerDashboard";
-
-// Central list of authorized admin Solana public keys
-const AUTHORIZED_ADMIN_WALLETS = [
-  '5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS', // HypeOracle Core
-  '4H7Wk7Y1qB6n7x5k6d8m9p0q1r2s3t4u5v6w7x8y9z0a', // Dev Admin Key
-];
+import { checkIsAdminWallet, registerAdminSession } from '@/lib/admin-wallets';
 
 export default function XManagerPage() {
   const { publicKey, connected } = useWallet();
@@ -22,27 +17,23 @@ export default function XManagerPage() {
 
   useEffect(() => {
     setMounted(true);
-    // Check if saved admin session exists
-    const savedToken = localStorage.getItem('hypeoracle_admin_token');
-    if (savedToken && savedToken.length > 10) {
+    const pubkeyStr = publicKey ? publicKey.toBase58() : null;
+    if (checkIsAdminWallet(pubkeyStr)) {
       setIsPassAuthed(true);
     }
-  }, []);
+  }, [publicKey]);
 
-  const isWalletAdmin = Boolean(
-    publicKey && AUTHORIZED_ADMIN_WALLETS.includes(publicKey.toBase58())
-  );
-
+  const isWalletAdmin = Boolean(publicKey && checkIsAdminWallet(publicKey.toBase58()));
   const isAuthorized = isWalletAdmin || isPassAuthed;
 
   const handleAdminKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
-    // Master admin key validation (defaults or env)
     const validKey = process.env.NEXT_PUBLIC_ADMIN_PIN || 'hypeoracle_admin_2026';
     if (adminKey.trim() === validKey) {
-      localStorage.setItem('hypeoracle_admin_token', `admin_session_${Date.now()}`);
+      registerAdminSession(publicKey ? publicKey.toBase58() : null);
       setIsPassAuthed(true);
+      window.location.reload();
     } else {
       setErrorMsg('Invalid administrator access key.');
     }

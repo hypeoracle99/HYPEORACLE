@@ -11,6 +11,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { createClient } from '@insforge/sdk'
 import { INSFORGE_CONFIG } from '@/lib/constants'
+import { checkIsAdminWallet } from '@/lib/admin-wallets'
 
 const client = createClient(INSFORGE_CONFIG)
 
@@ -57,11 +58,14 @@ export function NavHeader() {
   const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
   const [oracleWallet, setOracleWallet] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     setMounted(true)
     fetchOracleWallet()
-  }, [])
+    const isAdm = checkIsAdminWallet(publicKey ? publicKey.toBase58() : null)
+    setIsAdmin(isAdm)
+  }, [publicKey])
 
   async function fetchOracleWallet() {
     try {
@@ -142,6 +146,16 @@ export function NavHeader() {
             >
               Community
             </NavItem>
+            {isAdmin && (
+              <NavItem 
+                href="/admin/x-manager" 
+                icon={Bot} 
+                active={pathname.startsWith('/admin/x-manager')} 
+                color="#00FF88"
+              >
+                AI X Manager ⚡
+              </NavItem>
+            )}
             {publicKey && (
               <>
                 <NavItem 
