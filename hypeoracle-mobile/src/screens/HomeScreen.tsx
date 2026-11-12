@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,6 +11,8 @@ import {
   Modal,
   Image,
   Linking,
+  Animated,
+  Easing,
 } from 'react-native';
 import Svg, { Circle, G, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { client } from '../lib/insforge';
@@ -41,6 +43,102 @@ import {
 } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
+
+interface AutoMovingTickerProps {
+  tokens: TokenVibe[];
+  onNavigateTab: (tab: 'market') => void;
+}
+
+function AutoMovingTicker({ tokens, onNavigateTab }: AutoMovingTickerProps) {
+  const animatedValue = useRef(new Animated.Value(0)).current;
+  const [sequenceWidth, setSequenceWidth] = useState(0);
+
+  useEffect(() => {
+    if (sequenceWidth <= 0 || tokens.length === 0) return;
+
+    animatedValue.setValue(0);
+    // Smooth readable marquee speed: ~32ms per pixel
+    const duration = Math.max(16000, sequenceWidth * 32);
+
+    const animation = Animated.loop(
+      Animated.timing(animatedValue, {
+        toValue: -sequenceWidth,
+        duration,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, [sequenceWidth, tokens.length]);
+
+  if (!tokens || tokens.length === 0) return null;
+
+  const renderItem = (token: TokenVibe, keyPrefix: string, index: number) => {
+    const isPos = token.change24h >= 0;
+    return (
+      <TouchableOpacity
+        key={`${keyPrefix}-${token.symbol}-${index}`}
+        style={styles.tickerItem}
+        onPress={() => onNavigateTab('market')}
+        activeOpacity={0.75}
+      >
+        <View style={styles.tickerDot} />
+        <Text style={styles.tickerSymbol}>${token.symbol}</Text>
+        {token.priceUsd ? (
+          <Text style={styles.tickerPrice}>
+            ${token.priceUsd < 0.001 ? token.priceUsd.toPrecision(3) : token.priceUsd.toFixed(2)}
+          </Text>
+        ) : null}
+        <Text style={[styles.tickerChange, { color: isPos ? THEME.primary : THEME.bearish }]}>
+          {isPos ? '+' : ''}{token.change24h}%
+        </Text>
+        <View style={styles.tickerBagsBadge}>
+          <Text style={styles.tickerBagsText}>Bags.fm 👜</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <View style={styles.tickerBar}>
+      <Animated.View
+        style={[
+          styles.tickerTrack,
+          {
+            transform: [{ translateX: animatedValue }],
+          },
+        ]}
+      >
+        <View
+          style={styles.tickerSequence}
+          onLayout={(e) => {
+            const w = e.nativeEvent.layout.width;
+            if (w > 0 && Math.abs(w - sequenceWidth) > 2) {
+              setSequenceWidth(w);
+            }
+          }}
+        >
+          {tokens.map((token, i) => renderItem(token, 'seq1', i))}
+        </View>
+
+        <View style={styles.tickerSequence}>
+          {tokens.map((token, i) => renderItem(token, 'seq2', i))}
+        </View>
+
+        <View style={styles.tickerSequence}>
+          {tokens.map((token, i) => renderItem(token, 'seq3', i))}
+        </View>
+
+        <View style={styles.tickerSequence}>
+          {tokens.map((token, i) => renderItem(token, 'seq4', i))}
+        </View>
+      </Animated.View>
+    </View>
+  );
+}
 
 interface HomeScreenProps {
   identity: DePINIdentity | null;
@@ -224,35 +322,8 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
 
   return (
     <View style={styles.container}>
-      {/* 1. Horizontal Live Ticker Strip */}
-      <View style={styles.tickerBar}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tickerContent}>
-          {tokens.map((token, i) => {
-            const isPos = token.change24h >= 0;
-            return (
-              <TouchableOpacity
-                key={`${token.symbol}-${i}`}
-                style={styles.tickerItem}
-                onPress={() => onNavigateTab('market')}
-              >
-                <View style={styles.tickerDot} />
-                <Text style={styles.tickerSymbol}>${token.symbol}</Text>
-                {token.priceUsd ? (
-                  <Text style={styles.tickerPrice}>
-                    ${token.priceUsd < 0.001 ? token.priceUsd.toPrecision(3) : token.priceUsd.toFixed(2)}
-                  </Text>
-                ) : null}
-                <Text style={[styles.tickerChange, { color: isPos ? THEME.primary : THEME.bearish }]}>
-                  {isPos ? '+' : ''}{token.change24h}%
-                </Text>
-                <View style={styles.tickerBagsBadge}>
-                  <Text style={styles.tickerBagsText}>Bags.fm 👜</Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
+      {/* 1. Horizontal Auto-Moving Live Ticker Strip */}
+      <AutoMovingTicker tokens={tokens} onNavigateTab={onNavigateTab} />
 
       <ScrollView
         style={{ flex: 1 }}
@@ -483,11 +554,18 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.bgSurface,
     borderBottomWidth: 1,
     borderBottomColor: THEME.border,
+    overflow: 'hidden',
+    justifyContent: 'center',
   },
-  tickerContent: {
+  tickerTrack: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
+  },
+  tickerSequence: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 16,
+    paddingRight: 16,
   },
   tickerItem: {
     flexDirection: 'row',
