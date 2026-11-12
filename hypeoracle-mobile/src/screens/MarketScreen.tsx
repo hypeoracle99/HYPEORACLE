@@ -407,16 +407,16 @@ export function MarketScreen({ identity }: MarketScreenProps) {
 
               {/* Action Bottom Row */}
               <View style={styles.tokenActionRow}>
-                <Text style={styles.contributorsText}>
-                  👥 {token.contributorCount} real sensor contributors
+                <Text style={styles.contributorsText} numberOfLines={1}>
+                  👥 {token.contributorCount} contributors
                 </Text>
                 <TouchableOpacity
                   style={styles.swapActionBtn}
                   onPress={() => handleOpenSwap(token)}
                   activeOpacity={0.8}
                 >
-                  <Zap size={14} color={THEME.onPrimary} />
-                  <Text style={styles.swapActionText}>1-TAP HYPE BUY</Text>
+                  <Zap size={13} color={THEME.onPrimary} />
+                  <Text style={styles.swapActionText}>1-TAP BUY</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -750,26 +750,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 8,
+    marginTop: 2,
   },
   contributorsText: {
     color: THEME.textMuted,
     fontSize: 10,
     fontFamily: 'monospace',
+    flex: 1,
   },
   swapActionBtn: {
-    height: 48,
+    height: 36,
     backgroundColor: THEME.primary,
-    borderRadius: 10,
+    borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    gap: 6,
+    paddingHorizontal: 12,
+    gap: 5,
+    flexShrink: 0,
   },
   swapActionText: {
     color: THEME.onPrimary,
     fontFamily: 'monospace',
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: 'bold',
     letterSpacing: 0.5,
   },
