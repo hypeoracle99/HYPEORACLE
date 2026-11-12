@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Svg, { Circle, G, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { client } from '../lib/insforge';
+import { fetchLiveTokenVibes, TokenVibe } from '../lib/live-tokens';
 import { DePINIdentity } from '../lib/secure-store';
 import { THEME } from '../lib/theme';
 import { RecordScreen } from './RecordScreen';
@@ -44,19 +45,6 @@ const { width } = Dimensions.get('window');
 interface HomeScreenProps {
   identity: DePINIdentity | null;
   onNavigateTab: (tab: 'home' | 'market' | 'predict' | 'community' | 'hub') => void;
-}
-
-interface TokenVibe {
-  mint: string;
-  symbol: string;
-  name: string;
-  score: number;
-  confidence: number;
-  contributorCount: number;
-  change24h: number;
-  priceSol: number;
-  isHot: boolean;
-  history: number[];
 }
 
 const DEFAULT_HOME_TOKENS: TokenVibe[] = [
@@ -199,16 +187,12 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
 
   const loadVibeData = useCallback(async () => {
     try {
-      const { data, error } = await client.database
-        .from('vibe_scores')
-        .select('*')
-        .order('score', { ascending: false });
-
-      if (data && data.length > 0) {
-        // Enriched live data
+      const liveTokens = await fetchLiveTokenVibes();
+      if (liveTokens && liveTokens.length > 0) {
+        setTokens(liveTokens);
       }
-    } catch (err) {
-      // Fallback state
+    } catch (err: any) {
+      console.warn('[HomeScreen] Live prices fetch error, using resilient state:', err?.message);
     } finally {
       setRefreshing(false);
     }
@@ -216,6 +200,9 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
 
   useEffect(() => {
     loadVibeData();
+    // Live price refresh every 25 seconds
+    const interval = setInterval(loadVibeData, 25000);
+    return () => clearInterval(interval);
   }, [loadVibeData]);
 
   const onRefresh = () => {
@@ -250,6 +237,11 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
               >
                 <View style={styles.tickerDot} />
                 <Text style={styles.tickerSymbol}>${token.symbol}</Text>
+                {token.priceUsd ? (
+                  <Text style={styles.tickerPrice}>
+                    ${token.priceUsd < 0.001 ? token.priceUsd.toPrecision(3) : token.priceUsd.toFixed(2)}
+                  </Text>
+                ) : null}
                 <Text style={[styles.tickerChange, { color: isPos ? THEME.primary : THEME.bearish }]}>
                   {isPos ? '+' : ''}{token.change24h}%
                 </Text>
@@ -399,7 +391,14 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
               {/* Price & Change Pill */}
               <View style={styles.tokenRightPillGroup}>
                 <View style={styles.tokenChangePill}>
-                  <Text style={styles.tokenChangeText}>+{token.change24h}%</Text>
+                  {token.priceUsd ? (
+                    <Text style={styles.tokenPriceSmall}>
+                      ${token.priceUsd < 0.001 ? token.priceUsd.toPrecision(3) : token.priceUsd.toFixed(2)}
+                    </Text>
+                  ) : null}
+                  <Text style={[styles.tokenChangeText, { color: token.change24h >= 0 ? THEME.primary : THEME.bearish }]}>
+                    {token.change24h >= 0 ? '+' : ''}{token.change24h}%
+                  </Text>
                 </View>
                 <View style={styles.tokenScoreBox}>
                   <Text style={styles.tokenScoreText}>{token.score}</Text>
@@ -505,6 +504,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'monospace',
     fontSize: 11,
+    fontWeight: 'bold',
+  },
+  tickerPrice: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontFamily: 'monospace',
+    fontSize: 10,
     fontWeight: 'bold',
   },
   tickerChange: {
@@ -787,6 +792,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
+    alignItems: 'flex-end',
+  },
+  tokenPriceSmall: {
+    color: '#fff',
+    fontFamily: 'monospace',
+    fontSize: 9.5,
+    fontWeight: 'bold',
   },
   tokenChangeText: {
     color: THEME.primary,

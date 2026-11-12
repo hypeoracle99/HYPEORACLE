@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import Svg, { Path, Defs, LinearGradient, Stop, Line } from 'react-native-svg';
 import { client } from '../lib/insforge';
+import { fetchLiveTokenVibes } from '../lib/live-tokens';
 import { DePINIdentity } from '../lib/secure-store';
 import { THEME } from '../lib/theme';
 import {
@@ -48,6 +49,7 @@ interface MarketToken {
   change24h: number;
   bondingCurvePercent: number;
   priceSol: number;
+  priceUsd?: number;
   status: 'raging' | 'bullish' | 'neutral' | 'bearish';
   history: number[];
 }
@@ -211,16 +213,26 @@ export function MarketScreen({ identity }: MarketScreenProps) {
 
   const loadMarketData = useCallback(async () => {
     try {
-      const { data, error } = await client.database
-        .from('vibe_scores')
-        .select('*')
-        .order('score', { ascending: false });
-
-      if (data && data.length > 0) {
-        // Merge with existing token metadata if available
+      const liveTokens = await fetchLiveTokenVibes();
+      if (liveTokens && liveTokens.length > 0) {
+        const mapped: MarketToken[] = liveTokens.map((t) => ({
+          mint: t.mint,
+          symbol: t.symbol,
+          name: t.name,
+          hypeScore: t.score,
+          confidence: t.confidence,
+          contributorCount: t.contributorCount,
+          change24h: t.change24h,
+          bondingCurvePercent: t.bondingProgress ?? 100,
+          priceSol: t.priceSol,
+          priceUsd: t.priceUsd,
+          status: t.score > 90 ? 'raging' : t.score > 75 ? 'bullish' : 'neutral',
+          history: t.history,
+        }));
+        setTokens(mapped);
       }
-    } catch (err) {
-      // Keep state resilient
+    } catch (err: any) {
+      console.warn('[MarketScreen] Live data sync error, maintaining resilient state:', err?.message);
     } finally {
       setRefreshing(false);
     }
@@ -228,6 +240,9 @@ export function MarketScreen({ identity }: MarketScreenProps) {
 
   useEffect(() => {
     loadMarketData();
+    // Live price refresh every 25 seconds
+    const interval = setInterval(loadMarketData, 25000);
+    return () => clearInterval(interval);
   }, [loadMarketData]);
 
   const onRefresh = () => {
@@ -367,7 +382,13 @@ export function MarketScreen({ identity }: MarketScreenProps) {
                       </View>
                     )}
                   </View>
-                  <Text style={styles.tokenName}>{token.name}</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                    <Text style={styles.tokenName}>{token.name}</Text>
+                    <Text style={styles.tokenDotDivider}>•</Text>
+                    <Text style={styles.tokenPriceLive}>
+                      {token.priceUsd ? `$${token.priceUsd < 0.001 ? token.priceUsd.toPrecision(3) : token.priceUsd.toFixed(2)}` : `${token.priceSol.toFixed(4)} SOL`}
+                    </Text>
+                  </View>
                 </View>
 
                 {/* Hype Score Badge */}
@@ -447,6 +468,12 @@ export function MarketScreen({ identity }: MarketScreenProps) {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
                   <Text style={styles.infoLabel}>TARGET TOKEN</Text>
                   <Text style={styles.infoValue}>${selectedToken.symbol} ({selectedToken.name})</Text>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <Text style={styles.infoLabel}>LIVE PRICE</Text>
+                  <Text style={[styles.infoValue, { color: '#fff' }]}>
+                    {selectedToken.priceUsd ? `$${selectedToken.priceUsd < 0.001 ? selectedToken.priceUsd.toPrecision(3) : selectedToken.priceUsd.toFixed(2)} (${selectedToken.priceSol.toFixed(4)} SOL)` : `${selectedToken.priceSol.toFixed(4)} SOL`}
+                  </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
                   <Text style={styles.infoLabel}>CURRENT HYPE SCORE</Text>
@@ -676,7 +703,16 @@ const styles = StyleSheet.create({
   tokenName: {
     color: THEME.textSecondary,
     fontSize: 11,
-    marginTop: 2,
+  },
+  tokenDotDivider: {
+    color: THEME.textDim,
+    fontSize: 10,
+  },
+  tokenPriceLive: {
+    color: THEME.primary,
+    fontFamily: 'monospace',
+    fontSize: 10.5,
+    fontWeight: 'bold',
   },
   scoreBadge: {
     flexDirection: 'row',
