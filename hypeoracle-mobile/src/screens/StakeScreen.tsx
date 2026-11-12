@@ -15,7 +15,7 @@ import { getAssociatedTokenAddress, createTransferInstruction } from '@solana/sp
 import bs58 from 'bs58';
 import { client } from '../lib/insforge';
 import { DePINIdentity } from '../lib/secure-store';
-import { Coins, Zap, TrendingUp, ShieldCheck, Landmark, RotateCcw, AlertTriangle } from 'lucide-react-native';
+import { Coins, Zap, TrendingUp, ShieldCheck, Landmark, RotateCcw, AlertTriangle, Award, Flame, Cpu, ArrowUpRight } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 const HYPE_MINT = '5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS';
@@ -208,6 +208,60 @@ export function StakeScreen({ identity }: StakeScreenProps) {
   }
 
   const userStakedAmount = userStake ? Number(userStake.staked_amount) : 0;
+  
+  const getTierInfo = (amount: number) => {
+    if (amount >= 50000) {
+      return {
+        name: 'GOLD GUARDIAN',
+        badge: '🥇 GOLD',
+        apy: '26.0%',
+        multiplier: '1.50x',
+        perk: 'Full Autonomous Agent Active (0% Protocol Swap Fees)',
+        color: '#fbbf24',
+        progress: 1,
+        nextTier: null,
+        needed: 0,
+      };
+    } else if (amount >= 10000) {
+      return {
+        name: 'SILVER SENTINEL',
+        badge: '🥈 SILVER',
+        apy: '18.4%',
+        multiplier: '1.25x',
+        perk: 'High-Frequency DePIN Signals & Supervised Execution',
+        color: '#38bdf8',
+        progress: Math.min(1, (amount - 10000) / 40000),
+        nextTier: 'GOLD',
+        needed: 50000 - amount,
+      };
+    } else if (amount >= 1000) {
+      return {
+        name: 'BRONZE SCOUT',
+        badge: '🥉 BRONZE',
+        apy: '12.5%',
+        multiplier: '1.10x',
+        perk: 'Daily AI Alpha Signals & 5 Supervised Trades/Day',
+        color: '#f97316',
+        progress: Math.min(1, (amount - 1000) / 9000),
+        nextTier: 'SILVER',
+        needed: 10000 - amount,
+      };
+    } else {
+      return {
+        name: 'UNSTAKED NODE',
+        badge: 'UNSTAKED',
+        apy: '0.0%',
+        multiplier: '1.00x',
+        perk: 'Stake 1,000 $HYPE to unlock AI Agent copy-trading',
+        color: 'rgba(255,255,255,0.4)',
+        progress: Math.min(1, amount / 1000),
+        nextTier: 'BRONZE',
+        needed: 1000 - amount,
+      };
+    }
+  };
+
+  const currentTier = getTierInfo(userStakedAmount);
   const multiplier = 1 + Math.min(0.5, userStakedAmount / 1_000_000);
   const unclaimedRewards = userStake ? Number(userStake.pending_rewards || 0) : 0;
 
@@ -234,6 +288,44 @@ export function StakeScreen({ identity }: StakeScreenProps) {
           <Text style={[styles.statValue, { color: '#fbbf24' }]}>12.5%</Text>
           <Text style={styles.statSub}>DYNAMIC</Text>
         </View>
+      </View>
+
+      {/* Active Tier Card */}
+      <View style={[styles.tierCard, { borderColor: `${currentTier.color}40` }]}>
+        <View style={styles.tierHeader}>
+          <View style={styles.tierTitleRow}>
+            <Award size={20} color={currentTier.color} />
+            <Text style={[styles.tierTitle, { color: currentTier.color }]}>
+              {currentTier.name}
+            </Text>
+          </View>
+          <View style={[styles.tierApyBadge, { backgroundColor: `${currentTier.color}20` }]}>
+            <Text style={[styles.tierApyText, { color: currentTier.color }]}>
+              {currentTier.apy} APY
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.tierPerkDesc}>{currentTier.perk}</Text>
+
+        {currentTier.nextTier && (
+          <View style={styles.progressContainer}>
+            <View style={styles.progressLabelRow}>
+              <Text style={styles.progressLabel}>NEXT TIER: {currentTier.nextTier}</Text>
+              <Text style={styles.progressTarget}>
+                Needs {currentTier.needed.toLocaleString()} more $HYPE
+              </Text>
+            </View>
+            <View style={styles.progressBarBg}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: `${Math.round(currentTier.progress * 100)}%`, backgroundColor: currentTier.color }
+                ]}
+              />
+            </View>
+          </View>
+        )}
       </View>
 
       {/* Main Staking Controls */}
@@ -303,6 +395,23 @@ export function StakeScreen({ identity }: StakeScreenProps) {
           </TouchableOpacity>
         </View>
 
+        {/* Quick Amount Chips */}
+        <View style={styles.quickChipsRow}>
+          {[
+            { label: '+1K (Bronze)', val: '1000' },
+            { label: '+10K (Silver)', val: '10000' },
+            { label: '+50K (Gold)', val: '50000' },
+          ].map((chip) => (
+            <TouchableOpacity
+              key={chip.val}
+              style={styles.quickChip}
+              onPress={() => setStakeAmount(chip.val)}
+            >
+              <Text style={styles.quickChipText}>{chip.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         <View style={styles.separator}>
           <View style={styles.sepLine} />
           <Text style={styles.sepText}>MANAGED WITHDRAWAL</Text>
@@ -330,6 +439,93 @@ export function StakeScreen({ identity }: StakeScreenProps) {
               <Text style={styles.actionBtnTextAlt}>UNSTAKE</Text>
             )}
           </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Tier Matrix & Privileges */}
+      <View style={styles.panel}>
+        <View style={styles.panelHeader}>
+          <Cpu size={18} color="#00FF88" />
+          <Text style={styles.panelTitle}>STAKER TIERS & AGENT POWERS</Text>
+        </View>
+
+        <View style={styles.tierList}>
+          <View style={[styles.tierRow, userStakedAmount >= 1000 && userStakedAmount < 10000 && styles.tierRowActive]}>
+            <View style={styles.tierRowLeft}>
+              <View style={styles.tierRowTop}>
+                <Text style={[styles.tierRowName, { color: '#f97316' }]}>🥉 BRONZE (1,000 $HYPE)</Text>
+                <Text style={[styles.tierRowApy, { color: '#f97316' }]}>12.5% APY</Text>
+              </View>
+              <Text style={styles.tierRowSub}>Supervised AI Agent • 5 Trades/Day • 1.10x Vibe Multiplier</Text>
+            </View>
+          </View>
+
+          <View style={[styles.tierRow, userStakedAmount >= 10000 && userStakedAmount < 50000 && styles.tierRowActive]}>
+            <View style={styles.tierRowLeft}>
+              <View style={styles.tierRowTop}>
+                <Text style={[styles.tierRowName, { color: '#38bdf8' }]}>🥈 SILVER (10,000 $HYPE)</Text>
+                <Text style={[styles.tierRowApy, { color: '#38bdf8' }]}>18.4% APY</Text>
+              </View>
+              <Text style={styles.tierRowSub}>High-Frequency DePIN Alpha Signals • Custom Risk Guardrails • 1.25x Multiplier</Text>
+            </View>
+          </View>
+
+          <View style={[styles.tierRow, userStakedAmount >= 50000 && styles.tierRowActive]}>
+            <View style={styles.tierRowLeft}>
+              <View style={styles.tierRowTop}>
+                <Text style={[styles.tierRowName, { color: '#fbbf24' }]}>🥇 GOLD (50,000+ $HYPE)</Text>
+                <Text style={[styles.tierRowApy, { color: '#fbbf24' }]}>26.0% APY</Text>
+              </View>
+              <Text style={styles.tierRowSub}>Full Autonomous Agent • 0% Swap Protocol Fees • 1.50x Max Multiplier</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Protocol Revenue & Burn Dynamics */}
+      <View style={styles.panel}>
+        <View style={styles.panelHeader}>
+          <Flame size={18} color="#00FF88" />
+          <Text style={styles.panelTitle}>PROTOCOL REVENUE & BURN SPLIT</Text>
+        </View>
+
+        <Text style={styles.revenueExplainer}>
+          Every trade and swap routed through HypeOracle generates protocol micro-fees, split transparently to power real yield and deflationary scarcity:
+        </Text>
+
+        <View style={styles.splitGrid}>
+          <View style={styles.splitCard}>
+            <View style={styles.splitTopRow}>
+              <Text style={styles.splitPct}>70%</Text>
+              <View style={[styles.liveTag, { backgroundColor: 'rgba(16,185,129,0.15)', borderColor: '#10b981' }]}>
+                <Text style={[styles.liveTagText, { color: '#10b981' }]}>LIVE</Text>
+              </View>
+            </View>
+            <Text style={styles.splitTitle}>STAKER YIELD</Text>
+            <Text style={styles.splitDesc}>Distributed in real SOL claimable directly to your wallet.</Text>
+          </View>
+
+          <View style={styles.splitCard}>
+            <View style={styles.splitTopRow}>
+              <Text style={[styles.splitPct, { color: '#f97316' }]}>20%</Text>
+              <View style={[styles.liveTag, { backgroundColor: 'rgba(249,115,22,0.15)', borderColor: '#f97316' }]}>
+                <Text style={[styles.liveTagText, { color: '#f97316' }]}>METEORA DLMM</Text>
+              </View>
+            </View>
+            <Text style={styles.splitTitle}>BUYBACK & BURN</Text>
+            <Text style={styles.splitDesc}>Autonomous DEX market buys and burns $HYPE to reduce supply.</Text>
+          </View>
+
+          <View style={styles.splitCard}>
+            <View style={styles.splitTopRow}>
+              <Text style={[styles.splitPct, { color: '#38bdf8' }]}>10%</Text>
+              <View style={[styles.liveTag, { backgroundColor: 'rgba(56,189,248,0.15)', borderColor: '#38bdf8' }]}>
+                <Text style={[styles.liveTagText, { color: '#38bdf8' }]}>LIVE</Text>
+              </View>
+            </View>
+            <Text style={styles.splitTitle}>DePIN REWARDS</Text>
+            <Text style={styles.splitDesc}>Rewarded to active vocal & motion vibe telemetry contributors.</Text>
+          </View>
         </View>
       </View>
 
@@ -665,5 +861,181 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.3)',
     textAlign: 'center',
     paddingVertical: 12,
+  },
+  tierCard: {
+    backgroundColor: '#0d0d14',
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 16,
+  },
+  tierHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  tierTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  tierTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+  tierApyBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  tierApyText: {
+    fontFamily: 'monospace',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  tierPerkDesc: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.7)',
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+  progressContainer: {
+    marginTop: 4,
+  },
+  progressLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  progressLabel: {
+    fontFamily: 'monospace',
+    fontSize: 9,
+    color: 'rgba(255,255,255,0.5)',
+    letterSpacing: 0.5,
+  },
+  progressTarget: {
+    fontFamily: 'monospace',
+    fontSize: 9,
+    color: 'rgba(255,255,255,0.4)',
+  },
+  progressBarBg: {
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  quickChipsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+  },
+  quickChip: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 8,
+    paddingVertical: 7,
+    alignItems: 'center',
+  },
+  quickChipText: {
+    fontFamily: 'monospace',
+    fontSize: 9.5,
+    color: 'rgba(255,255,255,0.6)',
+  },
+  tierList: {
+    gap: 10,
+  },
+  tierRow: {
+    backgroundColor: 'rgba(255,255,255,0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 14,
+    padding: 12,
+  },
+  tierRowActive: {
+    borderColor: 'rgba(0,255,136,0.3)',
+    backgroundColor: 'rgba(0,255,136,0.03)',
+  },
+  tierRowLeft: {
+    flex: 1,
+  },
+  tierRowTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  tierRowName: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  tierRowApy: {
+    fontFamily: 'monospace',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  tierRowSub: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.5)',
+    lineHeight: 16,
+  },
+  revenueExplainer: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.6)',
+    lineHeight: 18,
+    marginBottom: 14,
+  },
+  splitGrid: {
+    gap: 10,
+  },
+  splitCard: {
+    backgroundColor: 'rgba(255,255,255,0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 14,
+    padding: 12,
+  },
+  splitTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  splitPct: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#00FF88',
+  },
+  liveTag: {
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  liveTagText: {
+    fontFamily: 'monospace',
+    fontSize: 8,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+  splitTitle: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#fff',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  splitDesc: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.4)',
+    lineHeight: 15,
   },
 });

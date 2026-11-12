@@ -196,8 +196,55 @@ export function AgentScreen({ identity }: AgentScreenProps) {
               )}
             </View>
             <Text style={styles.panelDesc}>
-              Allows the Oracle to trade SOL for high sentiment vibes natively on Bags.fm. Requires 50,000 $HYPE staked.
+              Allows your AI Agent to execute autonomous trades based on high-conviction DePIN vibe telemetry.
             </Text>
+
+            {/* Staker Tier Status in Agent */}
+            <View style={styles.agentTierBox}>
+              <View style={styles.agentTierRow}>
+                <Text style={styles.agentTierLabel}>STAKER TIER:</Text>
+                <Text
+                  style={[
+                    styles.agentTierBadge,
+                    {
+                      color:
+                        stakedHype >= 50000
+                          ? '#fbbf24'
+                          : stakedHype >= 10000
+                          ? '#38bdf8'
+                          : stakedHype >= 1000
+                          ? '#f97316'
+                          : 'rgba(255,255,255,0.4)',
+                    },
+                  ]}
+                >
+                  {stakedHype >= 50000
+                    ? '🥇 GOLD GUARDIAN'
+                    : stakedHype >= 10000
+                    ? '🥈 SILVER SENTINEL'
+                    : stakedHype >= 1000
+                    ? '🥉 BRONZE SCOUT'
+                    : 'UNSTAKED NODE'}
+                </Text>
+              </View>
+
+              {!autonomyUnlocked && (
+                <View style={styles.autonomyReqContainer}>
+                  <View style={styles.autonomyReqHeader}>
+                    <Text style={styles.autonomyReqText}>GOLD TIER (50K $HYPE) REQUIRED FOR FULL AUTONOMY</Text>
+                    <Text style={styles.autonomyReqValue}>{stakedHype.toLocaleString()} / 50,000</Text>
+                  </View>
+                  <View style={styles.autonomyReqProgressBg}>
+                    <View
+                      style={[
+                        styles.autonomyReqProgressFill,
+                        { width: `${Math.min(100, Math.round((stakedHype / 50000) * 100))}%` },
+                      ]}
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
 
             <View style={styles.toggleRow}>
               <Text style={styles.toggleText}>
@@ -583,5 +630,63 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#00FF88',
     letterSpacing: 1,
+  },
+  agentTierBox: {
+    backgroundColor: 'rgba(255,255,255,0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+  },
+  agentTierRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  agentTierLabel: {
+    fontFamily: 'monospace',
+    fontSize: 9,
+    color: 'rgba(255,255,255,0.5)',
+    letterSpacing: 0.5,
+  },
+  agentTierBadge: {
+    fontFamily: 'monospace',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
+  autonomyReqContainer: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.05)',
+  },
+  autonomyReqHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  autonomyReqText: {
+    fontFamily: 'monospace',
+    fontSize: 8,
+    color: 'rgba(255,255,255,0.4)',
+  },
+  autonomyReqValue: {
+    fontFamily: 'monospace',
+    fontSize: 8,
+    color: '#fbbf24',
+    fontWeight: 'bold',
+  },
+  autonomyReqProgressBg: {
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  autonomyReqProgressFill: {
+    height: '100%',
+    backgroundColor: '#fbbf24',
+    borderRadius: 2,
   },
 });
