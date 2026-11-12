@@ -43,3 +43,4 @@ export function registerAdminSession(pubkey?: string | null) {
     localStorage.setItem('hypeoracle_admin_wallet', pubkey);
   }
 }
+
