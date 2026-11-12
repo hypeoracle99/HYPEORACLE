@@ -20,6 +20,7 @@ export default function XManagerPage() {
     const pubkeyStr = publicKey ? publicKey.toBase58() : null;
     if (checkIsAdminWallet(pubkeyStr)) {
       setIsPassAuthed(true);
+      if (pubkeyStr) registerAdminSession(pubkeyStr);
     }
   }, [publicKey]);
 

@@ -3,8 +3,9 @@
  */
 
 export const KNOWN_ADMIN_WALLETS: string[] = [
-  '5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS',
-  '4H7Wk7Y1qB6n7x5k6d8m9p0q1r2s3t4u5v6w7x8y9z0a',
+  'BBz7heBU32GENqiBqEVVCfFoc8QcJJduezjpN6oesKaP', // Official Protocol Admin Wallet
+  '5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS', // HypeOracle Core Mint
+  '4H7Wk7Y1qB6n7x5k6d8m9p0q1r2s3t4u5v6w7x8y9z0a', // Dev Admin Key
 ];
 
 export function checkIsAdminWallet(pubkey?: string | null): boolean {

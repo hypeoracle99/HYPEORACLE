@@ -6,6 +6,7 @@ import { CommunityAuditLog } from '@/lib/community-types';
 
 // Central list of authorized admin Solana public keys
 const DEFAULT_ADMIN_WALLETS = [
+  'BBz7heBU32GENqiBqEVVCfFoc8QcJJduezjpN6oesKaP', // Official Protocol Admin Wallet
   '5k87WMWqpzPEWFqrUoAbriD2Xr4fNZx4288NtFZSBAGS', // HypeOracle Core
   '4H7Wk7Y1qB6n7x5k6d8m9p0q1r2s3t4u5v6w7x8y9z0a', // Dev Admin Key
 ];
