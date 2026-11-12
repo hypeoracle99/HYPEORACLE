@@ -142,14 +142,6 @@ export function NavHeader() {
             >
               Community
             </NavItem>
-            <NavItem 
-              href="/admin/x-manager" 
-              icon={Bot} 
-              active={pathname.startsWith('/admin/x-manager')} 
-              color="#00FF88"
-            >
-              AI X Manager
-            </NavItem>
             {publicKey && (
               <>
                 <NavItem 

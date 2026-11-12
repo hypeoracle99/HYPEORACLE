@@ -157,20 +157,6 @@ export default function CommunityQuestHub() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Link 
-              href="/admin/x-manager"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/30 text-xs font-mono text-[#00FF88] transition-all active:scale-95 font-bold"
-            >
-              <Bot className="w-3.5 h-3.5" />
-              <span>AI X Manager</span>
-            </Link>
-            <Link 
-              href="/community/admin"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-white/80 transition-all active:scale-95"
-            >
-              <Shield className="w-3.5 h-3.5 text-[#05F292]" />
-              <span>Admin Command Center</span>
-            </Link>
             {mounted && <WalletMultiButton className="!bg-[#00FF88] !hover:bg-[#00FF88] !rounded-xl !h-10 !text-xs !font-display !font-bold" />}
           </div>
         </div>
