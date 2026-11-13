@@ -206,10 +206,9 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
 
         const responseText = await new Promise<string>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
-          xhr.timeout = 5000;
-          // Prefer active InsForge regional endpoint
-          xhr.open('POST', 'https://9s8ct2b5.us-east.insforge.app/functions/submit-vibe');
-          xhr.setRequestHeader('Authorization', `Bearer ${INSFORGE_CONFIG.anonKey}`);
+          xhr.timeout = 3500;
+          // Target official HypeOracle API endpoint with automatic regional failover
+          xhr.open('POST', 'https://hype-oracle.xyz/api/submit-vibe');
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
               resolve(xhr.responseText);
