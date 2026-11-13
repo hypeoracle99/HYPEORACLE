@@ -19,6 +19,12 @@ export function OracleStatus() {
 
   async function fetchStatus() {
     try {
+      const res = await fetch('/api/oracle/status')
+      if (res.ok) {
+        const data = await res.json()
+        setStatus(data)
+        return
+      }
       const { data, error } = await client.functions.invoke('get-oracle-status')
       if (error) throw error
       setStatus(data)
