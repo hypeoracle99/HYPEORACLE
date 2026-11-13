@@ -17,6 +17,8 @@ import { signSensorTelemetry } from '../lib/sensor-signing';
 import { client, INSFORGE_CONFIG } from '../lib/insforge';
 import { THEME } from '../lib/theme';
 import { Mic, Square, Zap, CheckCircle2, Pause, Sparkles, Activity } from 'lucide-react-native';
+import { haptics } from '../lib/haptics';
+import { recordDailyVibeSubmission } from '../lib/streak';
 
 const { width } = Dimensions.get('window');
 const SHAKE_THRESHOLD = 2.0; // 2.0g calibrated baseline
@@ -143,8 +145,10 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
 
       await audioRecorder.record();
       startAccelerometer();
+      haptics.recordStart();
     } catch (err: any) {
       console.error('[Mic Recorder] Start failure:', err);
+      haptics.error();
       Alert.alert('Microphone Error', 'Failed to initialize audio capture node.');
     }
   };
@@ -254,13 +258,18 @@ export function RecordScreen({ identity, onVibeSubmitted }: RecordScreenProps) {
 
       setLastVibeScore(calculatedVibeScore);
 
+      // Record daily streak and compute streak multiplier reward
+      const { streak, bonusXp } = await recordDailyVibeSubmission();
+      haptics.success();
+
       Alert.alert(
         'Sensory Vibe Logged! 🔥',
-        `Calibrated Vibe Score: ${calculatedVibeScore}\n+250 XP Credited to your Staker Account.\n${serverSyncSuccess ? '● Sync: Verified on Consensus Network' : '● Node: Cryptographically signed on-device'}`
+        `Calibrated Vibe Score: ${calculatedVibeScore}\n+${bonusXp} XP Credited (${streak.multiplier}x Streak Multiplier!)\n🔥 ${streak.streakDays}-Day Streak • ${streak.badge}\n\n${serverSyncSuccess ? '● Sync: Verified on Consensus Network' : '● Node: Cryptographically signed on-device'}`
       );
       onVibeSubmitted();
     } catch (err: any) {
       console.error('[RecordScreen] Submission aborted:', err);
+      haptics.error();
       Alert.alert('Verification Failed', err.message || 'Telemetry transmission stalled. Re-syncing node.');
     } finally {
       setSubmitting(false);

@@ -14,6 +14,7 @@
     "expo-audio": "~56.0.11",
     "expo-clipboard": "~56.0.3",
     "expo-dev-client": "~56.0.18",
+    "expo-local-authentication": "~56.0.5",
     "expo-secure-store": "^56.0.4",
     "expo-sensors": "^56.0.5",
     "expo-splash-screen": "~56.0.10",

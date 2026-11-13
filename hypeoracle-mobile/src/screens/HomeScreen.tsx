@@ -20,6 +20,8 @@ import { fetchLiveTokenVibes, TokenVibe } from '../lib/live-tokens';
 import { DePINIdentity } from '../lib/secure-store';
 import { THEME } from '../lib/theme';
 import { RecordScreen } from './RecordScreen';
+import { haptics } from '../lib/haptics';
+import { getDailyStreak, StreakInfo } from '../lib/streak';
 import {
   Activity,
   Flame,
@@ -282,6 +284,18 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
   const [refreshing, setRefreshing] = useState(false);
   const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [selectedTokenForHype, setSelectedTokenForHype] = useState<TokenVibe | null>(null);
+  const [streakInfo, setStreakInfo] = useState<StreakInfo>({
+    streakDays: 1,
+    lastDate: null,
+    totalVibes: 0,
+    badge: 'Novice Oracle ⚡',
+    multiplier: 1.0,
+    todayLogged: false,
+  });
+
+  const refreshStreak = useCallback(() => {
+    getDailyStreak().then(setStreakInfo);
+  }, []);
 
   const loadVibeData = useCallback(async () => {
     try {
@@ -298,17 +312,21 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
 
   useEffect(() => {
     loadVibeData();
+    refreshStreak();
     // Live price refresh every 25 seconds
     const interval = setInterval(loadVibeData, 25000);
     return () => clearInterval(interval);
-  }, [loadVibeData]);
+  }, [loadVibeData, refreshStreak]);
 
   const onRefresh = () => {
+    haptics.tap();
     setRefreshing(true);
     loadVibeData();
+    refreshStreak();
   };
 
   const handleOpenSendHype = (token?: TokenVibe) => {
+    haptics.tap();
     setSelectedTokenForHype(token || null);
     setRecordModalOpen(true);
   };
@@ -349,6 +367,36 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
           >
             <Mic size={18} color={THEME.onPrimary} />
             <Text style={styles.scanVibeBtnText}>Scan Your Vibe ➔</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* 2.5 Daily Contributor Streak & Rank Card */}
+        <View style={styles.streakBanner}>
+          <View style={styles.streakLeft}>
+            <View style={styles.streakIconWrap}>
+              <Flame size={18} color={THEME.primary} />
+            </View>
+            <View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={styles.streakDayText}>{streakInfo.streakDays}-DAY STREAK</Text>
+                <View style={styles.streakMultiplierPill}>
+                  <Text style={styles.streakMultiplierText}>{streakInfo.multiplier}x XP BOOST</Text>
+                </View>
+              </View>
+              <Text style={styles.streakBadgeText}>{streakInfo.badge}</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.streakStatusBtn, streakInfo.todayLogged && styles.streakStatusBtnDone]}
+            onPress={() => {
+              haptics.tap();
+              handleOpenSendHype();
+            }}
+          >
+            <Text style={[styles.streakStatusBtnText, streakInfo.todayLogged && styles.streakStatusBtnTextDone]}>
+              {streakInfo.todayLogged ? 'LOGGED ✓' : 'LOG VIBE ➔'}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -534,6 +582,7 @@ export function HomeScreen({ identity, onNavigateTab }: HomeScreenProps) {
                 onVibeSubmitted={() => {
                   setRecordModalOpen(false);
                   loadVibeData();
+                  refreshStreak();
                 }}
               />
             </View>
@@ -964,5 +1013,79 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     letterSpacing: 1,
+  },
+  streakBanner: {
+    marginHorizontal: 16,
+    marginTop: 12,
+    backgroundColor: 'rgba(0, 255, 136, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 255, 136, 0.22)',
+    borderRadius: THEME.radiusMd,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  streakLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  streakIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(0, 255, 136, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 255, 136, 0.3)',
+  },
+  streakDayText: {
+    color: '#fff',
+    fontFamily: 'monospace',
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
+  streakMultiplierPill: {
+    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    borderColor: 'rgba(0, 255, 136, 0.4)',
+  },
+  streakMultiplierText: {
+    color: THEME.primary,
+    fontFamily: 'monospace',
+    fontSize: 9,
+    fontWeight: 'bold',
+  },
+  streakBadgeText: {
+    color: THEME.textMuted,
+    fontSize: 10,
+    marginTop: 2,
+  },
+  streakStatusBtn: {
+    backgroundColor: THEME.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+  },
+  streakStatusBtnDone: {
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+  },
+  streakStatusBtnText: {
+    color: THEME.onPrimary,
+    fontFamily: 'monospace',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  streakStatusBtnTextDone: {
+    color: THEME.primary,
   },
 });

@@ -28,9 +28,13 @@ import {
   Lock,
   Coins,
   ChevronDown,
+  Fingerprint,
+  Shield,
 } from 'lucide-react-native';
 import { DePINIdentity } from '../lib/secure-store';
 import { THEME } from '../lib/theme';
+import { authenticateWithBiometrics } from '../lib/biometrics';
+import { haptics } from '../lib/haptics';
 
 // Set global Buffer polyfill using globalThis
 if (typeof (globalThis as any).Buffer === 'undefined') {
@@ -172,6 +176,15 @@ export function WalletHub({ identity }: WalletHubProps) {
     const value = parseFloat(amount);
     if (isNaN(value) || value <= 0) {
       Alert.alert('Invalid Amount', 'Please enter a valid transfer amount.');
+      return;
+    }
+
+    // Biometric Security Guard
+    haptics.tap();
+    const authorized = await authenticateWithBiometrics(`Authorize transfer of ${amount} ${selectedToken.symbol}`);
+    if (!authorized) {
+      haptics.error();
+      Alert.alert('Transfer Cancelled', 'Biometric authentication was cancelled.');
       return;
     }
 
@@ -537,6 +550,11 @@ export function WalletHub({ identity }: WalletHubProps) {
               </Text>
             </View>
 
+            <View style={styles.biometricBadge}>
+              <Fingerprint size={15} color={THEME.primary} />
+              <Text style={styles.biometricBadgeText}>BIOMETRIC SHIELD: HARDWARE FINGERPRINT & FACE UNLOCK ACTIVE</Text>
+            </View>
+
             {revealKey ? (
               <View style={styles.privateKeyBox}>
                 <Text style={styles.privateKeyLabel}>YOUR BASE58 SECRET KEY</Text>
@@ -563,19 +581,20 @@ export function WalletHub({ identity }: WalletHubProps) {
             ) : (
               <TouchableOpacity
                 style={styles.revealBtn}
-                onPress={() => {
-                  Alert.alert(
-                    'Reveal Private Key?',
-                    'Are you sure you want to reveal your private key? Make sure no one is looking at your screen.',
-                    [
-                      { text: 'Cancel', style: 'cancel' },
-                      { text: 'Reveal', onPress: () => setRevealKey(true) },
-                    ]
-                  );
+                onPress={async () => {
+                  haptics.tap();
+                  const authed = await authenticateWithBiometrics('Authenticate to reveal your staker secret key');
+                  if (authed) {
+                    haptics.success();
+                    setRevealKey(true);
+                  } else {
+                    haptics.error();
+                    Alert.alert('Authentication Failed', 'Biometric or device PIN verification is required.');
+                  }
                 }}
               >
-                <Eye size={14} color={THEME.primary} />
-                <Text style={styles.revealBtnText}>REVEAL STAKER SECRET KEY</Text>
+                <Fingerprint size={16} color={THEME.primary} />
+                <Text style={styles.revealBtnText}>BIOMETRIC REVEAL SECRET KEY</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -1097,5 +1116,25 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: 'bold',
     color: '#fff',
+  },
+  biometricBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(0, 255, 136, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 255, 136, 0.25)',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 16,
+  },
+  biometricBadgeText: {
+    fontFamily: 'monospace',
+    fontSize: 8.5,
+    fontWeight: 'bold',
+    color: THEME.primary,
+    letterSpacing: 0.5,
+    flex: 1,
   },
 });

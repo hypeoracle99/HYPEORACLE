@@ -20,7 +20,8 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "permissions": [
-        "RECORD_AUDIO"
+        "RECORD_AUDIO",
+        "USE_BIOMETRIC"
       ],
       "predictiveBackGestureEnabled": false,
       "package": "com.hypeoracle99.hypeoraclemobile"
